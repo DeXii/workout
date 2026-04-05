@@ -3,1547 +3,1566 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🏋️ Воркаут — Программа тренировок</title>
-
-    <!-- Firebase SDK -->
+    <title>⚡ Система Аянокоджи — Комплексное развитие</title>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        *{margin:0;padding:0;box-sizing:border-box;}
+        :root{
+            --bg1:#0a0a0f;--bg2:#111118;--bg3:#1a1a24;
+            --accent1:#00d4ff;--accent2:#7c3aed;--accent3:#10b981;
+            --accent4:#f59e0b;--accent5:#ef4444;
+            --text1:#f0f0f0;--text2:#a0a0b0;--text3:#606070;
+            --border:rgba(255,255,255,0.07);
         }
+        body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var(--text1);min-height:100vh;overflow-x:hidden;}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            color: #fff;
-            min-height: 100vh;
+        /* ─── NAVBAR ─── */
+        .navbar{background:rgba(10,10,15,0.95);backdrop-filter:blur(20px);padding:0 20px;position:sticky;top:0;z-index:1000;border-bottom:1px solid var(--border);}
+        .navbar-inner{max-width:1400px;margin:0 auto;display:flex;align-items:center;gap:12px;padding:10px 0;flex-wrap:wrap;}
+        .logo{font-size:1.1em;font-weight:800;background:linear-gradient(90deg,#00d4ff,#7c3aed,#10b981);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;white-space:nowrap;margin-right:8px;}
+        .nav-links{display:flex;gap:4px;flex-wrap:wrap;}
+        .nav-btn{background:transparent;border:1px solid transparent;color:var(--text2);padding:6px 12px;border-radius:8px;cursor:pointer;font-size:0.82em;transition:all .25s;white-space:nowrap;}
+        .nav-btn:hover{background:rgba(255,255,255,0.07);color:var(--text1);}
+        .nav-btn.active{background:rgba(0,212,255,0.12);border-color:rgba(0,212,255,0.3);color:var(--accent1);}
+
+        /* ─── CONTAINER ─── */
+        .container{max-width:1400px;margin:0 auto;padding:24px 20px;}
+        .section{display:none;animation:fadeUp .4s ease;}
+        .section.active{display:block;}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+        /* ─── SECTION HEADER ─── */
+        .sec-header{margin-bottom:28px;}
+        .sec-title{font-size:1.8em;font-weight:700;margin-bottom:6px;}
+        .sec-sub{color:var(--text2);font-size:.9em;}
+
+        /* ─── CARDS ─── */
+        .card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;}
+        .card-sm{padding:14px 16px;}
+        .card:hover{border-color:rgba(255,255,255,0.12);}
+
+        /* ─── GRID HELPERS ─── */
+        .grid-2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;}
+        .grid-3{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;}
+        .grid-4{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;}
+
+        /* ─── STAT CARDS ─── */
+        .stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:18px;text-align:center;}
+        .stat-num{font-size:2em;font-weight:800;display:block;line-height:1;}
+        .stat-lbl{color:var(--text2);font-size:.82em;margin-top:6px;}
+
+        /* ─── SYNC BOX ─── */
+        .sync-box{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;text-align:center;margin-bottom:20px;}
+        .sync-status{display:inline-block;padding:4px 12px;border-radius:20px;font-size:.8em;margin-bottom:12px;}
+        .sync-status.online{background:rgba(16,185,129,.15);color:#10b981;border:1px solid rgba(16,185,129,.3);}
+        .sync-status.offline{background:rgba(239,68,68,.15);color:#ef4444;border:1px solid rgba(239,68,68,.3);}
+        .sync-input{background:rgba(0,0,0,.3);border:1px solid var(--border);color:var(--accent1);padding:8px 14px;border-radius:8px;font-size:.95em;text-align:center;width:280px;cursor:pointer;transition:all .3s;}
+        .sync-input:focus{border-color:var(--accent1);outline:none;}
+        .sync-input.edit{color:var(--text1);}
+
+        /* ─── BUTTONS ─── */
+        .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 18px;border-radius:8px;border:none;cursor:pointer;font-size:.9em;font-weight:600;transition:all .25s;}
+        .btn:hover{transform:translateY(-1px);}
+        .btn-primary{background:var(--accent1);color:#000;}
+        .btn-purple{background:var(--accent2);color:#fff;}
+        .btn-green{background:var(--accent3);color:#fff;}
+        .btn-orange{background:var(--accent4);color:#000;}
+        .btn-red{background:var(--accent5);color:#fff;}
+        .btn-ghost{background:rgba(255,255,255,.08);color:var(--text1);border:1px solid var(--border);}
+        .btn-sm{padding:5px 12px;font-size:.82em;}
+
+        /* ─── PROGRESS ─── */
+        .prog-wrap{margin:10px 0;}
+        .prog-header{display:flex;justify-content:space-between;font-size:.85em;margin-bottom:5px;}
+        .prog-bar{background:rgba(255,255,255,.07);border-radius:6px;height:10px;overflow:hidden;}
+        .prog-fill{height:100%;border-radius:6px;transition:width 1s ease;}
+
+        /* ─── TABS (inner) ─── */
+        .inner-tabs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap;}
+        .itab{background:rgba(255,255,255,.05);border:1px solid var(--border);color:var(--text2);padding:7px 16px;border-radius:8px;cursor:pointer;font-size:.85em;transition:all .25s;}
+        .itab.active,.itab:hover{background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.3);color:var(--accent1);}
+        .itab-content{display:none;}
+        .itab-content.active{display:block;animation:fadeUp .3s ease;}
+
+        /* ─── SCHEDULE ─── */
+        .month-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+        .day-hdr{text-align:center;font-size:.75em;color:var(--text3);padding:6px;text-transform:uppercase;font-weight:600;}
+        .day-cell{aspect-ratio:1;border-radius:10px;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .25s;padding:4px;min-height:56px;}
+        .day-cell:hover{border-color:rgba(0,212,255,.4);background:rgba(0,212,255,.06);}
+        .day-cell.empty{cursor:default;opacity:0;}
+        .day-cell .d-num{font-weight:700;font-size:.95em;}
+        .day-cell .d-lbl{font-size:.6em;margin-top:2px;text-align:center;line-height:1.1;opacity:.8;}
+        .day-cell.push{background:rgba(124,58,237,.12);border-color:rgba(124,58,237,.3);}
+        .day-cell.pull{background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.3);}
+        .day-cell.legs{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);}
+        .day-cell.full{background:rgba(245,158,11,.1);border-color:rgba(245,158,11,.3);}
+        .day-cell.rest{background:var(--bg2);}
+        .day-cell.today{box-shadow:0 0 0 2px var(--accent1);}
+        .day-cell.done::after{content:'✓';position:absolute;top:3px;right:5px;font-size:.6em;color:var(--accent3);}
+        .day-cell{position:relative;}
+
+        .hour-sched{display:flex;flex-direction:column;gap:0;}
+        .hour-row{display:grid;grid-template-columns:56px 1fr;gap:0;border-bottom:1px solid var(--border);}
+        .hour-row:last-child{border-bottom:none;}
+        .hour-time{padding:8px 10px;color:var(--text3);font-size:.78em;font-weight:600;border-right:1px solid var(--border);display:flex;align-items:center;white-space:nowrap;}
+        .hour-act{padding:8px 12px;font-size:.84em;display:flex;align-items:center;gap:8px;}
+        .hour-act .act-tag{padding:2px 8px;border-radius:4px;font-size:.75em;font-weight:600;white-space:nowrap;}
+        .tag-train{background:rgba(124,58,237,.2);color:#a78bfa;}
+        .tag-study{background:rgba(0,212,255,.15);color:var(--accent1);}
+        .tag-food{background:rgba(16,185,129,.15);color:var(--accent3);}
+        .tag-mind{background:rgba(245,158,11,.15);color:var(--accent4);}
+        .tag-rest{background:rgba(255,255,255,.05);color:var(--text2);}
+        .tag-chess{background:rgba(239,68,68,.15);color:#fca5a5;}
+        .tag-sleep{background:rgba(99,102,241,.2);color:#a5b4fc;}
+
+        /* ─── WORKOUT ─── */
+        .workout-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:16px;}
+        .workout-header{padding:16px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;}
+        .workout-header:hover{background:rgba(255,255,255,.03);}
+        .workout-body{padding:0 20px 16px;}
+        .ex-table{width:100%;border-collapse:collapse;}
+        .ex-table th{padding:10px 12px;text-align:left;font-size:.78em;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--border);}
+        .ex-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:.88em;}
+        .ex-table tr:last-child td{border-bottom:none;}
+        .ex-table tbody tr:hover{background:rgba(255,255,255,.03);}
+        .ex-name{font-weight:600;}
+        .ex-sets{color:var(--accent1);font-weight:700;}
+        .ex-rest{color:var(--accent4);}
+        .ex-prog{color:var(--accent3);font-size:.8em;}
+
+        .prog-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75em;font-weight:700;}
+        .prog-badge.lv1{background:rgba(16,185,129,.2);color:#10b981;}
+        .prog-badge.lv2{background:rgba(245,158,11,.2);color:#f59e0b;}
+        .prog-badge.lv3{background:rgba(239,68,68,.2);color:#ef4444;}
+
+        .progression-box{background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px 16px;margin-top:12px;}
+        .progression-box h4{color:var(--accent3);font-size:.88em;margin-bottom:8px;}
+        .progression-box p{font-size:.83em;color:var(--text2);line-height:1.6;}
+
+        /* ─── FOOD ─── */
+        .food-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:all .25s;}
+        .food-card:hover{border-color:rgba(255,255,255,.15);transform:translateY(-2px);}
+        .food-img{background:linear-gradient(135deg,var(--bg3),rgba(124,58,237,.1));height:80px;display:flex;align-items:center;justify-content:center;font-size:2.5em;}
+        .food-body{padding:14px;}
+        .food-name{font-weight:700;font-size:.95em;margin-bottom:6px;}
+        .food-macros{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0;}
+        .macro-item{background:var(--bg3);border-radius:6px;padding:6px;text-align:center;}
+        .macro-val{font-size:.95em;font-weight:700;}
+        .macro-lbl{font-size:.68em;color:var(--text3);margin-top:1px;}
+        .macro-kcal{color:var(--accent4);}
+        .macro-p{color:var(--accent1);}
+        .macro-f{color:var(--accent5);}
+        .macro-c{color:var(--accent3);}
+        .food-prep{font-size:.8em;color:var(--text2);line-height:1.6;margin-top:8px;padding-top:8px;border-top:1px solid var(--border);}
+        .food-grams{font-size:.78em;color:var(--text3);margin-bottom:8px;}
+
+        /* ─── BOOKS ─── */
+        .book-tier{margin-bottom:28px;}
+        .tier-title{font-size:.95em;font-weight:700;margin-bottom:12px;padding:8px 14px;border-radius:8px;display:inline-block;}
+        .tier-1{background:rgba(16,185,129,.1);color:var(--accent3);border:1px solid rgba(16,185,129,.2);}
+        .tier-2{background:rgba(0,212,255,.1);color:var(--accent1);border:1px solid rgba(0,212,255,.2);}
+        .tier-3{background:rgba(245,158,11,.1);color:var(--accent4);border:1px solid rgba(245,158,11,.2);}
+        .tier-4{background:rgba(239,68,68,.1);color:var(--accent5);border:1px solid rgba(239,68,68,.2);}
+        .book-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:16px;display:flex;gap:14px;align-items:flex-start;transition:all .25s;margin-bottom:8px;}
+        .book-card:hover{border-color:rgba(255,255,255,.14);transform:translateX(4px);}
+        .book-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8em;font-weight:700;flex-shrink:0;margin-top:2px;}
+        .book-info h4{font-size:.92em;font-weight:700;margin-bottom:3px;}
+        .book-info .author{font-size:.8em;color:var(--text3);margin-bottom:5px;}
+        .book-info p{font-size:.82em;color:var(--text2);line-height:1.5;}
+        .book-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;}
+        .book-tag{padding:2px 7px;border-radius:4px;font-size:.7em;background:rgba(255,255,255,.06);color:var(--text2);}
+
+        /* ─── MENTAL ─── */
+        .mental-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:20px;}
+        .mental-card h3{font-size:1em;font-weight:700;margin-bottom:8px;}
+        .mental-card p{font-size:.84em;color:var(--text2);line-height:1.7;}
+        .hrv-info{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:16px 0;}
+        .hrv-item{background:var(--bg3);border-radius:10px;padding:14px;text-align:center;}
+        .hrv-num{font-size:1.6em;font-weight:800;color:var(--accent1);}
+        .hrv-sub{font-size:.76em;color:var(--text2);margin-top:4px;}
+        .breath-anim{width:80px;height:80px;border-radius:50%;background:rgba(0,212,255,.1);border:2px solid rgba(0,212,255,.3);display:flex;align-items:center;justify-content:center;font-size:.8em;text-align:center;margin:0 auto 12px;transition:all 4s ease;}
+        .breath-anim.inhale{transform:scale(1.4);background:rgba(0,212,255,.2);border-color:rgba(0,212,255,.6);}
+        .breath-anim.exhale{transform:scale(0.8);background:rgba(0,212,255,.05);}
+
+        /* ─── TIMER ─── */
+        .timer-big{font-size:5em;font-weight:800;font-family:'Courier New',monospace;text-align:center;color:var(--accent1);margin:20px 0;letter-spacing:.04em;}
+        .timer-presets{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-top:14px;}
+
+        /* ─── CALENDAR ─── */
+        .cal-legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:16px;}
+        .leg-item{display:flex;align-items:center;gap:6px;font-size:.82em;color:var(--text2);}
+        .leg-dot{width:10px;height:10px;border-radius:50%;}
+        .cal-nav{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:14px;}
+        .cal-nav-btn{background:rgba(255,255,255,.07);border:1px solid var(--border);color:var(--text1);width:34px;height:34px;border-radius:8px;cursor:pointer;font-size:1em;display:flex;align-items:center;justify-content:center;}
+        .cal-nav-btn:hover{background:rgba(255,255,255,.12);}
+        .cal-month{font-size:1.1em;font-weight:700;min-width:180px;text-align:center;}
+
+        /* ─── MODAL ─── */
+        .modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:2000;justify-content:center;align-items:center;padding:20px;}
+        .modal-ov.open{display:flex;}
+        .modal{background:var(--bg2);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:28px;max-width:520px;width:100%;max-height:80vh;overflow-y:auto;animation:fadeUp .3s ease;}
+        .modal h3{font-size:1.2em;margin-bottom:14px;}
+        .modal p{font-size:.88em;margin:7px 0;color:var(--text2);line-height:1.6;}
+        .modal hr{border:none;border-top:1px solid var(--border);margin:12px 0;}
+
+        /* ─── NOTIFICATION ─── */
+        .notif{position:fixed;bottom:24px;right:24px;background:var(--accent3);color:#000;padding:12px 20px;border-radius:10px;font-weight:700;font-size:.88em;transform:translateY(80px);opacity:0;transition:all .4s;z-index:3000;max-width:300px;}
+        .notif.show{transform:translateY(0);opacity:1;}
+
+        /* ─── LOADING ─── */
+        .loading{position:fixed;inset:0;background:var(--bg1);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s;}
+        .loading.done{opacity:0;pointer-events:none;}
+        .spin{width:40px;height:40px;border:3px solid rgba(255,255,255,.1);border-top:3px solid var(--accent1);border-radius:50%;animation:spin 1s linear infinite;}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        /* ─── MISC ─── */
+        .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.75em;font-weight:700;}
+        .divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+        .tip-row{display:flex;gap:10px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
+        .tip-row:last-child{border-bottom:none;}
+        .tip-icon{font-size:1.3em;flex-shrink:0;}
+
+        ::-webkit-scrollbar{width:6px;}
+        ::-webkit-scrollbar-track{background:transparent;}
+        ::-webkit-scrollbar-thumb{background:rgba(255,255,255,.15);border-radius:3px;}
+
+        @media(max-width:768px){
+            .navbar-inner{gap:6px;}
+            .nav-btn{padding:5px 8px;font-size:.75em;}
+            .sec-title{font-size:1.3em;}
+            .timer-big{font-size:3em;}
+            .month-grid{gap:3px;}
+            .day-cell{min-height:42px;}
+            .food-macros{grid-template-columns:repeat(2,1fr);}
+            .ex-table{font-size:.8em;}
+            .ex-table th,.ex-table td{padding:7px 8px;}
         }
-
-        /* ===== НАВИГАЦИЯ ===== */
-        .navbar {
-            background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(10px);
-            padding: 15px 30px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .navbar .logo {
-            font-size: 1.5em;
-            font-weight: bold;
-            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #95e35d, #ffd93d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-        }
-
-        .nav-links button {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            padding: 8px 16px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.3s;
-        }
-
-        .nav-links button:hover,
-        .nav-links button.active {
-            background: rgba(255,255,255,0.25);
-            transform: translateY(-2px);
-        }
-
-        .nav-links button.active {
-            border-color: #4ecdc4;
-            box-shadow: 0 0 15px rgba(78, 205, 196, 0.3);
-        }
-
-        /* ===== КОНТЕЙНЕР ===== */
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* ===== СЕКЦИИ ===== */
-        .section {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* ===== ЗАГОЛОВКИ ===== */
-        .section-title {
-            font-size: 2em;
-            text-align: center;
-            margin: 30px 0;
-            padding: 20px;
-            border-radius: 15px;
-            background: rgba(255,255,255,0.05);
-        }
-
-        /* ===== СТАТИСТИКА ===== */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .stat-card {
-            background: rgba(255,255,255,0.08);
-            border-radius: 15px;
-            padding: 20px;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-card .number {
-            font-size: 2.5em;
-            font-weight: bold;
-            display: block;
-        }
-
-        .stat-card .label {
-            font-size: 0.9em;
-            opacity: 0.7;
-            margin-top: 5px;
-        }
-
-        /* ===== SYNC BOX ===== */
-        .sync-box {
-            text-align: center;
-            margin: 25px 0;
-            padding: 20px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            border: 1px solid rgba(78, 205, 196, 0.2);
-        }
-
-        .sync-box .sync-status {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 15px;
-            font-size: 0.85em;
-            margin-bottom: 15px;
-        }
-
-        .sync-box .sync-status.online {
-            background: rgba(149, 227, 93, 0.2);
-            color: #95e35d;
-        }
-
-        .sync-box .sync-status.offline {
-            background: rgba(255, 107, 107, 0.2);
-            color: #ff6b6b;
-        }
-
-        .sync-input {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #4ecdc4;
-            padding: 10px 15px;
-            border-radius: 10px;
-            font-size: 1.05em;
-            text-align: center;
-            width: 280px;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .sync-input:focus {
-            border-color: #4ecdc4;
-            outline: none;
-            box-shadow: 0 0 10px rgba(78, 205, 196, 0.3);
-        }
-
-        .sync-input.editable {
-            color: #fff;
-            cursor: text;
-        }
-
-        .sync-btn {
-            display: inline-block;
-            margin: 8px 5px;
-            padding: 8px 20px;
-            border-radius: 20px;
-            border: none;
-            cursor: pointer;
-            font-size: 0.95em;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .sync-btn:hover { transform: scale(1.05); }
-        .sync-btn.primary { background: #4ecdc4; color: #000; }
-        .sync-btn.danger { background: #ff6b6b; color: #fff; }
-        .sync-btn.secondary { background: rgba(255,255,255,0.15); color: #fff; }
-
-        /* ===== УРОВЕНЬ ===== */
-        .level-selector {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .level-btn {
-            padding: 10px 24px;
-            border-radius: 25px;
-            border: 2px solid;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-            transition: all 0.3s;
-            background: transparent;
-            color: #fff;
-        }
-
-        .level-btn:hover { transform: scale(1.05); }
-
-        .level-btn.level-1 { border-color: #95e35d; }
-        .level-btn.level-1.active, .level-btn.level-1:hover { background: #95e35d; color: #000; }
-        .level-btn.level-2 { border-color: #ffd93d; }
-        .level-btn.level-2.active, .level-btn.level-2:hover { background: #ffd93d; color: #000; }
-        .level-btn.level-3 { border-color: #ffa552; }
-        .level-btn.level-3.active, .level-btn.level-3:hover { background: #ffa552; color: #000; }
-        .level-btn.level-4 { border-color: #ff6b6b; }
-        .level-btn.level-4.active, .level-btn.level-4:hover { background: #ff6b6b; color: #000; }
-
-        /* ===== ТАБЛИЦА ===== */
-        .workout-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            border-radius: 15px;
-            overflow: hidden;
-        }
-
-        .workout-table th {
-            padding: 15px;
-            text-align: left;
-            font-size: 0.95em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .workout-table td {
-            padding: 14px 15px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .workout-table tr { transition: background 0.2s; }
-        .workout-table tbody tr:hover { background: rgba(255,255,255,0.08); }
-        .workout-table .exercise-name { font-weight: 600; font-size: 1.05em; }
-        .workout-table .sets { color: #4ecdc4; font-weight: bold; }
-        .workout-table .rest { color: #ffd93d; }
-
-        .table-arms th { background: rgba(255, 107, 107, 0.3); }
-        .table-back th { background: rgba(78, 205, 196, 0.3); }
-        .table-abs th { background: rgba(149, 227, 93, 0.3); }
-        .table-legs th { background: rgba(255, 217, 61, 0.3); }
-
-        /* ===== КАЛЕНДАРЬ ===== */
-        .calendar-controls {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 20px;
-            margin: 20px 0;
-        }
-
-        .calendar-controls button {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1.2em;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .calendar-controls button:hover { background: rgba(255,255,255,0.2); }
-
-        .calendar-month-title {
-            font-size: 1.3em;
-            font-weight: bold;
-            min-width: 200px;
-            text-align: center;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            margin: 10px 0;
-        }
-
-        .calendar-day-header {
-            text-align: center;
-            padding: 10px;
-            font-weight: bold;
-            font-size: 0.85em;
-            opacity: 0.6;
-            text-transform: uppercase;
-        }
-
-        .calendar-day {
-            aspect-ratio: 1;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.85em;
-            cursor: pointer;
-            transition: all 0.3s;
-            border: 2px solid transparent;
-            position: relative;
-            min-height: 70px;
-            padding: 5px;
-        }
-
-        .calendar-day:hover { transform: scale(1.05); z-index: 2; }
-        .calendar-day.empty { cursor: default; }
-        .calendar-day .day-number { font-weight: bold; font-size: 1.1em; }
-        .calendar-day .day-label { font-size: 0.7em; margin-top: 2px; text-align: center; line-height: 1.1; }
-
-        .calendar-day.rest { background: rgba(255,255,255,0.03); }
-        .calendar-day.arms { background: rgba(255,107,107,0.2); border-color: rgba(255,107,107,0.4); }
-        .calendar-day.back { background: rgba(78,205,196,0.2); border-color: rgba(78,205,196,0.4); }
-        .calendar-day.abs { background: rgba(149,227,93,0.2); border-color: rgba(149,227,93,0.4); }
-        .calendar-day.legs { background: rgba(255,217,61,0.2); border-color: rgba(255,217,61,0.4); }
-
-        .calendar-day.completed { opacity: 0.7; }
-        .calendar-day.completed::after {
-            content: '✅';
-            position: absolute;
-            top: 3px;
-            right: 5px;
-            font-size: 0.7em;
-        }
-
-        .calendar-day.today {
-            box-shadow: 0 0 15px rgba(255,255,255,0.3);
-            border-color: #fff !important;
-        }
-
-        .calendar-legend {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 15px 0;
-            flex-wrap: wrap;
-        }
-
-        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 0.9em; }
-        .legend-dot { width: 14px; height: 14px; border-radius: 50%; }
-
-        /* ===== МОДАЛКА ===== */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        .modal-overlay.active { display: flex; }
-
-        .modal {
-            background: linear-gradient(135deg, #1a1a2e, #16213e);
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 500px;
-            width: 100%;
-            max-height: 80vh;
-            overflow-y: auto;
-            border: 1px solid rgba(255,255,255,0.1);
-            animation: modalIn 0.3s ease;
-        }
-
-        @keyframes modalIn {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal h3 { font-size: 1.4em; margin-bottom: 15px; }
-        .modal p { margin: 8px 0; opacity: 0.9; }
-
-        .modal-btn {
-            display: inline-block;
-            margin-top: 15px;
-            padding: 10px 25px;
-            border-radius: 25px;
-            border: none;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .modal-btn.complete { background: #95e35d; color: #000; }
-        .modal-btn.uncomplete { background: #ff6b6b; color: #fff; }
-        .modal-btn.close { background: rgba(255,255,255,0.1); color: #fff; margin-left: 10px; }
-        .modal-btn:hover { transform: scale(1.05); }
-
-        /* ===== ПРОГРЕСС ===== */
-        .progress-section { margin: 30px 0; }
-        .progress-item { margin: 15px 0; }
-        .progress-label { display: flex; justify-content: space-between; margin-bottom: 8px; font-weight: 600; }
-        .progress-bar-bg { background: rgba(255,255,255,0.1); border-radius: 10px; height: 20px; overflow: hidden; }
-
-        .progress-bar-fill {
-            height: 100%;
-            border-radius: 10px;
-            transition: width 0.8s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.75em;
-            font-weight: bold;
-        }
-
-        .progress-bar-fill.arms { background: linear-gradient(90deg, #ff6b6b, #ee5a6f); }
-        .progress-bar-fill.back { background: linear-gradient(90deg, #4ecdc4, #44b8b0); }
-        .progress-bar-fill.abs { background: linear-gradient(90deg, #95e35d, #7bc842); }
-        .progress-bar-fill.legs { background: linear-gradient(90deg, #ffd93d, #f0c830); }
-
-        /* ===== ТАЙМЕР ===== */
-        .timer-section {
-            text-align: center;
-            margin: 30px 0;
-            padding: 30px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 20px;
-        }
-
-        .timer-display {
-            font-size: 5em;
-            font-weight: bold;
-            font-family: 'Courier New', monospace;
-            margin: 20px 0;
-            color: #4ecdc4;
-        }
-
-        .timer-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin: 15px 0;
-            flex-wrap: wrap;
-        }
-
-        .timer-btn {
-            padding: 12px 30px;
-            border-radius: 25px;
-            border: none;
-            cursor: pointer;
-            font-size: 1.1em;
-            font-weight: bold;
-            transition: all 0.3s;
-        }
-
-        .timer-btn:hover { transform: scale(1.05); }
-        .timer-btn.start { background: #95e35d; color: #000; }
-        .timer-btn.pause { background: #ffd93d; color: #000; }
-        .timer-btn.reset { background: #ff6b6b; color: #fff; }
-
-        .timer-presets {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .preset-btn {
-            padding: 8px 18px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(255,255,255,0.05);
-            color: #fff;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.3s;
-        }
-
-        .preset-btn:hover { background: rgba(255,255,255,0.15); }
-
-        /* ===== СОВЕТЫ ===== */
-        .tips-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-
-        .tip-card {
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-            padding: 20px;
-            border-left: 4px solid #4ecdc4;
-            transition: transform 0.3s;
-        }
-
-        .tip-card:hover { transform: translateX(5px); }
-        .tip-card h4 { margin-bottom: 8px; color: #4ecdc4; }
-        .tip-card p { opacity: 0.8; line-height: 1.5; }
-
-        /* ===== НАСТРОЙКИ ДАТЫ ===== */
-        .date-picker-box {
-            text-align: center;
-            margin: 20px 0;
-            padding: 15px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 15px;
-        }
-
-        .date-input {
-            background: rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #fff;
-            padding: 8px 15px;
-            border-radius: 10px;
-            font-size: 1em;
-            cursor: pointer;
-        }
-
-        .date-input:focus {
-            border-color: #4ecdc4;
-            outline: none;
-        }
-
-        /* ===== УВЕДОМЛЕНИЕ ===== */
-        .notification {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: #95e35d;
-            color: #000;
-            padding: 15px 25px;
-            border-radius: 15px;
-            font-weight: bold;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.5s;
-            z-index: 3000;
-            max-width: 350px;
-        }
-
-        .notification.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        /* ===== АДАПТИВ ===== */
-        @media (max-width: 768px) {
-            .navbar { flex-direction: column; gap: 10px; }
-            .nav-links { justify-content: center; }
-            .nav-links button { padding: 6px 12px; font-size: 0.8em; }
-            .section-title { font-size: 1.4em; }
-            .timer-display { font-size: 3em; }
-            .calendar-day { min-height: 50px; font-size: 0.7em; }
-            .calendar-day .day-label { font-size: 0.6em; }
-            .workout-table { font-size: 0.85em; }
-            .workout-table th, .workout-table td { padding: 10px 8px; }
-            .sync-input { width: 220px; font-size: 0.9em; }
-        }
-
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
-
-        /* Загрузка */
-        .loading-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s;
-        }
-
-        .loading-overlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loader {
-            width: 50px; height: 50px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top: 4px solid #4ecdc4;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin { to { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
 
-<!-- ЗАГРУЗКА -->
-<div class="loading-overlay" id="loading-overlay">
-    <div class="loader"></div>
-    <p style="margin-top:20px; opacity:0.7;">Загрузка данных...</p>
+<div class="loading" id="loading">
+    <div class="spin"></div>
+    <p style="margin-top:16px;color:var(--text2);font-size:.85em;">Загрузка системы...</p>
 </div>
 
-<!-- НАВИГАЦИЯ -->
 <nav class="navbar">
-    <div class="logo">💪 ВОРКАУТ</div>
-    <div class="nav-links" id="nav-links">
-        <button class="active" data-section="dashboard">📊 Главная</button>
-        <button data-section="calendar">📅 Календарь</button>
-        <button data-section="arms">💪 Руки</button>
-        <button data-section="back">🏋️ Спина</button>
-        <button data-section="abs">🔥 Пресс</button>
-        <button data-section="legs">🦵 Ноги</button>
-        <button data-section="timer">⏱️ Таймер</button>
-        <button data-section="tips">📌 Советы</button>
+    <div class="navbar-inner">
+        <div class="logo">⚡ AYANOKOJI SYS</div>
+        <div class="nav-links" id="nav">
+            <button class="nav-btn active" data-s="dashboard">📊 Главная</button>
+            <button class="nav-btn" data-s="schedule">🗓️ График</button>
+            <button class="nav-btn" data-s="workout">💪 Тренировки</button>
+            <button class="nav-btn" data-s="food">🍽️ Питание</button>
+            <button class="nav-btn" data-s="books">📚 Литература</button>
+            <button class="nav-btn" data-s="mental">🧠 Ментал</button>
+            <button class="nav-btn" data-s="calendar">📅 Трекер</button>
+            <button class="nav-btn" data-s="timer">⏱️ Таймер</button>
+        </div>
     </div>
 </nav>
 
 <div class="container">
 
-    <!-- ===== ГЛАВНАЯ ===== -->
-    <div id="section-dashboard" class="section active">
-        <h1 class="section-title">📊 Панель прогресса</h1>
+<!-- ═══════════════ ГЛАВНАЯ ═══════════════ -->
+<div id="s-dashboard" class="section active">
+    <div class="sec-header">
+        <div class="sec-title">📊 Панель управления</div>
+        <div class="sec-sub">Система комплексного развития — по исследованию об Аянокоджи</div>
+    </div>
 
-        <!-- СИНХРОНИЗАЦИЯ -->
-        <div class="sync-box">
-            <div class="sync-status" id="sync-status">⏳ Подключение...</div>
-            <br>
-            <p style="margin-bottom:10px; opacity:0.8;">🔗 Твой ID для синхронизации между устройствами:</p>
-            <input type="text" class="sync-input" id="user-id-display" readonly
-                onclick="copyUserId()">
-            <br>
-            <button class="sync-btn secondary" onclick="copyUserId()">📋 Копировать ID</button>
-            <br><br>
-            <p style="margin-bottom:10px; opacity:0.8;">📲 Ввести ID с другого устройства:</p>
-            <input type="text" class="sync-input editable" id="sync-id-input" placeholder="Вставь ID сюда">
-            <br>
-            <button class="sync-btn primary" onclick="syncWithId()">🔄 Синхронизировать</button>
-            <button class="sync-btn secondary" onclick="generateNewId()">🆕 Новый ID</button>
+    <div class="sync-box">
+        <div class="sync-status" id="sync-st">⏳ Подключение...</div>
+        <p style="font-size:.84em;color:var(--text2);margin-bottom:10px;">🔗 Твой ID для синхронизации:</p>
+        <input type="text" class="sync-input" id="uid-display" readonly onclick="copyUid()">
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:10px;">
+            <button class="btn btn-ghost btn-sm" onclick="copyUid()">📋 Копировать ID</button>
+            <button class="btn btn-ghost btn-sm" onclick="genNewId()">🆕 Новый ID</button>
         </div>
-
-        <!-- ДАТА СТАРТА -->
-        <div class="date-picker-box">
-            <p style="margin-bottom:10px;">📅 Дата начала тренировок:</p>
-            <input type="date" class="date-input" id="start-date-input" onchange="changeStartDate()">
-        </div>
-
-        <!-- СТАТИСТИКА -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <span class="number" id="total-workouts" style="color:#4ecdc4;">0</span>
-                <span class="label">Тренировок выполнено</span>
-            </div>
-            <div class="stat-card">
-                <span class="number" id="current-streak" style="color:#95e35d;">0</span>
-                <span class="label">Серия подряд</span>
-            </div>
-            <div class="stat-card">
-                <span class="number" id="current-level" style="color:#ffd93d;">🟢</span>
-                <span class="label">Текущий уровень</span>
-            </div>
-            <div class="stat-card">
-                <span class="number" id="next-workout" style="color:#ff6b6b;">—</span>
-                <span class="label">Следующая тренировка</span>
-            </div>
-        </div>
-
-        <!-- ПРОГРЕСС -->
-        <div class="progress-section">
-            <h2 style="text-align:center; margin-bottom:20px;">📈 Прогресс по группам мышц</h2>
-            <div class="progress-item">
-                <div class="progress-label"><span>💪 Руки</span><span id="arms-progress-text">0 / 8</span></div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill arms" id="arms-progress" style="width:0%"></div></div>
-            </div>
-            <div class="progress-item">
-                <div class="progress-label"><span>🏋️ Спина и плечи</span><span id="back-progress-text">0 / 8</span></div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill back" id="back-progress" style="width:0%"></div></div>
-            </div>
-            <div class="progress-item">
-                <div class="progress-label"><span>🔥 Пресс</span><span id="abs-progress-text">0 / 8</span></div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill abs" id="abs-progress" style="width:0%"></div></div>
-            </div>
-            <div class="progress-item">
-                <div class="progress-label"><span>🦵 Ноги</span><span id="legs-progress-text">0 / 8</span></div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill legs" id="legs-progress" style="width:0%"></div></div>
-            </div>
-        </div>
-
-        <div style="text-align:center; margin-top:30px;">
-            <button class="sync-btn danger" onclick="resetAllData()">🗑️ Сбросить все данные</button>
+        <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+            <p style="font-size:.84em;color:var(--text2);margin-bottom:8px;">📲 Синхронизировать с другого устройства:</p>
+            <input type="text" class="sync-input edit" id="sync-in" placeholder="Вставь ID сюда">
+            <br><button class="btn btn-primary btn-sm" style="margin-top:8px;" onclick="syncId()">🔄 Синхронизировать</button>
         </div>
     </div>
 
-    <!-- ===== КАЛЕНДАРЬ ===== -->
-    <div id="section-calendar" class="section">
-        <h1 class="section-title">📅 Календарь тренировок</h1>
-        <div class="calendar-legend">
-            <div class="legend-item"><div class="legend-dot" style="background:#ff6b6b"></div> Руки</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#4ecdc4"></div> Спина</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#95e35d"></div> Пресс</div>
-            <div class="legend-item"><div class="legend-dot" style="background:#ffd93d"></div> Ноги</div>
-            <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.1)"></div> Отдых</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+        <span style="font-size:.85em;color:var(--text2);">📅 Дата начала:</span>
+        <input type="date" id="start-date" onchange="changeStart()" style="background:var(--bg3);border:1px solid var(--border);color:var(--text1);padding:6px 12px;border-radius:8px;font-size:.88em;">
+    </div>
+
+    <div class="grid-4" style="margin-bottom:20px;">
+        <div class="stat-card">
+            <span class="stat-num" id="st-total" style="color:var(--accent1);">0</span>
+            <div class="stat-lbl">Тренировок выполнено</div>
         </div>
-        <div class="calendar-controls">
-            <button onclick="changeMonth(-1)">◀</button>
-            <span class="calendar-month-title" id="calendar-month-title"></span>
-            <button onclick="changeMonth(1)">▶</button>
+        <div class="stat-card">
+            <span class="stat-num" id="st-streak" style="color:var(--accent3);">0</span>
+            <div class="stat-lbl">Серия подряд (дней)</div>
         </div>
-        <div class="calendar-grid" id="calendar-grid"></div>
+        <div class="stat-card">
+            <span class="stat-num" id="st-week" style="color:var(--accent4);">0</span>
+            <div class="stat-lbl">Тренировок на этой неделе</div>
+        </div>
+        <div class="stat-card">
+            <span class="stat-num" id="st-next" style="color:var(--accent5);font-size:1.2em;">—</span>
+            <div class="stat-lbl">Следующая тренировка</div>
+        </div>
     </div>
 
-    <!-- ===== ТРЕНИРОВКИ ===== -->
-    <div id="section-arms" class="section">
-        <h1 class="section-title" style="border-left:5px solid #ff6b6b;">💪 Руки</h1>
-        <div class="level-selector" id="arms-level-selector"></div>
-        <div id="arms-workout-content"></div>
+    <div class="card" style="margin-bottom:20px;">
+        <h3 style="margin-bottom:16px;font-size:1em;">📈 Прогресс по видам тренировок</h3>
+        <div class="prog-wrap">
+            <div class="prog-header"><span>💪 Push (толчок)</span><span id="pr-push">0/8</span></div>
+            <div class="prog-bar"><div class="prog-fill" id="pf-push" style="width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7);"></div></div>
+        </div>
+        <div class="prog-wrap">
+            <div class="prog-header"><span>🏋️ Pull (тяга)</span><span id="pr-pull">0/8</span></div>
+            <div class="prog-bar"><div class="prog-fill" id="pf-pull" style="width:0%;background:linear-gradient(90deg,#00d4ff,#38bdf8);"></div></div>
+        </div>
+        <div class="prog-wrap">
+            <div class="prog-header"><span>🦵 Ноги + Кор</span><span id="pr-legs">0/8</span></div>
+            <div class="prog-bar"><div class="prog-fill" id="pf-legs" style="width:0%;background:linear-gradient(90deg,#10b981,#34d399);"></div></div>
+        </div>
+        <div class="prog-wrap">
+            <div class="prog-header"><span>⚡ Full Body HIFT</span><span id="pr-full">0/8</span></div>
+            <div class="prog-bar"><div class="prog-fill" id="pf-full" style="width:0%;background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div>
+        </div>
     </div>
 
-    <div id="section-back" class="section">
-        <h1 class="section-title" style="border-left:5px solid #4ecdc4;">🏋️ Спина и плечи</h1>
-        <div class="level-selector" id="back-level-selector"></div>
-        <div id="back-workout-content"></div>
-    </div>
-
-    <div id="section-abs" class="section">
-        <h1 class="section-title" style="border-left:5px solid #95e35d;">🔥 Пресс</h1>
-        <div class="level-selector" id="abs-level-selector"></div>
-        <div id="abs-workout-content"></div>
-    </div>
-
-    <div id="section-legs" class="section">
-        <h1 class="section-title" style="border-left:5px solid #ffd93d;">🦵 Ноги</h1>
-        <div class="level-selector" id="legs-level-selector"></div>
-        <div id="legs-workout-content"></div>
-    </div>
-
-    <!-- ===== ТАЙМЕР ===== -->
-    <div id="section-timer" class="section">
-        <h1 class="section-title">⏱️ Таймер отдыха</h1>
-        <div class="timer-section">
-            <p style="opacity:0.7; margin-bottom:10px;">Установите время отдыха между подходами</p>
-            <div class="timer-display" id="timer-display">01:30</div>
-            <div class="timer-buttons">
-                <button class="timer-btn start" id="timer-start-btn" onclick="startTimer()">▶ Старт</button>
-                <button class="timer-btn pause" onclick="pauseTimer()">⏸ Пауза</button>
-                <button class="timer-btn reset" onclick="resetTimer()">⟲ Сброс</button>
+    <!-- Пирамида развития (из исследования) -->
+    <div class="card" style="margin-bottom:20px;">
+        <h3 style="margin-bottom:16px;font-size:1em;">🔺 Пирамида развития (по исследованию)</h3>
+        <div class="grid-4">
+            <div style="background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);border-radius:10px;padding:14px;text-align:center;">
+                <div style="font-size:1.5em;margin-bottom:6px;">🏋️</div>
+                <div style="font-size:.82em;font-weight:700;color:var(--accent3);">Уровень 1</div>
+                <div style="font-size:.75em;color:var(--text2);margin-top:4px;">Физиологический фундамент (GPP/HIFT)</div>
             </div>
-            <div class="timer-presets">
-                <button class="preset-btn" onclick="setTimer(30)">30 сек</button>
-                <button class="preset-btn" onclick="setTimer(60)">60 сек</button>
-                <button class="preset-btn" onclick="setTimer(90)">90 сек</button>
-                <button class="preset-btn" onclick="setTimer(120)">120 сек</button>
-                <button class="preset-btn" onclick="setTimer(150)">150 сек</button>
+            <div style="background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:14px;text-align:center;">
+                <div style="font-size:1.5em;margin-bottom:6px;">🧘</div>
+                <div style="font-size:.82em;font-weight:700;color:var(--accent1);">Уровень 2</div>
+                <div style="font-size:.75em;color:var(--text2);margin-top:4px;">Ядро саморегуляции (HRV/медитация)</div>
+            </div>
+            <div style="background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:10px;padding:14px;text-align:center;">
+                <div style="font-size:1.5em;margin-bottom:6px;">♟️</div>
+                <div style="font-size:.82em;font-weight:700;color:var(--accent4);">Уровень 3</div>
+                <div style="font-size:.75em;color:var(--text2);margin-top:4px;">Стратегическое мышление (шахматы/EF)</div>
+            </div>
+            <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:14px;text-align:center;">
+                <div style="font-size:1.5em;margin-bottom:6px;">🎯</div>
+                <div style="font-size:.82em;font-weight:700;color:var(--accent5);">Уровень 4</div>
+                <div style="font-size:.75em;color:var(--text2);margin-top:4px;">Тактика влияния (MI/Nudge)</div>
             </div>
         </div>
     </div>
 
-    <!-- ===== СОВЕТЫ ===== -->
-    <div id="section-tips" class="section">
-        <h1 class="section-title">📌 Советы и правила</h1>
-        <div class="tips-grid">
-            <div class="tip-card"><h4>🔥 Разминка</h4><p>5–7 минут перед каждой тренировкой: бег на месте, махи руками, вращения суставов.</p></div>
-            <div class="tip-card"><h4>🎯 Техника</h4><p>Техника важнее количества! Лучше 3 чистых повторения, чем 10 грязных.</p></div>
-            <div class="tip-card"><h4>📈 Прогрессия</h4><p>Каждую неделю старайся добавить хотя бы 1 повторение или 1 подход.</p></div>
-            <div class="tip-card"><h4>😴 Восстановление</h4><p>Сон 7–9 часов — мышцы растут именно во сне.</p></div>
-            <div class="tip-card"><h4>🍗 Питание</h4><p>~1.5–2 г белка на кг веса: мясо, яйца, творог, бобовые.</p></div>
-            <div class="tip-card"><h4>💧 Вода</h4><p>Пей воду во время тренировки. Минимум 2 литра в день.</p></div>
-            <div class="tip-card"><h4>🧘 Заминка</h4><p>5 минут лёгкой растяжки после тренировки.</p></div>
-            <div class="tip-card" style="border-left-color:#ff6b6b;"><h4 style="color:#ff6b6b;">⚡ Переход на след. уровень</h4><p>Все подходы — с хорошей техникой, последние повторения не на пределе, нет сильной боли на следующий день.</p></div>
+    <div style="text-align:center;">
+        <button class="btn btn-red btn-sm" onclick="resetAll()">🗑️ Сбросить все данные</button>
+    </div>
+</div>
+
+<!-- ═══════════════ ГРАФИК ═══════════════ -->
+<div id="s-schedule" class="section">
+    <div class="sec-header">
+        <div class="sec-title">🗓️ Полный график</div>
+        <div class="sec-sub">Месячный план + почасовое расписание на каждый день</div>
+    </div>
+
+    <div class="inner-tabs">
+        <button class="itab active" onclick="showItab('sched','monthly')">📅 Месячный план</button>
+        <button class="itab" onclick="showItab('sched','daily')">🕐 Дневной распорядок</button>
+        <button class="itab" onclick="showItab('sched','weekly')">📋 Недельный цикл</button>
+    </div>
+
+    <!-- MONTHLY -->
+    <div id="sched-monthly" class="itab-content active">
+        <div class="card">
+            <div class="cal-legend">
+                <div class="leg-item"><div class="leg-dot" style="background:#7c3aed;"></div>Push (толчок)</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#00d4ff;"></div>Pull (тяга)</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#10b981;"></div>Ноги + Кор</div>
+                <div class="leg-item"><div class="leg-dot" style="background:#f59e0b;"></div>Full Body</div>
+                <div class="leg-item"><div class="leg-dot" style="background:var(--bg3);"></div>Отдых / Ментал</div>
+            </div>
+            <div class="cal-nav">
+                <button class="cal-nav-btn" onclick="chMonth(-1)">◀</button>
+                <div class="cal-month" id="cal-title"></div>
+                <button class="cal-nav-btn" onclick="chMonth(1)">▶</button>
+            </div>
+            <div class="month-grid" id="sched-grid">
+                <div class="day-hdr">Пн</div><div class="day-hdr">Вт</div>
+                <div class="day-hdr">Ср</div><div class="day-hdr">Чт</div>
+                <div class="day-hdr">Пт</div><div class="day-hdr">Сб</div>
+                <div class="day-hdr">Вс</div>
+            </div>
+        </div>
+
+        <!-- Legend info -->
+        <div class="grid-2" style="margin-top:16px;">
+            <div class="card card-sm">
+                <h4 style="font-size:.88em;margin-bottom:10px;color:var(--accent3);">📌 Принципы месячного цикла</h4>
+                <div class="tip-row"><div class="tip-icon">🔄</div><div style="font-size:.82em;color:var(--text2);">Чередование Push/Pull/Legs + Full Body по схеме 3-4 тренировки в неделю (HIFT-подход)</div></div>
+                <div class="tip-row"><div class="tip-icon">🧘</div><div style="font-size:.82em;color:var(--text2);">Дни отдыха — для медитации, чтения, шахмат и практики HRV-дыхания</div></div>
+                <div class="tip-row"><div class="tip-icon">📉</div><div style="font-size:.82em;color:var(--text2);">4-я неделя каждого месяца — разгрузочная (-20% объёма)</div></div>
+                <div class="tip-row"><div class="tip-icon">📈</div><div style="font-size:.82em;color:var(--text2);">Каждые 8 недель — переход на следующий уровень сложности</div></div>
+            </div>
+            <div class="card card-sm">
+                <h4 style="font-size:.88em;margin-bottom:10px;color:var(--accent1);">🎯 Ключевые метрики месяца</h4>
+                <div class="tip-row"><div class="tip-icon">💪</div><div style="font-size:.82em;color:var(--text2);">Тренировок: 12-16 за месяц (3-4/неделю)</div></div>
+                <div class="tip-row"><div class="tip-icon">📚</div><div style="font-size:.82em;color:var(--text2);">Чтение: 30 мин ежедневно = ~15 ч/месяц</div></div>
+                <div class="tip-row"><div class="tip-icon">♟️</div><div style="font-size:.82em;color:var(--text2);">Шахматы: 30 мин ежедневно = ~15 ч/месяц</div></div>
+                <div class="tip-row"><div class="tip-icon">🫀</div><div style="font-size:.82em;color:var(--text2);">Медитация/дыхание: 15 мин утром + 10 мин вечером</div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DAILY -->
+    <div id="sched-daily" class="itab-content">
+        <div class="grid-2">
+            <div class="card">
+                <h3 style="margin-bottom:14px;font-size:.95em;color:var(--accent2);">💪 День тренировки</h3>
+                <div class="hour-sched" id="daily-train"></div>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom:14px;font-size:.95em;color:var(--accent1);">🧘 День отдыха / развития</h3>
+                <div class="hour-sched" id="daily-rest"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WEEKLY -->
+    <div id="sched-weekly" class="itab-content">
+        <div class="card">
+            <h3 style="margin-bottom:16px;">📋 Недельный цикл (по исследованию HIFT)</h3>
+            <div id="weekly-content"></div>
         </div>
     </div>
 </div>
 
-<!-- МОДАЛКА -->
-<div class="modal-overlay" id="modal-overlay" onclick="closeModal(event)">
-    <div class="modal" id="modal-content">
-        <h3 id="modal-title"></h3>
-        <div id="modal-body"></div>
-        <div id="modal-buttons" style="margin-top:20px;"></div>
+<!-- ═══════════════ ТРЕНИРОВКИ ═══════════════ -->
+<div id="s-workout" class="section">
+    <div class="sec-header">
+        <div class="sec-title">💪 Тренировки на спортплощадке</div>
+        <div class="sec-sub">Турник + брусья — система GPP/HIFT с прогрессией (по исследованию)</div>
+    </div>
+
+    <div class="inner-tabs">
+        <button class="itab active" onclick="showItab('wo','push')">🟣 Тренировка A — Push</button>
+        <button class="itab" onclick="showItab('wo','pull')">🔵 Тренировка B — Pull</button>
+        <button class="itab" onclick="showItab('wo','legs')">🟢 Тренировка C — Ноги+Кор</button>
+        <button class="itab" onclick="showItab('wo','hift')">🟡 Тренировка D — Full HIFT</button>
+        <button class="itab" onclick="showItab('wo','prog')">📈 Система прогрессии</button>
+    </div>
+
+    <!-- PUSH -->
+    <div id="wo-push" class="itab-content active">
+        <div class="workout-card">
+            <div class="workout-header" style="cursor:default;">
+                <div>
+                    <div style="font-size:1.05em;font-weight:700;">🟣 Тренировка A — Push (толкающая)</div>
+                    <div style="font-size:.82em;color:var(--text2);margin-top:3px;">Брусья, отжимания, пайк пуш-апс | ~45-55 мин | Пн / Чт</div>
+                </div>
+                <span class="badge prog-badge lv1">Уровень 1→4</span>
+            </div>
+            <div class="workout-body">
+                <p style="font-size:.82em;color:var(--text2);margin-bottom:12px;">🔥 <strong>Разминка 7 мин:</strong> Бег на месте 2 мин → Вращения суставов → Динамическая растяжка → 10 лёгких отжиманий</p>
+                <table class="ex-table">
+                    <thead><tr><th>#</th><th>Упражнение</th><th>Подходы × Повт.</th><th>Отдых</th><th>Прогрессия</th></tr></thead>
+                    <tbody id="push-table"></tbody>
+                </table>
+                <div class="progression-box">
+                    <h4>📈 Прогрессия Push-тренировки</h4>
+                    <p>• <strong>Недели 1-4:</strong> Базовые объёмы. Фокус — техника. Добавляй +1 повт. каждую неделю если последние 2 повт. даются легко.<br>
+                    • <strong>Недели 5-8:</strong> Добавляй сложность (паузы 2 сек внизу, медленный негатив 3 сек).<br>
+                    • <strong>Недели 9-12:</strong> Переход к более сложным вариациям (корейские отжимания, HSPU у стены).<br>
+                    • <strong>Неделя 4, 8, 12:</strong> Разгрузка — снизь объём на 20%, работай над техникой.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PULL -->
+    <div id="wo-pull" class="itab-content">
+        <div class="workout-card">
+            <div class="workout-header" style="cursor:default;">
+                <div>
+                    <div style="font-size:1.05em;font-weight:700;">🔵 Тренировка B — Pull (тяговая)</div>
+                    <div style="font-size:.82em;color:var(--text2);margin-top:3px;">Турник, австралийские подтягивания | ~45-55 мин | Вт / Пт</div>
+                </div>
+                <span class="badge prog-badge lv2">Уровень 1→4</span>
+            </div>
+            <div class="workout-body">
+                <p style="font-size:.82em;color:var(--text2);margin-bottom:12px;">🔥 <strong>Разминка 7 мин:</strong> Вращения плечевого пояса → Вис на перекладине 30 сек → Австралийские подтягивания 2×8 лёгко</p>
+                <table class="ex-table">
+                    <thead><tr><th>#</th><th>Упражнение</th><th>Подходы × Повт.</th><th>Отдых</th><th>Прогрессия</th></tr></thead>
+                    <tbody id="pull-table"></tbody>
+                </table>
+                <div class="progression-box">
+                    <h4>📈 Прогрессия Pull-тренировки</h4>
+                    <p>• <strong>Если не можешь подтянуться:</strong> Начни с австралийских подтягиваний 3×10-15 + негативных подтягиваний (прыжок вверх, медленно опускайся 5 сек).<br>
+                    • <strong>Цель — 10 подтягиваний:</strong> Затем добавляй объём (4-5 подходов) перед усложнением хвата.<br>
+                    • <strong>Следующие этапы:</strong> Узкий хват → Лучник → Archer → Muscle-up негативы → Muscle-up.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- LEGS -->
+    <div id="wo-legs" class="itab-content">
+        <div class="workout-card">
+            <div class="workout-header" style="cursor:default;">
+                <div>
+                    <div style="font-size:1.05em;font-weight:700;">🟢 Тренировка C — Ноги + Кор</div>
+                    <div style="font-size:.82em;color:var(--text2);margin-top:3px;">Приседания, выпады, брусья (кор) | ~50-60 мин | Ср / Сб</div>
+                </div>
+                <span class="badge prog-badge lv1">Уровень 1→4</span>
+            </div>
+            <div class="workout-body">
+                <p style="font-size:.82em;color:var(--text2);margin-bottom:12px;">🔥 <strong>Разминка 7 мин:</strong> Приседания без нагрузки 15 раз → Выпады на месте → Вращение бёдер</p>
+                <table class="ex-table">
+                    <thead><tr><th>#</th><th>Упражнение</th><th>Подходы × Повт.</th><th>Отдых</th><th>Прогрессия</th></tr></thead>
+                    <tbody id="legs-table"></tbody>
+                </table>
+                <div class="progression-box">
+                    <h4>📈 Прогрессия Legs+Core</h4>
+                    <p>• <strong>Приседания → Приседания с паузой → Болгарские → Пистолетик с опорой → Пистолетик.</strong><br>
+                    • <strong>Кор-прогрессия:</strong> Подъём коленей → Подъём прямых ног → Toes-to-bar → Dragon flag → Front lever.<br>
+                    • Каждые 2 недели добавляй 1 подход или усложняй на 1 ступень.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HIFT -->
+    <div id="wo-hift" class="itab-content">
+        <div class="workout-card">
+            <div class="workout-header" style="cursor:default;">
+                <div>
+                    <div style="font-size:1.05em;font-weight:700;">🟡 Тренировка D — Full Body HIFT</div>
+                    <div style="font-size:.82em;color:var(--text2);margin-top:3px;">Высокоинтенсивная функциональная тренировка | ~35-40 мин | По субботам</div>
+                </div>
+                <span class="badge prog-badge lv3">Интенсивный</span>
+            </div>
+            <div class="workout-body">
+                <p style="font-size:.82em;color:var(--text2);margin-bottom:12px;">⚡ По исследованию HIFT: 75 мин/нед приносят лучший результат чем 240-300 мин традиционных тренировок. Выполняй по кругу без длинных перерывов.</p>
+
+                <h4 style="font-size:.88em;margin-bottom:10px;color:var(--accent4);">🔥 Вариант 1 — AMRAP 20 минут (As Many Rounds As Possible)</h4>
+                <table class="ex-table">
+                    <thead><tr><th>#</th><th>Упражнение</th><th>Кол-во</th><th>Примечание</th></tr></thead>
+                    <tbody id="hift1-table"></tbody>
+                </table>
+
+                <h4 style="font-size:.88em;margin:16px 0 10px;color:var(--accent4);">⚡ Вариант 2 — 5 раундов на время</h4>
+                <table class="ex-table">
+                    <thead><tr><th>#</th><th>Упражнение</th><th>Кол-во</th><th>Примечание</th></tr></thead>
+                    <tbody id="hift2-table"></tbody>
+                </table>
+
+                <div class="progression-box">
+                    <h4>📈 Прогрессия HIFT</h4>
+                    <p>• <strong>Прогрессия:</strong> Запиши количество раундов / время. Каждые 2 недели старайся улучшить результат.<br>
+                    • <strong>Правило исследования:</strong> Интенсивность важнее объёма. Лучше 35 мин мощной работы, чем 90 мин вялой.<br>
+                    • <strong>Контроль:</strong> ЧСС должна держаться на 75-85% от максимума (220 - возраст).</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROGRESSION SYSTEM -->
+    <div id="wo-prog" class="itab-content">
+        <div class="grid-2">
+            <div class="card">
+                <h3 style="margin-bottom:14px;font-size:.95em;color:var(--accent3);">📈 Общие принципы прогрессии</h3>
+                <div class="tip-row"><div class="tip-icon">➕</div><div><strong style="font-size:.84em;">Линейная прогрессия (1-8 недель):</strong><br><span style="font-size:.8em;color:var(--text2);">+1 повторение каждую тренировку в 1-2 подходах. Как только выходишь на верхнюю границу диапазона — добавляй подход.</span></div></div>
+                <div class="tip-row"><div class="tip-icon">⏱️</div><div><strong style="font-size:.84em;">Интенсификация (8-16 недель):</strong><br><span style="font-size:.8em;color:var(--text2);">Паузы 2-3 сек в нижней точке. Медленный негатив 4-5 сек. Уменьши отдых с 90 до 60 сек.</span></div></div>
+                <div class="tip-row"><div class="tip-icon">🆙</div><div><strong style="font-size:.84em;">Усложнение варианта (16+ недель):</strong><br><span style="font-size:.8em;color:var(--text2);">Переход к более сложному упражнению. Например: обычные подтягивания → лучник → muscle-up.</span></div></div>
+                <div class="tip-row"><div class="tip-icon">📉</div><div><strong style="font-size:.84em;">Разгрузка (каждая 4-я неделя):</strong><br><span style="font-size:.8em;color:var(--text2);">-20-30% объёма. Фокус на технике. Позволяет суперкомпенсацию.</span></div></div>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom:14px;font-size:.95em;color:var(--accent1);">🎯 Критерии смены уровня</h3>
+                <div class="tip-row"><div class="tip-icon">✅</div><div><span style="font-size:.82em;color:var(--text2);">Все подходы выполнены с <strong>чистой техникой</strong> — без читинга</span></div></div>
+                <div class="tip-row"><div class="tip-icon">✅</div><div><span style="font-size:.82em;color:var(--text2);">Последние 2-3 повтора — <strong>не на пределе</strong> (RPE ≤ 8/10)</span></div></div>
+                <div class="tip-row"><div class="tip-icon">✅</div><div><span style="font-size:.82em;color:var(--text2);"><strong>Нет сильной боли</strong> на следующий день (DOMS умеренный)</span></div></div>
+                <div class="tip-row"><div class="tip-icon">✅</div><div><span style="font-size:.82em;color:var(--text2);">Критерии выполняются <strong>3 тренировки подряд</strong></span></div></div>
+                <hr class="divider">
+                <h4 style="font-size:.85em;margin-bottom:10px;color:var(--accent4);">⚠️ Признаки перетренированности</h4>
+                <div class="tip-row"><div class="tip-icon">🔴</div><div><span style="font-size:.82em;color:var(--text2);">Нет прогресса 2+ недели → снизь объём на 15%</span></div></div>
+                <div class="tip-row"><div class="tip-icon">🔴</div><div><span style="font-size:.82em;color:var(--text2);">Сильная усталость постоянно → добавь день отдыха</span></div></div>
+                <div class="tip-row"><div class="tip-icon">🔴</div><div><span style="font-size:.82em;color:var(--text2);">Боль в суставах → не тренируй эту группу 5-7 дней</span></div></div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+            <h3 style="margin-bottom:14px;font-size:.95em;">🗺️ Дорожная карта навыков (Calisthenics Roadmap)</h3>
+            <div class="grid-3">
+                <div style="border-left:3px solid var(--accent2);padding-left:12px;">
+                    <div style="font-size:.82em;font-weight:700;color:var(--accent2);margin-bottom:8px;">PUSH — путь к HSPU</div>
+                    <div style="font-size:.78em;color:var(--text2);line-height:2;">Отжимания → Дипсы → Pike push-up → HSPU у стены → Свободные HSPU</div>
+                </div>
+                <div style="border-left:3px solid var(--accent1);padding-left:12px;">
+                    <div style="font-size:.82em;font-weight:700;color:var(--accent1);margin-bottom:8px;">PULL — путь к Muscle-up</div>
+                    <div style="font-size:.78em;color:var(--text2);line-height:2;">Австралийские → Подтягивания → Лучник → Негативный MU → Muscle-up</div>
+                </div>
+                <div style="border-left:3px solid var(--accent3);padding-left:12px;">
+                    <div style="font-size:.82em;font-weight:700;color:var(--accent3);margin-bottom:8px;">CORE — путь к Front Lever</div>
+                    <div style="font-size:.78em;color:var(--text2);line-height:2;">Подъём коленей → L-sit → Toes-to-bar → Dragon flag → Front Lever</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- УВЕДОМЛЕНИЕ -->
-<div class="notification" id="notification"></div>
+<!-- ═══════════════ ПИТАНИЕ ═══════════════ -->
+<div id="s-food" class="section">
+    <div class="sec-header">
+        <div class="sec-title">🍽️ Питание</div>
+        <div class="sec-sub">~1.8 г белка/кг · восстановление и когнитивные функции · по исследованию</div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;">
+            <div class="hrv-item"><div class="hrv-num" style="color:var(--accent4);">2500</div><div class="hrv-sub">Ккал/день (тренировка)</div></div>
+            <div class="hrv-item"><div class="hrv-num" style="color:var(--accent1);">2200</div><div class="hrv-sub">Ккал/день (отдых)</div></div>
+            <div class="hrv-item"><div class="hrv-num" style="color:var(--accent2);">140+</div><div class="hrv-sub">Белок г/день (70 кг)</div></div>
+            <div class="hrv-item"><div class="hrv-num" style="color:var(--accent3);">2.5</div><div class="hrv-sub">Литров воды минимум</div></div>
+        </div>
+    </div>
+
+    <div class="inner-tabs">
+        <button class="itab active" onclick="showItab('food','breakfast')">🌅 Завтраки</button>
+        <button class="itab" onclick="showItab('food','lunch')">☀️ Обеды</button>
+        <button class="itab" onclick="showItab('food','dinner')">🌙 Ужины</button>
+        <button class="itab" onclick="showItab('food','snack')">🍎 Перекусы</button>
+    </div>
+
+    <div id="food-breakfast" class="itab-content active">
+        <div class="grid-3" id="fc-breakfast"></div>
+    </div>
+    <div id="food-lunch" class="itab-content">
+        <div class="grid-3" id="fc-lunch"></div>
+    </div>
+    <div id="food-dinner" class="itab-content">
+        <div class="grid-3" id="fc-dinner"></div>
+    </div>
+    <div id="food-snack" class="itab-content">
+        <div class="grid-3" id="fc-snack"></div>
+    </div>
+</div>
+
+<!-- ═══════════════ ЛИТЕРАТУРА ═══════════════ -->
+<div id="s-books" class="section">
+    <div class="sec-header">
+        <div class="sec-title">📚 Список литературы</div>
+        <div class="sec-sub">От поверхностных к углублённым темам — логическая последовательность по исследованию</div>
+    </div>
+
+    <div class="card" style="margin-bottom:20px;padding:14px 18px;">
+        <p style="font-size:.84em;color:var(--text2);line-height:1.7;">
+            📌 Список выстроен по <strong>4 уровням пирамиды</strong> из исследования: физический фундамент → саморегуляция → стратегическое мышление → социальное влияние. Читай последовательно — каждая книга строится на фундаменте предыдущей.
+        </p>
+    </div>
+
+    <div id="books-content"></div>
+</div>
+
+<!-- ═══════════════ МЕНТАЛ ═══════════════ -->
+<div id="s-mental" class="section">
+    <div class="sec-header">
+        <div class="sec-title">🧠 Ментальная тренировка</div>
+        <div class="sec-sub">HRV · Резонансное дыхание · Mindfulness — Уровень 2 пирамиды (по исследованию)</div>
+    </div>
+
+    <div class="inner-tabs">
+        <button class="itab active" onclick="showItab('men','hrv')">🫀 HRV & Дыхание</button>
+        <button class="itab" onclick="showItab('men','meditation')">🧘 Медитация</button>
+        <button class="itab" onclick="showItab('men','chess')">♟️ Шахматы & EF</button>
+        <button class="itab" onclick="showItab('men','journal')">📓 Дневник рефлексии</button>
+    </div>
+
+    <!-- HRV -->
+    <div id="men-hrv" class="itab-content active">
+        <div class="grid-2">
+            <div class="card">
+                <h3 style="margin-bottom:12px;">🫀 Что такое HRV и почему это важно</h3>
+                <p style="font-size:.84em;color:var(--text2);line-height:1.7;">
+                    HRV (Heart Rate Variability) — вариабельность сердечного ритма. Это разброс между интервалами сердцебиений. <strong>Высокий HRV = гибкая нервная система</strong>, быстрое переключение между стрессом и покоем. По исследованию: именно этот показатель отражает «хладнокровие» Аянокоджи на физиологическом уровне.
+                </p>
+                <div class="hrv-info">
+                    <div class="hrv-item"><div class="hrv-num">4.5–6.5</div><div class="hrv-sub">вдохов/мин — резонансная частота дыхания</div></div>
+                    <div class="hrv-item"><div class="hrv-num">10–12 сек</div><div class="hrv-sub">на полный цикл вдох + выдох</div></div>
+                    <div class="hrv-item"><div class="hrv-num">10 мин</div><div class="hrv-sub">минимум практики для эффекта</div></div>
+                </div>
+            </div>
+            <div class="card" style="text-align:center;">
+                <h3 style="margin-bottom:16px;">🌬️ Резонансное дыхание</h3>
+                <div class="breath-anim" id="breath-circle">Готов</div>
+                <div id="breath-phase" style="font-size:.9em;margin-bottom:14px;color:var(--text2);">Нажми старт для начала</div>
+                <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+                    <button class="btn btn-primary btn-sm" onclick="startBreath()">▶ Старт</button>
+                    <button class="btn btn-ghost btn-sm" onclick="stopBreath()">⏹ Стоп</button>
+                </div>
+                <p style="font-size:.78em;color:var(--text3);margin-top:12px;">5 сек вдох · 5 сек выдох · 5 мин = 30 циклов</p>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+            <h3 style="margin-bottom:14px;font-size:.95em;">📋 Протокол HRV-тренировки (утро)</h3>
+            <div class="grid-3">
+                <div style="background:var(--bg3);border-radius:10px;padding:14px;">
+                    <div style="font-size:.82em;font-weight:700;color:var(--accent3);">ШАГ 1 — Измерение (2 мин)</div>
+                    <p style="font-size:.78em;color:var(--text2);margin-top:8px;line-height:1.6;">Сразу после пробуждения, лёжа. Замерь HRV через приложение (Elite HRV, HRV4Training). Следи за трендом — важна динамика, не абсолютное число.</p>
+                </div>
+                <div style="background:var(--bg3);border-radius:10px;padding:14px;">
+                    <div style="font-size:.82em;font-weight:700;color:var(--accent1);">ШАГ 2 — Резонанс (10 мин)</div>
+                    <p style="font-size:.78em;color:var(--text2);margin-top:8px;line-height:1.6;">Резонансное дыхание: вдох 5 сек через нос, выдох 5 сек через рот. Сидя прямо. 10 минут. Фокус на области сердца (техника Quick Coherence, HeartMath).</p>
+                </div>
+                <div style="background:var(--bg3);border-radius:10px;padding:14px;">
+                    <div style="font-size:.82em;font-weight:700;color:var(--accent4);">ШАГ 3 — Якорение (3 мин)</div>
+                    <p style="font-size:.78em;color:var(--text2);margin-top:8px;line-height:1.6;">Намеренно вызови ощущение благодарности или спокойствия — зафиксируй это состояние. По исследованию это «якорит» парасимпатическое состояние на весь день.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MEDITATION -->
+    <div id="men-meditation" class="itab-content">
+        <div class="grid-2">
+            <div class="card">
+                <h3 style="margin-bottom:14px;font-size:.95em;">🧘 Протокол MMFT (по военному исследованию)</h3>
+                <p style="font-size:.83em;color:var(--text2);line-height:1.7;margin-bottom:12px;">
+                    Mindfulness-Based Mind Fitness Training (MMFT) — применяется в армии США для повышения психологической устойчивости. Учит наблюдать мысли и эмоции <strong>без немедленной реакции</strong>.
+                </p>
+                <div class="tip-row"><div class="tip-icon">🌅</div><div><strong style="font-size:.84em;">Утро (10 мин):</strong><br><span style="font-size:.8em;color:var(--text2);">Сядь прямо. Закрой глаза. Сфокусируйся на дыхании. Когда мысль появляется — просто замечай её без оценки и возвращай внимание к дыханию. Не борись с мыслями.</span></div></div>
+                <div class="tip-row"><div class="tip-icon">⚡</div><div><strong style="font-size:.84em;">«Ментальный скан» (5 мин, перед стрессом):</strong><br><span style="font-size:.8em;color:var(--text2);">Пройдись вниманием по телу с головы до ног. Замечай напряжение. Диафрагмальное дыхание для «перекалибровки» — как учат новобранцев US Navy.</span></div></div>
+                <div class="tip-row"><div class="tip-icon">🌙</div><div><strong style="font-size:.84em;">Вечер — ПМР (10 мин):</strong><br><span style="font-size:.8em;color:var(--text2);">Прогрессивная мышечная релаксация. Напрягай и расслабляй группы мышц последовательно. Снижает уровень кортизола, улучшает сон и HRV ночью.</span></div></div>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom:14px;font-size:.95em;">🔢 Техника Box Breathing (4-4-4-4)</h3>
+                <p style="font-size:.83em;color:var(--text2);line-height:1.7;margin-bottom:12px;">Используется спецназом SEAL. Быстро снижает стресс, активирует парасимпатическую систему. Используй перед тяжёлым подходом или сложной ситуацией.</p>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                    <div style="background:rgba(0,212,255,.08);border-radius:10px;padding:12px;text-align:center;border:1px solid rgba(0,212,255,.2);">
+                        <div style="font-size:1.4em;font-weight:800;color:var(--accent1);">4 сек</div>
+                        <div style="font-size:.75em;color:var(--text2);">Вдох через нос</div>
+                    </div>
+                    <div style="background:rgba(124,58,237,.08);border-radius:10px;padding:12px;text-align:center;border:1px solid rgba(124,58,237,.2);">
+                        <div style="font-size:1.4em;font-weight:800;color:var(--accent2);">4 сек</div>
+                        <div style="font-size:.75em;color:var(--text2);">Задержка на вдохе</div>
+                    </div>
+                    <div style="background:rgba(16,185,129,.08);border-radius:10px;padding:12px;text-align:center;border:1px solid rgba(16,185,129,.2);">
+                        <div style="font-size:1.4em;font-weight:800;color:var(--accent3);">4 сек</div>
+                        <div style="font-size:.75em;color:var(--text2);">Выдох через рот</div>
+                    </div>
+                    <div style="background:rgba(245,158,11,.08);border-radius:10px;padding:12px;text-align:center;border:1px solid rgba(245,158,11,.2);">
+                        <div style="font-size:1.4em;font-weight:800;color:var(--accent4);">4 сек</div>
+                        <div style="font-size:.75em;color:var(--text2);">Задержка на выдохе</div>
+                    </div>
+                </div>
+                <p style="font-size:.78em;color:var(--text3);margin-top:12px;">4-6 циклов = ~2 минуты · достаточно для снятия острого стресса</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHESS / EF -->
+    <div id="men-chess" class="itab-content">
+        <div class="card" style="margin-bottom:16px;">
+            <h3 style="margin-bottom:12px;font-size:.95em;">♟️ Шахматы как тренажёр Executive Functions</h3>
+            <p style="font-size:.84em;color:var(--text2);line-height:1.7;">
+                По исследованию: шахматы — <strong>наиболее эффективный тренажёр EF</strong> (когнитивного контроля). Эксперты используют <em>chunking</em> — обработка групп фигур как единого целого, освобождая рабочую память для глубокого анализа. Именно так работает стратегическое мышление Аянокоджи.
+            </p>
+        </div>
+        <div class="grid-3">
+            <div class="mental-card">
+                <h3>🎯 Ингибирование</h3>
+                <p>Способность подавлять импульсивные ходы. Тренируется через паузу перед каждым ходом: «Что видит противник? Какой ход кажется очевидным — именно его и ожидают».</p>
+                <div style="margin-top:10px;padding:8px;background:var(--bg3);border-radius:8px;font-size:.78em;color:var(--text3);">Упражнение: 5-минутные партии с обязательной паузой 30 сек перед ходом</div>
+            </div>
+            <div class="mental-card">
+                <h3>🧩 Рабочая память</h3>
+                <p>Удержание вариантов продолжения в уме («look-ahead search»). Тренируй слепые шахматы — записывай позицию словами без доски. Начни с 5 ходов вперёд.</p>
+                <div style="margin-top:10px;padding:8px;background:var(--bg3);border-radius:8px;font-size:.78em;color:var(--text3);">Ресурс: Lichess.org — задачи на тактику · 30 мин/день</div>
+            </div>
+            <div class="mental-card">
+                <h3>🔄 Когнитивная гибкость</h3>
+                <p>Способность менять план при изменении ситуации. После каждой партии анализируй: «В какой момент мой план устарел? Почему я его не обновил?»</p>
+                <div style="margin-top:10px;padding:8px;background:var(--bg3);border-radius:8px;font-size:.78em;color:var(--text3);">Метапознание: дневник партий с анализом своих ошибок мышления</div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top:16px;">
+            <h3 style="margin-bottom:14px;font-size:.95em;">📅 Ежедневная практика EF (30 мин)</h3>
+            <div class="hour-row" style="border-radius:8px 8px 0 0;overflow:hidden;">
+                <div class="hour-time" style="background:var(--bg3);">0–10</div>
+                <div class="hour-act">♟️ Решение тактических задач на Lichess (мат в 2-3 хода). Фокус — скорость и точность.</div>
+            </div>
+            <div class="hour-row">
+                <div class="hour-time" style="background:var(--bg3);">10–25</div>
+                <div class="hour-act">🎮 Партия 10+0 или 15+10. Полный фокус, без отвлечений. RPE мышления ≥ 7/10.</div>
+            </div>
+            <div class="hour-row" style="border-radius:0 0 8px 8px;overflow:hidden;">
+                <div class="hour-time" style="background:var(--bg3);">25–30</div>
+                <div class="hour-act">📝 Анализ партии: 1 ключевая ошибка + почему принял именно это решение.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JOURNAL -->
+    <div id="men-journal" class="itab-content">
+        <div class="grid-2">
+            <div class="card">
+                <h3 style="margin-bottom:14px;font-size:.95em;">📓 Метапознавательный дневник</h3>
+                <p style="font-size:.83em;color:var(--text2);line-height:1.7;margin-bottom:14px;">По исследованию: метапознание — «мышление о мышлении». Регулярная рефлексия напрямую улучшает критическое мышление, решение проблем и саморегуляцию. 10 мин перед сном.</p>
+                <div style="background:var(--bg3);border-radius:10px;padding:14px;">
+                    <div style="font-size:.82em;font-weight:700;margin-bottom:10px;color:var(--accent4);">5 вопросов каждый вечер:</div>
+                    <div class="tip-row"><div class="tip-icon">1️⃣</div><div style="font-size:.8em;color:var(--text2);">Что сегодня прошло <strong>не так, как планировал</strong>? Почему?</div></div>
+                    <div class="tip-row"><div class="tip-icon">2️⃣</div><div style="font-size:.8em;color:var(--text2);">Какое решение принял? На каком <strong>основании</strong> его принял?</div></div>
+                    <div class="tip-row"><div class="tip-icon">3️⃣</div><div style="font-size:.8em;color:var(--text2);">Какое <strong>когнитивное искажение</strong> могло повлиять на мышление?</div></div>
+                    <div class="tip-row"><div class="tip-icon">4️⃣</div><div style="font-size:.8em;color:var(--text2);">Что сделаю <strong>иначе</strong> в следующий раз?</div></div>
+                    <div class="tip-row"><div class="tip-icon">5️⃣</div><div style="font-size:.8em;color:var(--text2);">За что <strong>благодарен</strong> сегодня? (Quick Coherence — HRV)</div></div>
+                </div>
+            </div>
+            <div class="card">
+                <h3 style="margin-bottom:14px;font-size:.95em;">🔮 Когнитивные искажения (изучи и отслеживай)</h3>
+                <div class="tip-row"><div class="tip-icon">⚡</div><div><strong style="font-size:.82em;">Confirmation bias</strong><br><span style="font-size:.78em;color:var(--text2);">Замечаем только то, что подтверждает нашу точку зрения. Активно ищи опровержения своей идеи.</span></div></div>
+                <div class="tip-row"><div class="tip-icon">🎯</div><div><strong style="font-size:.82em;">Sunk cost fallacy</strong><br><span style="font-size:.78em;color:var(--text2);">Продолжаем делать что-то только потому что уже вложили время/деньги. Оценивай только будущее.</span></div></div>
+                <div class="tip-row"><div class="tip-icon">🌊</div><div><strong style="font-size:.82em;">Availability heuristic</strong><br><span style="font-size:.78em;color:var(--text2);">Переоцениваем то, что легко вспомнить. Ищи статистику, а не примеры.</span></div></div>
+                <div class="tip-row"><div class="tip-icon">🔱</div><div><strong style="font-size:.82em;">Dunning-Kruger effect</strong><br><span style="font-size:.78em;color:var(--text2);">На начальном этапе переоцениваем свои знания. Отслеживай через обратную связь.</span></div></div>
+                <div class="tip-row"><div class="tip-icon">🎭</div><div><strong style="font-size:.82em;">Fundamental attribution error</strong><br><span style="font-size:.78em;color:var(--text2);">Поведение других объясняем характером, своё — обстоятельствами. Ключ к пониманию людей.</span></div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ ТРЕКЕР КАЛЕНДАРЬ ═══════════════ -->
+<div id="s-calendar" class="section">
+    <div class="sec-header">
+        <div class="sec-title">📅 Трекер тренировок</div>
+        <div class="sec-sub">Отмечай выполненные тренировки — синхронизируется через Firebase</div>
+    </div>
+    <div class="card">
+        <div class="cal-legend">
+            <div class="leg-item"><div class="leg-dot" style="background:#7c3aed;"></div>Push</div>
+            <div class="leg-item"><div class="leg-dot" style="background:#00d4ff;"></div>Pull</div>
+            <div class="leg-item"><div class="leg-dot" style="background:#10b981;"></div>Legs</div>
+            <div class="leg-item"><div class="leg-dot" style="background:#f59e0b;"></div>Full</div>
+        </div>
+        <div class="cal-nav">
+            <button class="cal-nav-btn" onclick="chCalMonth(-1)">◀</button>
+            <div class="cal-month" id="cal-month-title"></div>
+            <button class="cal-nav-btn" onclick="chCalMonth(1)">▶</button>
+        </div>
+        <div class="month-grid" id="cal-grid">
+            <div class="day-hdr">Пн</div><div class="day-hdr">Вт</div>
+            <div class="day-hdr">Ср</div><div class="day-hdr">Чт</div>
+            <div class="day-hdr">Пт</div><div class="day-hdr">Сб</div>
+            <div class="day-hdr">Вс</div>
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════ ТАЙМЕР ═══════════════ -->
+<div id="s-timer" class="section">
+    <div class="sec-header">
+        <div class="sec-title">⏱️ Таймер отдыха</div>
+        <div class="sec-sub">Отдых между подходами · по исследованию: 60-90 сек оптимально для мышечной выносливости</div>
+    </div>
+    <div class="card" style="text-align:center;padding:40px 20px;">
+        <p style="color:var(--text2);font-size:.84em;margin-bottom:6px;">Время отдыха между подходами</p>
+        <div class="timer-big" id="timer-disp">01:30</div>
+        <div style="display:flex;gap:10px;justify-content:center;margin-bottom:16px;flex-wrap:wrap;">
+            <button class="btn btn-green" id="t-start" onclick="tStart()">▶ Старт</button>
+            <button class="btn btn-orange" onclick="tPause()">⏸ Пауза</button>
+            <button class="btn btn-red" onclick="tReset()">⟲ Сброс</button>
+        </div>
+        <div class="timer-presets">
+            <button class="btn btn-ghost btn-sm" onclick="tSet(30)">30 сек</button>
+            <button class="btn btn-ghost btn-sm" onclick="tSet(60)">60 сек</button>
+            <button class="btn btn-ghost btn-sm" onclick="tSet(90)">90 сек</button>
+            <button class="btn btn-ghost btn-sm" onclick="tSet(120)">2 мин</button>
+            <button class="btn btn-ghost btn-sm" onclick="tSet(150)">2:30</button>
+            <button class="btn btn-ghost btn-sm" onclick="tSet(180)">3 мин</button>
+        </div>
+        <div style="margin-top:24px;padding:14px;background:var(--bg3);border-radius:10px;max-width:400px;margin-left:auto;margin-right:auto;">
+            <p style="font-size:.8em;color:var(--text2);line-height:1.6;">💡 <strong>Рекомендации по отдыху:</strong><br>
+            • Сила (1-5 повт.) → 2-3 мин<br>
+            • Гипертрофия (6-12 повт.) → 90 сек<br>
+            • Выносливость (13+ повт.) → 45-60 сек<br>
+            • HIFT-круговая → 30-45 сек</p>
+        </div>
+    </div>
+</div>
+
+</div><!-- /container -->
+
+<!-- MODAL -->
+<div class="modal-ov" id="modal" onclick="closeModal(event)">
+    <div class="modal">
+        <h3 id="m-title"></h3>
+        <div id="m-body"></div>
+        <div id="m-btns" style="margin-top:16px;display:flex;gap:8px;flex-wrap:wrap;"></div>
+    </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div class="notif" id="notif"></div>
 
 <script>
-// ============================================================
-// 🔥 FIREBASE — ВСТАВЬ СВОЙ КОНФИГ СЮДА
-// ============================================================
-const firebaseConfig = {
-  apiKey: "AIzaSyDtt9WdE8iIpPOoZ1Ozt4a3ssL2UNoDdb4",
-  authDomain: "workout-main.firebaseapp.com",
-  databaseURL: "https://workout-main-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "workout-main",
-  storageBucket: "workout-main.firebasestorage.app",
-  messagingSenderId: "60043564949",
-  appId: "1:60043564949:web:e120415d1e016135b4089c"
+// ════════════════════════════════════════════════
+// FIREBASE
+// ════════════════════════════════════════════════
+const fbConfig = {
+    apiKey:"AIzaSyDtt9WdE8iIpPOoZ1Ozt4a3ssL2UNoDdb4",
+    authDomain:"workout-main.firebaseapp.com",
+    databaseURL:"https://workout-main-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId:"workout-main",
+    storageBucket:"workout-main.firebasestorage.app",
+    messagingSenderId:"60043564949",
+    appId:"1:60043564949:web:e120415d1e016135b4089c"
 };
-// ============================================================
+let fbReady=false;
+try{firebase.initializeApp(fbConfig);fbReady=true;}catch(e){console.warn('FB:',e);}
 
-let firebaseReady = false;
-let dbRef = null;
+// ════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════
+let uid = localStorage.getItem('ay_uid') || ('u_'+Math.random().toString(36).substr(2,9)+Date.now().toString(36));
+localStorage.setItem('ay_uid',uid);
 
-try {
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-    firebaseReady = true;
-    console.log('✅ Firebase подключен');
-} catch(e) {
-    console.warn('⚠️ Firebase не настроен, работаем локально', e);
-}
-
-// ============================================================
-// ДАННЫЕ ТРЕНИРОВОК
-// ============================================================
-const workoutData = {
-    arms: {
-        name: '💪 Руки',
-        tableClass: 'table-arms',
-        variants: [
-            { name: '🟢 Новичок', exercises: [
-                ['Отжимания узким хватом', '3 × 8–12', '90 сек'],
-                ['Отжимания на брусьях (локти прижаты)', '3 × 5–10', '90 сек'],
-                ['Подтягивания обратным хватом', '3 × 5–8', '90 сек'],
-                ['Австралийские подтягивания обратным хватом', '3 × 10–15', '60 сек'],
-                ['Алмазные отжимания', '3 × 6–10', '90 сек'],
-            ]},
-            { name: '🟡 Нач.-средний', exercises: [
-                ['Отжимания на брусьях (полная ампл.)', '4 × 8–12', '90 сек'],
-                ['Подтягивания обратным узким хватом', '4 × 6–10', '90 сек'],
-                ['Алмазные отжимания ноги на возвышении', '3 × 8–12', '90 сек'],
-                ['Подтягивания параллельным хватом', '3 × 6–10', '90 сек'],
-                ['Вис на одной руке (поперем.)', '3 × 10–15 сек/рука', '60 сек'],
-                ['Обратные отжимания от скамьи', '3 × 12–15', '60 сек'],
-            ]},
-            { name: '🟠 Средний', exercises: [
-                ['Брусья с паузой внизу (3 сек)', '4 × 8–10', '90 сек'],
-                ['Подтяг. обр. хватом, негатив 4 сек', '4 × 6–8', '120 сек'],
-                ['Корейские отжимания на брусьях', '3 × 5–8', '120 сек'],
-                ['Алмазные отжимания с хлопком', '3 × 6–8', '90 сек'],
-                ['Подтяг. обр. хватом «лучник»', '3 × 4–6/стор.', '120 сек'],
-                ['Вис на согнутых руках', '3 × 15–25 сек', '60 сек'],
-            ]},
-            { name: '🔴 Продвинутый', exercises: [
-                ['Брусья с утяжелением (рюкзак)', '4 × 8–10', '120 сек'],
-                ['Подтяг. на одной руке / негатив', '4 × 3–5/рука', '150 сек'],
-                ['Русские отжимания на брусьях', '4 × 5–8', '120 сек'],
-                ['Печатная машинка обр. хватом', '3 × 4–6/стор.', '120 сек'],
-                ['Отжимания в наклоне к горизонту', '3 × 5–8', '120 сек'],
-                ['Вис на одной руке', '3 × 15–20 сек/рука', '90 сек'],
-            ]}
-        ]
-    },
-    back: {
-        name: '🏋️ Спина и плечи',
-        tableClass: 'table-back',
-        variants: [
-            { name: '🟢 Новичок', exercises: [
-                ['Подтягивания широким хватом', '3 × 5–8', '90 сек'],
-                ['Подтягивания средним хватом', '3 × 5–8', '90 сек'],
-                ['Австралийские подтягивания', '3 × 10–15', '60 сек'],
-                ['Отжимания «домик» (pike push-ups)', '3 × 6–10', '90 сек'],
-                ['Брусья с наклоном вперёд', '3 × 6–10', '90 сек'],
-            ]},
-            { name: '🟡 Нач.-средний', exercises: [
-                ['Подтягивания широким хватом', '4 × 8–10', '90 сек'],
-                ['Подтягивания за голову', '3 × 6–8', '90 сек'],
-                ['Австр. подтяг. широким + пауза', '3 × 10–12', '60 сек'],
-                ['«Домик» ноги на возвышении', '4 × 8–10', '90 сек'],
-                ['Подъёмы рук в стороны в висе', '3 × 8–10', '60 сек'],
-                ['Шраги в висе', '3 × 10–12', '60 сек'],
-            ]},
-            { name: '🟠 Средний', exercises: [
-                ['Подтяг. шир. хватом + пауза 3 сек', '4 × 6–8', '120 сек'],
-                ['Подтяг. «лучник» (archer)', '4 × 4–6/стор.', '120 сек'],
-                ['Подтягивания L-sit', '3 × 5–8', '120 сек'],
-                ['HSPU у стены', '4 × 5–8', '120 сек'],
-                ['Австр. подтяг. на одной руке', '3 × 6–8/рука', '90 сек'],
-                ['Tuck front lever holds', '3 × 10–20 сек', '90 сек'],
-            ]},
-            { name: '🔴 Продвинутый', exercises: [
-                ['Подтяг. с утяжелением 10–20 кг', '4 × 6–8', '150 сек'],
-                ['Подтяг. на одной руке', '4 × 2–4/рука', '150 сек'],
-                ['Выход силой (muscle-up)', '4 × 3–6', '150 сек'],
-                ['Свободные HSPU', '4 × 3–5', '150 сек'],
-                ['Full front lever holds', '4 × 5–15 сек', '120 сек'],
-                ['Typewriter pull-ups', '3 × 4–6/стор.', '120 сек'],
-            ]}
-        ]
-    },
-    abs: {
-        name: '🔥 Пресс',
-        tableClass: 'table-abs',
-        variants: [
-            { name: '🟢 Новичок', exercises: [
-                ['Подъём ног в висе (согнутые)', '3 × 8–12', '60 сек'],
-                ['Подъём коленей к груди в висе', '3 × 10–15', '60 сек'],
-                ['Скручивания на скамье', '3 × 15–20', '60 сек'],
-                ['Планка', '3 × 30–60 сек', '60 сек'],
-                ['Боковая планка', '3 × 20–30 сек/стор.', '60 сек'],
-                ['«Велосипед» лёжа', '3 × 20', '60 сек'],
-            ]},
-            { name: '🟡 Нач.-средний', exercises: [
-                ['Подъём прямых ног (до 90°)', '4 × 8–12', '60 сек'],
-                ['Подъём коленей с поворотом', '3 × 8–10/стор.', '60 сек'],
-                ['L-sit hold в висе', '3 × 15–20 сек', '60 сек'],
-                ['Скручивания в висе', '3 × 10–12', '60 сек'],
-                ['Планка + подъём руки/ноги', '3 × 30–45 сек', '60 сек'],
-                ['Русские скручивания', '3 × 20', '60 сек'],
-            ]},
-            { name: '🟠 Средний', exercises: [
-                ['Toes to bar', '4 × 8–10', '90 сек'],
-                ['«Дворники» (согнутые ноги)', '3 × 6–8/стор.', '90 сек'],
-                ['L-sit на брусьях', '4 × 15–25 сек', '60 сек'],
-                ['«Складка» в висе', '3 × 6–8', '90 сек'],
-                ['Dragon flag (согнутые)', '3 × 5–8', '90 сек'],
-                ['Планка на одной руке', '3 × 15–20 сек/стор.', '60 сек'],
-            ]},
-            { name: '🔴 Продвинутый', exercises: [
-                ['«Дворники» (прямые ноги)', '4 × 6–8/стор.', '90 сек'],
-                ['Dragon flag (прямые)', '4 × 6–8', '90 сек'],
-                ['Toes to bar + пауза 3 сек', '4 × 8–10', '90 сек'],
-                ['L-sit на полу', '4 × 20–30 сек', '60 сек'],
-                ['V-sit на брусьях', '3 × 10–15 сек', '90 сек'],
-                ['Front lever raises', '3 × 3–5', '120 сек'],
-            ]}
-        ]
-    },
-    legs: {
-        name: '🦵 Ноги',
-        tableClass: 'table-legs',
-        variants: [
-            { name: '🟢 Новичок', exercises: [
-                ['Приседания', '4 × 15–20', '60 сек'],
-                ['Выпады вперёд', '3 × 10/ногу', '60 сек'],
-                ['Болгарские приседания', '3 × 8–10/ногу', '90 сек'],
-                ['Подъёмы на носки', '4 × 15–20', '60 сек'],
-                ['Пистолетик с опорой', '3 × 5–8/ногу', '90 сек'],
-            ]},
-            { name: '🟡 Нач.-средний', exercises: [
-                ['Приседания с паузой (3 сек)', '4 × 12–15', '90 сек'],
-                ['Болгарские с паузой (2 сек)', '4 × 8–10/ногу', '90 сек'],
-                ['Выпады назад', '3 × 10/ногу', '60 сек'],
-                ['Приседания-сумо', '3 × 15–20', '60 сек'],
-                ['Пистолетик с лёгкой опорой', '3 × 5–8/ногу', '90 сек'],
-                ['Подъёмы на носки одна нога', '4 × 12–15/ногу', '60 сек'],
-            ]},
-            { name: '🟠 Средний', exercises: [
-                ['Пистолетик (без опоры)', '4 × 5–8/ногу', '120 сек'],
-                ['Присед с выпрыгиванием', '4 × 10–12', '90 сек'],
-                ['Болгарские с прыжком', '3 × 6–8/ногу', '90 сек'],
-                ['Шагающие выпады', '3 × 12/ногу', '90 сек'],
-                ['Step-up высокий', '3 × 8–10/ногу', '90 сек'],
-                ['Носки одна нога + пауза', '4 × 12–15/ногу', '60 сек'],
-            ]},
-            { name: '🔴 Продвинутый', exercises: [
-                ['Пистолетик, негатив 5 сек', '4 × 5–6/ногу', '120 сек'],
-                ['Box jump', '4 × 8–10', '90 сек'],
-                ['Креветка (shrimp squat)', '4 × 4–6/ногу', '120 сек'],
-                ['Прыжковые выпады', '3 × 12/ногу', '90 сек'],
-                ['Спринт в горку / ступеньки', '4 × 20–30 сек', '120 сек'],
-                ['Пистолетик с утяжелением', '3 × 5–6/ногу', '120 сек'],
-            ]}
-        ]
-    }
-};
-
-// ============================================================
-// СОСТОЯНИЕ
-// ============================================================
 let state = {
-    completedDays: {},
-    currentLevels: { arms: 0, back: 0, abs: 0, legs: 0 },
-    calendarMonth: new Date().getMonth(),
-    calendarYear: new Date().getFullYear(),
-    startDate: new Date(2025, 0, 6)
+    done:{},
+    startDate: new Date(2025,0,6),
+    calMonth: new Date().getMonth(),
+    calYear: new Date().getFullYear(),
+    schedMonth: new Date().getMonth(),
+    schedYear: new Date().getFullYear()
 };
 
-let userId = localStorage.getItem('workout_user_id');
-if (!userId) {
-    userId = 'user_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
-    localStorage.setItem('workout_user_id', userId);
+function loadLocal(){
+    const s=localStorage.getItem('ay_state');
+    if(s){const p=JSON.parse(s);state.done=p.done||{};if(p.startDate)state.startDate=new Date(p.startDate);}
 }
-
-// ============================================================
-// FIREBASE ФУНКЦИИ
-// ============================================================
-function getDbRef() {
-    if (!firebaseReady) return null;
-    return firebase.database().ref('users/' + userId);
-}
-
-function saveToCloud() {
-    const ref = getDbRef();
-    if (!ref) return;
-
-    ref.set({
-        completedDays: state.completedDays,
-        currentLevels: state.currentLevels,
-        startDate: state.startDate.toISOString(),
-        lastUpdated: new Date().toISOString()
-    }).then(() => {
-        console.log('☁️ Сохранено в облако');
-    }).catch(err => {
-        console.warn('⚠️ Ошибка сохранения:', err);
-    });
-}
-
-function loadFromCloud(callback) {
-    const ref = getDbRef();
-    if (!ref) {
-        if (callback) callback();
-        return;
-    }
-
-    ref.once('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            state.completedDays = data.completedDays || {};
-            state.currentLevels = data.currentLevels || { arms: 0, back: 0, abs: 0, legs: 0 };
-            if (data.startDate) state.startDate = new Date(data.startDate);
-        }
-        if (callback) callback();
-    }).catch(err => {
-        console.warn('⚠️ Ошибка загрузки:', err);
-        if (callback) callback();
-    });
-}
-
-function startRealtimeSync() {
-    const ref = getDbRef();
-    if (!ref) return;
-
-    ref.on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (data) {
-            state.completedDays = data.completedDays || {};
-            state.currentLevels = data.currentLevels || { arms: 0, back: 0, abs: 0, legs: 0 };
-            if (data.startDate) state.startDate = new Date(data.startDate);
-            refreshUI();
-        }
-    });
-}
-
-function stopRealtimeSync() {
-    const ref = getDbRef();
-    if (ref) ref.off();
-}
-
-// ============================================================
-// ЛОКАЛЬНОЕ ХРАНИЛИЩЕ
-// ============================================================
-function saveState() {
-    localStorage.setItem('workoutState', JSON.stringify({
-        completedDays: state.completedDays,
-        currentLevels: state.currentLevels,
-        startDate: state.startDate.toISOString()
-    }));
-    saveToCloud();
-}
-
-function loadLocalState() {
-    const saved = localStorage.getItem('workoutState');
-    if (saved) {
-        const parsed = JSON.parse(saved);
-        state.completedDays = parsed.completedDays || {};
-        state.currentLevels = parsed.currentLevels || { arms: 0, back: 0, abs: 0, legs: 0 };
-        if (parsed.startDate) state.startDate = new Date(parsed.startDate);
+function saveLocal(){
+    localStorage.setItem('ay_state',JSON.stringify({done:state.done,startDate:state.startDate.toISOString()}));
+    if(fbReady){
+        firebase.database().ref('users/'+uid).set({done:state.done,startDate:state.startDate.toISOString(),upd:new Date().toISOString()});
     }
 }
+function loadCloud(cb){
+    if(!fbReady){if(cb)cb();return;}
+    firebase.database().ref('users/'+uid).once('value',snap=>{
+        const d=snap.val();
+        if(d){state.done=d.done||{};if(d.startDate)state.startDate=new Date(d.startDate);}
+        if(cb)cb();
+    }).catch(()=>{if(cb)cb();});
+}
+function syncId(){
+    const v=document.getElementById('sync-in').value.trim();
+    if(!v){notify('⚠️ Введите ID');return;}
+    if(fbReady)firebase.database().ref('users/'+uid).off();
+    uid=v;localStorage.setItem('ay_uid',uid);
+    loadCloud(()=>{saveLocal();refreshAll();notify('✅ Синхронизировано!');});
+}
+function copyUid(){
+    navigator.clipboard.writeText(uid).then(()=>notify('📋 ID скопирован!')).catch(()=>notify('📋 ID: '+uid));
+}
+function genNewId(){
+    if(!confirm('Создать новый ID?'))return;
+    uid='u_'+Math.random().toString(36).substr(2,9)+Date.now().toString(36);
+    localStorage.setItem('ay_uid',uid);
+    saveLocal();refreshAll();notify('🆕 Новый ID создан');
+}
 
-// ============================================================
-// НАВИГАЦИЯ
-// ============================================================
-document.getElementById('nav-links').addEventListener('click', (e) => {
-    if (e.target.tagName !== 'BUTTON') return;
-    const section = e.target.dataset.section;
-    if (!section) return;
-
-    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-    document.getElementById('section-' + section).classList.add('active');
-    document.querySelectorAll('.nav-links button').forEach(b => b.classList.remove('active'));
+// ════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════
+document.getElementById('nav').addEventListener('click',e=>{
+    if(e.target.tagName!=='BUTTON')return;
+    const s=e.target.dataset.s;if(!s)return;
+    document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));
+    document.getElementById('s-'+s).classList.add('active');
+    document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
     e.target.classList.add('active');
-
-    if (section === 'dashboard') updateDashboard();
-    if (section === 'calendar') renderCalendar();
+    if(s==='dashboard')updateDash();
+    if(s==='schedule')renderSchedMonth();
+    if(s==='calendar')renderCalendar();
 });
 
-// ============================================================
-// ТРЕНИРОВКИ
-// ============================================================
-function renderWorkout(groupKey) {
-    const group = workoutData[groupKey];
-    const selectorEl = document.getElementById(groupKey + '-level-selector');
-    const contentEl = document.getElementById(groupKey + '-workout-content');
-    const currentLevel = state.currentLevels[groupKey];
-
-    selectorEl.innerHTML = '';
-    group.variants.forEach((variant, idx) => {
-        const btn = document.createElement('button');
-        btn.className = `level-btn level-${idx + 1} ${idx === currentLevel ? 'active' : ''}`;
-        btn.textContent = variant.name;
-        btn.onclick = () => {
-            state.currentLevels[groupKey] = idx;
-            saveState();
-            renderWorkout(groupKey);
-        };
-        selectorEl.appendChild(btn);
+function showItab(prefix,name){
+    document.querySelectorAll(`#s-${prefix==='sched'?'schedule':prefix==='wo'?'workout':prefix==='food'?'food':prefix==='men'?'mental':prefix} .itab`).forEach(b=>{
+        b.classList.toggle('active', b.getAttribute('onclick').includes("'"+name+"'"));
     });
-
-    const variant = group.variants[currentLevel];
-    let html = `<table class="workout-table ${group.tableClass}">
-        <thead><tr><th>№</th><th>Упражнение</th><th>Подходы × Повт.</th><th>Отдых</th></tr></thead><tbody>`;
-
-    variant.exercises.forEach((ex, idx) => {
-        html += `<tr>
-            <td style="text-align:center;opacity:0.5;">${idx + 1}</td>
-            <td class="exercise-name">${ex[0]}</td>
-            <td class="sets">${ex[1]}</td>
-            <td class="rest">${ex[2]}</td>
-        </tr>`;
-    });
-
-    html += '</tbody></table>';
-    contentEl.innerHTML = html;
+    // hide all itab-content in parent
+    const parent = document.querySelector(`#${
+        prefix==='sched'?'s-schedule':
+        prefix==='wo'?'s-workout':
+        prefix==='food'?'s-food':
+        prefix==='men'?'s-mental':
+        's-'+prefix
+    }`);
+    parent.querySelectorAll('.itab-content').forEach(x=>x.classList.remove('active'));
+    const el=document.getElementById(prefix+'-'+name);
+    if(el)el.classList.add('active');
 }
 
-// ============================================================
-// КАЛЕНДАРЬ
-// ============================================================
-const groupOrder = ['arms', 'back', 'abs', 'legs'];
-const groupNames = { arms: '💪 Руки', back: '🏋️ Спина', abs: '🔥 Пресс', legs: '🦵 Ноги' };
-const groupClasses = { arms: 'arms', back: 'back', abs: 'abs', legs: 'legs' };
-const monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-const dayHeaders = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+// ════════════════════════════════════════════════
+// TRAINING SCHEDULE DATA
+// ════════════════════════════════════════════════
+// Pattern: Mon=Push, Tue=Rest, Wed=Pull, Thu=Rest, Fri=Legs, Sat=Full, Sun=Rest
+const weekPat = ['push','rest','pull','rest','legs','full','rest'];
+const typeNames = {push:'Push 💪',pull:'Pull 🏋️',legs:'Ноги+Кор 🦵',full:'Full HIFT ⚡',rest:'Отдых 🧘'};
+const typeClass = {push:'push',pull:'pull',legs:'legs',full:'full',rest:'rest'};
 
-function getTrainingForDate(date) {
-    const start = new Date(state.startDate);
-    start.setHours(0,0,0,0);
-    const d = new Date(date);
-    d.setHours(0,0,0,0);
+function getTrainType(date){
+    const start=new Date(state.startDate);start.setHours(0,0,0,0);
+    const d=new Date(date);d.setHours(0,0,0,0);
+    const diff=Math.floor((d-start)/(864e5));
+    if(diff<0)return null;
+    return weekPat[diff%7];
+}
+function dKey(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 
-    const diff = Math.floor((d - start) / (1000 * 60 * 60 * 24));
-    if (diff < 0) return null;
+// ════════════════════════════════════════════════
+// RENDER SCHEDULE MONTH
+// ════════════════════════════════════════════════
+const MONTHS=['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
-    if (diff % 2 === 0) {
-        const trainNum = diff / 2;
-        const groupIdx = trainNum % 4;
-        const groupKey = groupOrder[groupIdx];
-        let level = trainNum < 32 ? 0 : trainNum < 64 ? 1 : trainNum < 96 ? 2 : 3;
+function renderSchedMonth(){
+    const y=state.schedYear,m=state.schedMonth;
+    document.getElementById('cal-title').textContent=MONTHS[m]+' '+y;
+    const grid=document.getElementById('sched-grid');
+    // Remove old day cells (keep headers)
+    const cells=grid.querySelectorAll('.day-cell');cells.forEach(c=>c.remove());
+    
+    const first=new Date(y,m,1);
+    let dow=first.getDay();if(dow===0)dow=7;dow--;
+    const days=new Date(y,m+1,0).getDate();
+    const today=new Date();today.setHours(0,0,0,0);
 
-        return { groupKey, groupName: groupNames[groupKey], groupClass: groupClasses[groupKey], trainNum: trainNum + 1, level };
+    for(let i=0;i<dow;i++){const e=document.createElement('div');e.className='day-cell empty';grid.appendChild(e);}
+    
+    for(let d=1;d<=days;d++){
+        const date=new Date(y,m,d);
+        const type=getTrainType(date)||'rest';
+        const key=dKey(date);
+        const isToday=date.getTime()===today.getTime();
+        const isDone=state.done[key];
+        
+        const cell=document.createElement('div');
+        cell.className='day-cell '+typeClass[type]+(isToday?' today':'')+(isDone?' done':'');
+        cell.innerHTML=`<span class="d-num">${d}</span><span class="d-lbl">${type!=='rest'?typeNames[type]:'😴'}</span>`;
+        cell.onclick=()=>openDayModal(key,date,type);
+        grid.appendChild(cell);
     }
-    return null;
+    renderDailySchedule();
+    renderWeekly();
+}
+function chMonth(d){
+    state.schedMonth+=d;
+    if(state.schedMonth>11){state.schedMonth=0;state.schedYear++;}
+    if(state.schedMonth<0){state.schedMonth=11;state.schedYear--;}
+    renderSchedMonth();
 }
 
-function dateKey(date) {
-    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-}
+// ════════════════════════════════════════════════
+// DAILY SCHEDULE
+// ════════════════════════════════════════════════
+const trainDay=[
+    ['06:00','Подъём + HRV замер (2 мин)','mind','🫀 HRV'],
+    ['06:05','Резонансное дыхание (10 мин) — 5 сек вдох / 5 сек выдох','mind','🧘 HRV'],
+    ['06:20','Стакан воды (500 мл) + холодный душ 30-60 сек','rest','💧 Ритуал'],
+    ['06:30','Завтрак (полноценный — белок + углеводы)','food','🍳 Еда'],
+    ['07:15','Самостоятельная работа / учёба — первый блок (фокус)','study','📖 Учёба'],
+    ['09:30','Короткий перерыв (5 мин) + лёгкий перекус','food','🍎 Перекус'],
+    ['09:35','Учёба — второй блок','study','📖 Учёба'],
+    ['11:30','Шахматы 30 мин (тактика + партия)','chess','♟️ EF'],
+    ['12:00','Обед (до тренировки — углеводы + белок)','food','🥗 Еда'],
+    ['12:45','Отдых 20 мин / лёгкая прогулка','rest','🚶 Отдых'],
+    ['13:00','Учёба / чтение по списку литературы','study','📚 Чтение'],
+    ['15:30','Перекус (за 1.5-2 ч до тренировки)','food','🍌 Перекус'],
+    ['16:00','Разминка + тренировка (45-60 мин)','train','💪 Трен.'],
+    ['17:00','Заминка / растяжка (5-10 мин)','train','🧘 Заминка'],
+    ['17:15','Душ + восстановительный перекус / протеин','food','🥛 Питание'],
+    ['18:00','Свободное время / хобби / социальное','rest','🎯 Своб.'],
+    ['19:30','Ужин (белок + овощи + немного углеводов)','food','🍽️ Ужин'],
+    ['20:30','Чтение по списку литературы (30 мин)','study','📖 Чтение'],
+    ['21:00','Метапознавательный дневник (10 мин)','mind','📓 Рефл.'],
+    ['21:15','Прогрессивная мышечная релаксация (ПМР, 10 мин)','mind','🧘 ПМР'],
+    ['21:30','Подготовка ко сну, без экранов','rest','🌙 Сон'],
+    ['22:00','Сон (8 ч — критично для восстановления мышц и HRV)','sleep','😴 Сон'],
+];
+const restDay=[
+    ['06:00','Подъём + HRV замер (2 мин)','mind','🫀 HRV'],
+    ['06:05','Резонансное дыхание (15 мин) — расширенная сессия','mind','🧘 HRV+'],
+    ['06:25','Стакан воды + прогулка 10 мин на свежем воздухе','rest','🌅 Утро'],
+    ['06:40','Завтрак','food','🍳 Еда'],
+    ['07:20','Учёба — первый блок (углублённое изучение)','study','📖 Учёба'],
+    ['09:30','Перекус + перерыв','food','🍎 Перекус'],
+    ['09:45','Шахматы 30-45 мин (разбор партий, эндшпили)','chess','♟️ EF+'],
+    ['10:30','Учёба — второй блок / чтение по литературе','study','📚 Чтение'],
+    ['12:00','Обед','food','🥗 Еда'],
+    ['13:00','Лёгкая активность: прогулка 30-45 мин (аэробика для BDNF)','train','🚶 Аэробика'],
+    ['14:00','Учёба / проект — глубокая работа','study','🎯 Фокус'],
+    ['16:00','Перекус','food','🍌 Перекус'],
+    ['16:15','Медитация расширенная (20 мин) или биофидбек-сессия','mind','🧘 Медит.'],
+    ['16:45','Чтение / просмотр образовательного контента','study','📖 Чтение'],
+    ['18:30','Свободное время','rest','🎯 Своб.'],
+    ['19:30','Ужин','food','🍽️ Ужин'],
+    ['20:30','Анализ шахматных партий / стратегические игры','chess','♟️ Анализ'],
+    ['21:00','Метапознавательный дневник (15 мин — развёрнутый)','mind','📓 Рефл.'],
+    ['21:20','Box Breathing / ПМР для глубокого сна','mind','🧘 Сон-преп'],
+    ['22:00','Сон (8 ч)','sleep','😴 Сон'],
+];
 
-function renderCalendar() {
-    const grid = document.getElementById('calendar-grid');
-    const title = document.getElementById('calendar-month-title');
+const tagMap={train:'tag-train',study:'tag-study',food:'tag-food',mind:'tag-mind',rest:'tag-rest',chess:'tag-chess',sleep:'tag-sleep'};
 
-    const year = state.calendarYear;
-    const month = state.calendarMonth;
-    title.textContent = `${monthNames[month]} ${year}`;
-
-    let html = '';
-    dayHeaders.forEach(d => { html += `<div class="calendar-day-header">${d}</div>`; });
-
-    const firstDay = new Date(year, month, 1);
-    let startDow = firstDay.getDay();
-    if (startDow === 0) startDow = 7;
-    startDow--;
-
-    for (let i = 0; i < startDow; i++) html += '<div class="calendar-day empty"></div>';
-
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const today = new Date(); today.setHours(0,0,0,0);
-
-    for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month, day);
-        const key = dateKey(date);
-        const training = getTrainingForDate(date);
-        const isToday = date.getTime() === today.getTime();
-        const isCompleted = state.completedDays[key];
-
-        let classes = 'calendar-day';
-        let label = '';
-
-        if (training) {
-            classes += ` ${training.groupClass}`;
-            label = training.groupName;
-        } else {
-            const start = new Date(state.startDate); start.setHours(0,0,0,0);
-            if (Math.floor((date - start) / (1000*60*60*24)) >= 0) {
-                classes += ' rest';
-                label = '😴';
-            }
-        }
-
-        if (isCompleted) classes += ' completed';
-        if (isToday) classes += ' today';
-
-        html += `<div class="${classes}" onclick="openDayModal('${key}')">
-            <span class="day-number">${day}</span>
-            <span class="day-label">${label}</span>
-        </div>`;
+function renderDailySchedule(){
+    function buildTable(data,el){
+        el.innerHTML=data.map(r=>`
+            <div class="hour-row">
+                <div class="hour-time">${r[0]}</div>
+                <div class="hour-act"><span class="act-tag ${tagMap[r[2]]||'tag-rest'}">${r[3]}</span>${r[1]}</div>
+            </div>`).join('');
     }
-
-    grid.innerHTML = html;
+    buildTable(trainDay,document.getElementById('daily-train'));
+    buildTable(restDay,document.getElementById('daily-rest'));
 }
 
-function changeMonth(delta) {
-    state.calendarMonth += delta;
-    if (state.calendarMonth > 11) { state.calendarMonth = 0; state.calendarYear++; }
-    if (state.calendarMonth < 0) { state.calendarMonth = 11; state.calendarYear--; }
+function renderWeekly(){
+    const days=[
+        {d:'Понедельник',t:'push',note:'Push-тренировка (брусья, отжимания) · Учёба · Шахматы 30 мин · Резонансное дыхание'},
+        {d:'Вторник',t:'rest',note:'День развития · Углублённое чтение · Шахматы 45 мин · Медитация 20 мин · Прогулка'},
+        {d:'Среда',t:'pull',note:'Pull-тренировка (турник, подтягивания) · Учёба · Шахматы 30 мин · HRV-дыхание'},
+        {d:'Четверг',t:'rest',note:'День развития · Чтение + разбор шахматных партий · Биофидбек / расширенная медитация'},
+        {d:'Пятница',t:'legs',note:'Тренировка Ноги+Кор · Учёба · Шахматы 30 мин · Метапознавательный дневник'},
+        {d:'Суббота',t:'full',note:'Full Body HIFT (35-40 мин) · Длинная сессия чтения · Социальное время · Рефлексия недели'},
+        {d:'Воскресенье',t:'rest',note:'Полный отдых · Планирование недели · Лёгкая прогулка · Дыхание + медитация · Сон приоритет'},
+    ];
+    const clr={push:'#7c3aed',pull:'#00d4ff',legs:'#10b981',full:'#f59e0b',rest:'rgba(255,255,255,.1)'};
+    document.getElementById('weekly-content').innerHTML=days.map(d=>`
+        <div style="display:grid;grid-template-columns:110px 80px 1fr;gap:0;border-bottom:1px solid var(--border);padding:10px 0;align-items:center;">
+            <div style="font-size:.88em;font-weight:700;">${d.d}</div>
+            <div><span class="badge" style="background:${clr[d.t]||'rgba(255,255,255,.1)'};color:${d.t==='rest'?'var(--text2)':'#fff'};font-size:.72em;">${typeNames[d.t]}</span></div>
+            <div style="font-size:.8em;color:var(--text2);">${d.note}</div>
+        </div>`).join('');
+}
+
+// ════════════════════════════════════════════════
+// WORKOUT DATA
+// ════════════════════════════════════════════════
+const pushExs=[
+    ['Отжимания от пола','3–4 × 10–15','90 сек','Нет прогресса → паузы 2 сек внизу'],
+    ['Дипсы на брусьях (прямое тело)','3 × 8–12','90 сек','→ Глубокие дипсы → Дипсы с паузой'],
+    ['Pike Push-up (отжимания «домик»)','3 × 8–12','90 сек','→ Ноги на возвышении → HSPU у стены'],
+    ['Алмазные отжимания','3 × 8–12','90 сек','→ С хлопком → Archer push-up'],
+    ['Отжимания широким хватом (медленно 3 сек вниз)','3 × 8–10','90 сек','Фокус на растяжку груди'],
+    ['Уголок на брусьях (L-sit hold)','3 × 15–25 сек','60 сек','→ V-sit → Full L-sit на полу'],
+    ['Планка на прямых руках','3 × 45–60 сек','60 сек','→ Планка с подъёмом ноги → RKC планка'],
+];
+const pullExs=[
+    ['Австралийские подтягивания','3 × 10–15','60 сек','Начальный уровень → добавь паузу сверху'],
+    ['Подтягивания нейтральным хватом','4 × 5–8','90 сек','→ 10 подтягиваний → добавь объём'],
+    ['Подтягивания широким хватом','4 × 5–8','90 сек','→ Пауза 3 сек сверху → Негатив 5 сек'],
+    ['Подтягивания обратным хватом (бицепс)','3 × 6–10','90 сек','→ Узкий хват → Archer → Muscle-up негатив'],
+    ['Вис на перекладине (активный)','3 × 20–30 сек','60 сек','Укрепляет хват, декомпрессия позвоночника'],
+    ['Подъём ног в висе (согнутые → прямые)','3 × 8–12','90 сек','→ Toes-to-bar → Windshield wipers'],
+    ['Шраги в висе (лопатки)','3 × 10–15','60 сек','Активация трапеции и широчайших'],
+];
+const legsExs=[
+    ['Приседания (паузовые, 3 сек внизу)','4 × 12–15','60 сек','→ Болгарские → Пистолетик с опорой'],
+    ['Выпады шагающие','3 × 10 на ногу','60 сек','→ Выпады с паузой → Прыжковые выпады'],
+    ['Болгарские приседания (нога на скамье)','3 × 8–10 на ногу','90 сек','→ С паузой 2 сек → С прыжком'],
+    ['Пистолетик с опорой (держась за стойку)','3 × 5–8 на ногу','90 сек','→ Лёгкая опора → Свободный пистолетик'],
+    ['Подъём ног в висе на турнике','3 × 10–12','90 сек','→ Прямые ноги → Toes-to-bar'],
+    ['Подъём на носки на одной ноге','4 × 12–15 на ногу','60 сек','→ С паузой 2 сек наверху'],
+    ['Берпи (кардио-финал)','3 × 8–10','90 сек','Взрывная мощь · финал тренировки'],
+];
+const hift1=[
+    ['Подтягивания','5 повт.','Строгая техника'],
+    ['Дипсы на брусьях','8 повт.','Полная амплитуда'],
+    ['Приседания с прыжком','10 повт.','Взрывной подъём'],
+    ['Отжимания','10 повт.','Грудь касается пола'],
+    ['Подъём коленей в висе','8 повт.','Контролируй опускание'],
+];
+const hift2=[
+    ['Австралийские подтягивания','10 повт.','Пауза сверху 1 сек'],
+    ['Дипсы','8 повт.','Медленный негатив 3 сек'],
+    ['Болгарские приседания','6 на ногу','Без отдыха между ногами'],
+    ['Алмазные отжимания','8 повт.','Локти прижаты'],
+    ['Toes-to-bar или подъём коленей','10 повт.','Темп умеренный'],
+];
+
+function buildTable(data,id){
+    const tb=document.getElementById(id);if(!tb)return;
+    tb.innerHTML=data.map((r,i)=>`<tr>
+        <td style="opacity:.4;text-align:center;">${i+1}</td>
+        <td class="ex-name">${r[0]}</td>
+        <td class="ex-sets">${r[1]}</td>
+        <td class="ex-rest">${r[2]}</td>
+        <td class="ex-prog">${r[3]||''}</td>
+    </tr>`).join('');
+}
+function buildHiftTable(data,id){
+    const tb=document.getElementById(id);if(!tb)return;
+    tb.innerHTML=data.map((r,i)=>`<tr>
+        <td style="opacity:.4;text-align:center;">${i+1}</td>
+        <td class="ex-name">${r[0]}</td>
+        <td class="ex-sets">${r[1]}</td>
+        <td style="color:var(--text2);font-size:.82em;">${r[2]}</td>
+    </tr>`).join('');
+}
+buildTable(pushExs,'push-table');
+buildTable(pullExs,'pull-table');
+buildTable(legsExs,'legs-table');
+buildHiftTable(hift1,'hift1-table');
+buildHiftTable(hift2,'hift2-table');
+
+// ════════════════════════════════════════════════
+// FOOD DATA
+// ════════════════════════════════════════════════
+const foods={
+breakfast:[
+    {e:'🥣',n:'Овсянка с бананом и миндалём',g:'Овсянка 80г · Молоко 1.5% 200мл · Банан 100г · Миндаль 20г · Мёд 10г',kcal:590,p:20,f:18,c:88,prep:'Засыпь овсянку в кипящее молоко. Вари 5 мин на медленном огне, помешивая. Нарежь банан, добавь в готовую кашу. Посыпь миндалём, полей мёдом.'},
+    {e:'🍳',n:'Омлет с овощами (3 яйца)',g:'Яйца С1 3 шт (150г) · Перец болгарский 80г · Помидор 100г · Оливковое масло 10г · Зелень 10г',kcal:370,p:22,f:28,c:8,prep:'Взбей яйца с щепоткой соли. Разогрей масло на сковороде, обжарь нарезанные овощи 3 мин. Залей яйцами. Накрой крышкой, жарь 3-4 мин на среднем огне. Посыпь зеленью.'},
+    {e:'🧀',n:'Творог с ягодами и семенами',g:'Творог 5% 200г · Черника 100г · Семена льна 15г · Греческий йогурт 50г · Мёд 15г',kcal:420,p:30,f:12,c:48,prep:'Смешай творог с греческим йогуртом до однородности. Добавь свежие или размороженные ягоды. Посыпь семенами льна, полей мёдом. Подавай сразу.'},
+    {e:'🥞',n:'Белковые блинчики (протеиновые)',g:'Яйца 3 шт · Творог 100г · Банан 1 шт (100г) · Геркулес 30г · Масло 5г',kcal:480,p:32,f:16,c:52,prep:'Смешай в блендере яйца, творог, банан и геркулес до однородного теста. Жарь на сковороде с минимумом масла по 2-3 мин с каждой стороны. Подавай со свежими ягодами.'},
+    {e:'🍚',n:'Гречка с яйцом вкрутую',g:'Гречка сухая 70г (после варки ~210г) · Яйцо 2 шт · Масло сливочное 10г · Соль, перец',kcal:440,p:22,f:16,c:56,prep:'Отвари гречку в кипящей воде 15-20 мин до готовности (1:2 по объёму). Яйца отвари вкрутую 10 мин. Заправь гречку маслом, подавай с нарезанными яйцами.'},
+    {e:'🥑',n:'Яичница с авокадо и тостом',g:'Яйца 2 шт · Авокадо 80г · Хлеб цельнозерновой 2 ломтя (60г) · Масло оливковое 8г · Помидор 80г',kcal:520,p:20,f:32,c:38,prep:'Поджарь хлеб. Разомни авокадо вилкой, добавь щепотку соли и лимонный сок. Пожарь яичницу на оливковом масле. Намажь авокадо на хлеб, сверху яичница и нарезанный помидор.'},
+    {e:'🫐',n:'Греческий йогурт с гранолой',g:'Греческий йогурт 5% 250г · Гранола без сахара 50г · Черника 70г · Банан 50г · Семена чиа 10г',kcal:480,p:22,f:14,c:66,prep:'Выложи йогурт в миску. Сверху насыпь гранолу. Добавь свежие ягоды и нарезанный банан. Посыпь семенами чиа. Не перемешивай — ешь слоями для разнообразия текстур.'},
+    {e:'🍌',n:'Смузи-боул (без варки)',g:'Банан замороженный 150г · Черника 100г · Протеин (сывороточный) 30г · Молоко 100мл · Гранола 40г · Семена тыквы 15г',kcal:510,p:34,f:12,c:68,prep:'Смешай банан, чернику, протеин и молоко в блендере до густой консистенции (без лишней жидкости). Вылей в миску. Сверху выложи гранолу и семена тыквы. Ешь сразу, пока не растаяло.'},
+    {e:'🌾',n:'Каша перловая с яйцом пашот',g:'Перловка 70г (сухая) · Яйцо 2 шт · Сыр твёрдый 20г · Масло оливковое 8г · Зелень',kcal:460,p:24,f:16,c:58,prep:'Отвари перловку (предварительно замочить на 2 ч). В кипящую воду с уксусом опусти яйцо и вари 3-4 мин. Выложи кашу, сверху яйца пашот, посыпь тёртым сыром и зеленью.'},
+    {e:'🧇',n:'Банановые вафли (2 ингредиента)',g:'Банан спелый 2 шт (200г) · Яйца 3 шт · Овсяные хлопья 40г · Корица 2г',kcal:430,p:20,f:14,c:60,prep:'Разомни бананы вилкой до пюре. Взбей яйца и добавь к бананам вместе с овсяными хлопьями и корицей. Жарь на антипригарной сковороде по 2-3 мин с каждой стороны. Подавай со свежими фруктами.'},
+],
+lunch:[
+    {e:'🍗',n:'Куриная грудка с рисом и овощами',g:'Куриная грудка 180г · Рис бурый 70г (сухой) · Брокколи 150г · Морковь 80г · Масло оливковое 10г',kcal:540,p:52,f:12,c:60,prep:'Отвари рис 25-30 мин. Куриную грудку запеки в духовке 200°C 25 мин или обжарь на сковороде по 6-7 мин с каждой стороны. Брокколи и морковь отвари 7 мин до мягкости. Заправь оливковым маслом.'},
+    {e:'🐟',n:'Лосось с картофелем и брокколи',g:'Лосось (стейк) 180г · Картофель 200г · Брокколи 150г · Лимон 30г · Масло оливковое 12г · Чеснок 5г',kcal:580,p:44,f:22,c:48,prep:'Картофель отвари 20 мин. Лосось натри солью, перцем и чесноком, запеки при 180°C 15-18 мин. Брокколи обжарь на оливковом масле 5 мин. Подавай с лимонным соком.'},
+    {e:'🥩',n:'Говяжий боул с гречкой',g:'Говяжий фарш 150г · Гречка 80г (сухая) · Лук 60г · Масло оливковое 10г · Томатная паста 30г · Специи',kcal:560,p:44,f:18,c:56,prep:'Отвари гречку. Обжарь лук на масле 5 мин, добавь фарш, жарь 8-10 мин помешивая. Добавь томатную пасту и 100мл воды, туши 10 мин. Подавай с гречкой.'},
+    {e:'🥗',n:'Тунец с пастой и салатом',g:'Тунец в собственном соку 150г · Паста (цельнозерновая) 80г (сухая) · Помидоры черри 100г · Огурец 100г · Оливковое масло 10г · Лимон',kcal:510,p:42,f:10,c:62,prep:'Отвари пасту до al dente. Смешай нарезанные овощи с тунцом, заправь оливковым маслом и лимонным соком. Добавь остывшую пасту, перемешай.'},
+    {e:'🍜',n:'Куриный суп с вермишелью',g:'Куриная грудка 150г · Вермишель 50г · Картофель 150г · Морковь 80г · Лук 50г · Зелень 15г',kcal:380,p:36,f:6,c:46,prep:'Сварить бульон из куриной грудки (30 мин). Вытащить курицу, нарезать. В бульон добавить нарезанные картофель и морковь, варить 15 мин. Добавить вермишель и варить ещё 5 мин. Вернуть курицу. Посыпать зеленью.'},
+    {e:'🦃',n:'Индейка с бурым рисом и салатом',g:'Грудка индейки 180г · Рис бурый 70г · Огурец 100г · Помидор 100г · Оливковое масло 10г · Лимон',kcal:490,p:50,f:10,c:54,prep:'Запеки индейку 200°C, 25-30 мин, предварительно посолив и поперчив. Отвари рис. Приготовь свежий салат с оливковым маслом и лимонным соком.'},
+    {e:'🫘',n:'Фасолевый суп с тостом (постный)',g:'Фасоль консервированная 200г · Картофель 150г · Лук 60г · Морковь 80г · Масло оливковое 12г · Хлеб цельнозерновой 60г',kcal:420,p:20,f:12,c:62,prep:'Обжарь лук и морковь на масле 5 мин. Добавь картофель и 600мл воды, вари 15 мин. Добавь фасоль (слить жидкость), вари 10 мин. Подавай с поджаренным хлебом.'},
+    {e:'🥚',n:'Творожная запеканка (обед на раздень отдыха)',g:'Творог 9% 300г · Яйца 2 шт · Сметана 20г · Мука рисовая 30г · Изюм 30г · Мёд 15г',kcal:540,p:38,f:20,c:52,prep:'Смешай творог с яйцами, сметаной и мукой до однородности. Добавь изюм и мёд. Вылей в форму, смазанную маслом. Запекай при 180°C, 30-35 мин до золотистой корочки.'},
+],
+dinner:[
+    {e:'🍗',n:'Запечённая курица с овощами',g:'Куриное бедро без кожи 200г · Цукини 150г · Перец болгарский 120г · Масло оливковое 10г · Чеснок 5г · Розмарин, тимьян',kcal:420,p:40,f:18,c:22,prep:'Курицу натри специями и чесноком. Нарежь овощи крупными кусками. Всё выложи на противень, сбрызни маслом. Запекай при 200°C, 30-35 мин. Лёгкий вариант ужина с акцентом на белок.'},
+    {e:'🐟',n:'Треска с пюре и зелёным горошком',g:'Треска 200г · Картофель 180г · Молоко 1.5% 50мл · Зелёный горошек 100г · Масло сливочное 8г',kcal:430,p:42,f:10,c:44,prep:'Картофель отвари, сделай пюре с молоком и маслом. Треску запеки при 180°C 20 мин с лимоном и зеленью. Горошек обжарь или отвари 3-4 мин. Подавай всё вместе.'},
+    {e:'🥩',n:'Котлеты из индейки с овощным рагу',g:'Фарш индейки 200г · Лук 40г · Яйцо 1 шт · Цукини 150г · Морковь 100г · Масло оливковое 10г',kcal:440,p:44,f:16,c:28,prep:'Смешай фарш с луком и яйцом, сформируй котлеты. Запеки при 190°C, 25 мин. Для рагу: обжарь морковь 5 мин, добавь цукини, туши 10 мин с небольшим количеством воды.'},
+    {e:'🥚',n:'Омлет с сыром и шпинатом (лёгкий ужин)',g:'Яйца 3 шт · Шпинат свежий 80г · Сыр твёрдый 30г · Масло оливковое 8г · Помидор 80г',kcal:350,p:26,f:26,c:6,prep:'Взбей яйца. Обжарь шпинат на масле 2 мин до мягкости. Залей яйцами, посыпь тёртым сыром. Накрой крышкой, жарь 3-4 мин. Подавай со свежим помидором.'},
+    {e:'🧀',n:'Творог с орехами (суперлёгкий ужин)',g:'Творог 5% 250г · Грецкий орех 25г · Банан 70г · Корица 2г · Кефир 100мл',kcal:420,p:28,f:16,c:40,prep:'Смешай творог с кефиром до кремообразной консистенции. Нарежь банан. Выложи всё в миску, посыпь дроблёными орехами и корицей. Подходит для дней отдыха — легко усваивается.'},
+    {e:'🍲',n:'Тушёная говядина с гречкой',g:'Говядина (лопатка) 180г · Гречка 60г (сухая) · Лук 60г · Морковь 80г · Масло оливковое 10г · Томатная паста 20г',kcal:500,p:44,f:14,c:50,prep:'Нарежь говядину кубиками. Обжарь лук и морковь 5 мин. Добавь мясо, обжарь 5 мин. Добавь томатную пасту и 200мл воды, туши 40-50 мин. Подавай с отварной гречкой.'},
+    {e:'🍝',n:'Куриные тефтели в томатном соусе',g:'Куриный фарш 180г · Рис 30г (варёный) · Лук 40г · Томаты консерв. 200г · Чеснок 5г · Масло оливковое 8г',kcal:420,p:38,f:12,c:38,prep:'Смешай фарш с варёным рисом и луком, сформируй тефтели. Обжарь до румяности. В ту же сковороду добавь томаты, чеснок, туши тефтели в соусе 20-25 мин.'},
+    {e:'🐠',n:'Запечённая скумбрия с овощами-гриль',g:'Скумбрия 200г · Цукини 150г · Перец 120г · Лимон 30г · Масло оливковое 10г',kcal:480,p:36,f:28,c:18,prep:'Скумбрию нарежь на порции, сбрызни лимоном, посоли. Запекай 200°C, 20 мин. Овощи нарежь, сбрызни маслом, жарь на сковороде-гриль 10-12 мин. Богата омега-3 — восстановление и противовоспалительный эффект.'},
+],
+snack:[
+    {e:'🥛',n:'Творог с кефиром',g:'Творог 5% 150г · Кефир 1% 150мл',kcal:195,p:24,f:5,c:12,prep:'Смешай творог с кефиром. Можно добавить щепотку соли или ложку мёда. Быстрый белковый перекус — 5 мин.'},
+    {e:'🍌',n:'Банан с арахисовой пастой',g:'Банан 120г · Арахисовая паста (без сахара) 25г',kcal:245,p:8,f:10,c:34,prep:'Нарежь банан. Обмакивай в арахисовую пасту или намажь. Быстрые углеводы + белок + жиры — идеально перед тренировкой за 1-1.5 ч.'},
+    {e:'🥚',n:'Яйца вкрутую с огурцом',g:'Яйца С1 2 шт (100г) · Огурец 150г · Соль, чёрный перец',kcal:175,p:16,f:11,c:4,prep:'Отвари яйца вкрутую 10 мин. Охлади под холодной водой, очисти. Нарежь огурец. Посоли и поперчи. Портативный белковый перекус.'},
+    {e:'🍎',n:'Яблоко с миндалём',g:'Яблоко 180г · Миндаль 25г',kcal:215,p:6,f:12,c:24,prep:'Вымой яблоко, нарежь дольками. Отмерь миндаль. Клетчатка + здоровые жиры + сложные углеводы — долгое насыщение. Отличный перекус для когнитивной работы.'},
+    {e:'💪',n:'Протеиновый шейк',g:'Сывороточный протеин 30г · Молоко 1.5% 250мл · Банан 80г',kcal:330,p:34,f:5,c:42,prep:'Смешай все ингредиенты в блендере или шейкере. Пей сразу после тренировки (в первые 30-60 мин) — это «анаболическое окно». Максимальный синтез белка мышц.'},
+    {e:'🫙',n:'Греческий йогурт с мёдом',g:'Греческий йогурт 5% 200г · Мёд 15г · Корица 2г',kcal:235,p:18,f:8,c:28,prep:'Выложи йогурт в стакан или миску. Добавь мёд и посыпь корицей. Не смешивай — ешь слоями. Корица улучшает чувствительность к инсулину.'},
+    {e:'🌰',n:'Ореховая смесь с сухофруктами',g:'Грецкий орех 15г · Миндаль 15г · Изюм 20г · Курага 20г',kcal:250,p:7,f:14,c:28,prep:'Смешай все компоненты. Порционируй заранее в пакетики. Удобно брать с собой. Энергетически плотный перекус — не злоупотребляй.'},
+    {e:'🥪',n:'Цельнозерновой хлебец с авокадо',g:'Хлебцы цельнозерновые 2 шт (30г) · Авокадо 80г · Лимонный сок · Соль, перец',kcal:195,p:4,f:10,c:22,prep:'Разомни авокадо вилкой с лимонным соком, солью и перцем. Намажь на хлебцы. При желании добавь нарезанный помидор. Богато полезными жирами — поддержка мозга.'},
+    {e:'🥤',n:'Кефир с бананом',g:'Кефир 1% 250мл · Банан 100г',kcal:195,p:8,f:3,c:36,prep:'Смешай в блендере. Пробиотики кефира + калий и углеводы банана. Хороший перекус за 1 ч до сна — поддержит синтез мышц ночью.'},
+    {e:'🌾',n:'Хлопья овсяные с молоком (сырые)',g:'Овсяные хлопья 40г · Молоко 1.5% 100мл · Банан 70г · Корица 2г',kcal:255,p:10,f:5,c:46,prep:'Залей хлопья холодным молоком (не вари). Оставь на 5 мин. Нарежь банан, добавь. Посыпь корицей. Быстрый перекус с медленными углеводами.'},
+]};
+
+function renderFoods(){
+    function build(arr,id){
+        const el=document.getElementById(id);if(!el)return;
+        el.innerHTML=arr.map(f=>`
+        <div class="food-card">
+            <div class="food-img">${f.e}</div>
+            <div class="food-body">
+                <div class="food-name">${f.n}</div>
+                <div class="food-grams">⚖️ ${f.g}</div>
+                <div class="food-macros">
+                    <div class="macro-item"><div class="macro-val macro-kcal">${f.kcal}</div><div class="macro-lbl">ккал</div></div>
+                    <div class="macro-item"><div class="macro-val macro-p">${f.p}г</div><div class="macro-lbl">белок</div></div>
+                    <div class="macro-item"><div class="macro-val macro-f">${f.f}г</div><div class="macro-lbl">жиры</div></div>
+                    <div class="macro-item"><div class="macro-val macro-c">${f.c}г</div><div class="macro-lbl">углев.</div></div>
+                </div>
+                <div class="food-prep">👨‍🍳 ${f.prep}</div>
+            </div>
+        </div>`).join('');
+    }
+    build(foods.breakfast,'fc-breakfast');
+    build(foods.lunch,'fc-lunch');
+    build(foods.dinner,'fc-dinner');
+    build(foods.snack,'fc-snack');
+}
+
+// ════════════════════════════════════════════════
+// BOOKS DATA
+// ════════════════════════════════════════════════
+const booksData=[
+    {tier:1,color:'#10b981',label:'📗 Уровень 1 — Физический фундамент (читать первым)',books:[
+        {n:'Атомные привычки',a:'Джеймс Клир',desc:'Научно обоснованная система построения полезных привычек и избавления от вредных. Читать первым — это основа всей системы развития. Без привычек ни одна программа не работает.',tags:['Привычки','Поведение','Система']},
+        {n:'Тело не лжёт (Never Let Go)',a:'Дэн Джон',desc:'Практическое руководство по функциональному силовому тренингу. Принципы GPP, которые упоминаются в исследовании. Основы подвижности и силы.',tags:['GPP','Сила','Функциональность']},
+        {n:'Почему мы спим',a:'Мэттью Уолкер',desc:'Исследование критической роли сна для физического восстановления и когнитивных функций. Исследование прямо указывает: без 7-9 ч сна мышцы не восстанавливаются, HRV не растёт.',tags:['Сон','Восстановление','Мозг']},
+    ]},
+    {tier:2,color:'#00d4ff',label:'🔵 Уровень 2 — Саморегуляция и HRV (второй этап)',books:[
+        {n:'Эмоциональный интеллект',a:'Дэниел Гоулман',desc:'Классическая книга о природе саморегуляции и эмоционального контроля. Даёт понимание того, почему EQ важнее IQ в большинстве жизненных ситуаций.',tags:['EQ','Саморегуляция','Эмоции']},
+        {n:'The HeartMath Solution',a:'Док Чайлдри, Говард Мартин',desc:'Научная основа техники Quick Coherence от HeartMath Institute. Объясняет механику HRV и резонансного дыхания, упомянутых в исследовании как ключевых инструментов хладнокровия.',tags:['HRV','Дыхание','Стресс']},
+        {n:'Осознанность (Mindfulness in Plain English)',a:'Бханте Гунаратана',desc:'Практическое руководство по медитации без мистики. Прямой путь к развитию той «невозмутимости», которая описывается в исследовании как тренируемый навык.',tags:['Медитация','Mindfulness','Фокус']},
+        {n:'Исчезающий мозг (Head Strong)',a:'Дейв Эспри',desc:'Биохакинг когнитивных функций через питание, сон и стресс-протоколы. Практические методы улучшения работы префронтальной коры — центра EF.',tags:['Биохакинг','Когниции','Мозг']},
+    ]},
+    {tier:3,color:'#f59e0b',label:'🟡 Уровень 3 — Стратегическое мышление (третий этап)',books:[
+        {n:'Думай медленно, решай быстро',a:'Даниэль Канеман',desc:'Лауреат Нобелевской премии о двух системах мышления. Фундаментальное понимание когнитивных искажений — основа метапознания, описанного в исследовании.',tags:['Когниции','Решения','EF']},
+        {n:'Искусство войны',a:'Сунь-цзы',desc:'Древний трактат о стратегии, который остаётся актуальным. Аянокоджи — воплощение этих принципов: знай себя и врага, побеждай без борьбы.',tags:['Стратегия','Классика','Планирование']},
+        {n:'Мышление стратега',a:'Кеничи Омаэ',desc:'Практические методологии стратегического анализа (упомянуты в исследовании): SWOT, анализ сценариев. Переносит игровое мышление в реальный мир.',tags:['Стратегия','Анализ','Бизнес']},
+        {n:'Шахматные задачи',a:'Ласло Полгар (5334 задачи)',desc:'По исследованию: шахматы — наиболее эффективный тренажёр EF. Ежедневное решение 5-10 задач развивает распознавание паттернов (chunking) и рабочую память.',tags:['Шахматы','Паттерны','EF']},
+    ]},
+    {tier:4,color:'#ef4444',label:'🔴 Уровень 4 — Социальное влияние (финальный этап)',books:[
+        {n:'Влияние: психология убеждения',a:'Роберт Чалдини',desc:'6 принципов влияния (авторитет, социальное доказательство, взаимность и др.), упомянутых в исследовании. Обязательное чтение для понимания механизмов социального воздействия.',tags:['Влияние','Психология','Nudge']},
+        {n:'Мотивационное интервьюирование',a:'Миллер и Роллник',desc:'Клинически доказанная методика влияния через партнёрство (MI), прямо упомянутая в исследовании. Убеждение без давления — самый этичный и эффективный инструмент.',tags:['MI','Коммуникация','Этика']},
+        {n:'Государь',a:'Никколо Макиавелли',desc:'Классический трактат о власти и управлении. Читать критически — как описание механизмов влияния, а не как руководство к действию. Даёт понимание игровой механики Аянокоджи.',tags:['Власть','Стратегия','Классика']},
+        {n:'Теория игр',a:'Авинаш Диксит, Барри Нейлбафф',desc:'Математические основы стратегического принятия решений. Игровые матрицы, доминирующие стратегии, равновесие Нэша — это и есть «несколько шагов вперёд» Аянокоджи.',tags:['Теория игр','Математика','Решения']},
+    ]},
+];
+
+function renderBooks(){
+    const el=document.getElementById('books-content');if(!el)return;
+    const colors=['#10b981','#00d4ff','#f59e0b','#ef4444'];
+    el.innerHTML=booksData.map((tier,ti)=>`
+    <div class="book-tier">
+        <div class="tier-title tier-${ti+1}">${tier.label}</div>
+        ${tier.books.map((b,bi)=>`
+        <div class="book-card">
+            <div class="book-num" style="background:${colors[ti]}20;color:${colors[ti]};">${ti*4+bi+1}</div>
+            <div class="book-info">
+                <h4>${b.n}</h4>
+                <div class="author">✍️ ${b.a}</div>
+                <p>${b.desc}</p>
+                <div class="book-tags">${b.tags.map(t=>`<span class="book-tag">${t}</span>`).join('')}</div>
+            </div>
+        </div>`).join('')}
+    </div>`).join('');
+}
+
+// ════════════════════════════════════════════════
+// CALENDAR TRACKER
+// ════════════════════════════════════════════════
+function renderCalendar(){
+    const y=state.calYear,m=state.calMonth;
+    document.getElementById('cal-month-title').textContent=MONTHS[m]+' '+y;
+    const grid=document.getElementById('cal-grid');
+    const cells=grid.querySelectorAll('.day-cell');cells.forEach(c=>c.remove());
+    
+    const first=new Date(y,m,1);
+    let dow=first.getDay();if(dow===0)dow=7;dow--;
+    const days=new Date(y,m+1,0).getDate();
+    const today=new Date();today.setHours(0,0,0,0);
+
+    for(let i=0;i<dow;i++){const e=document.createElement('div');e.className='day-cell empty';grid.appendChild(e);}
+    for(let d=1;d<=days;d++){
+        const date=new Date(y,m,d);
+        const type=getTrainType(date)||'rest';
+        const key=dKey(date);
+        const isToday=date.getTime()===today.getTime();
+        const isDone=state.done[key];
+        const cell=document.createElement('div');
+        cell.className='day-cell '+typeClass[type]+(isToday?' today':'')+(isDone?' done':'');
+        cell.innerHTML=`<span class="d-num">${d}</span><span class="d-lbl">${type!=='rest'?typeNames[type]:'😴'}</span>`;
+        cell.onclick=()=>openDayModal(key,date,type);
+        grid.appendChild(cell);
+    }
+}
+function chCalMonth(d){
+    state.calMonth+=d;
+    if(state.calMonth>11){state.calMonth=0;state.calYear++;}
+    if(state.calMonth<0){state.calMonth=11;state.calYear--;}
     renderCalendar();
 }
 
-// ============================================================
-// МОДАЛКА
-// ============================================================
-function openDayModal(key) {
-    const parts = key.split('-');
-    const date = new Date(parts[0], parts[1]-1, parts[2]);
-    const training = getTrainingForDate(date);
-    const isCompleted = state.completedDays[key];
-    const dayStr = `${parts[2]}.${parts[1]}.${parts[0]}`;
-
-    const titleEl = document.getElementById('modal-title');
-    const bodyEl = document.getElementById('modal-body');
-    const btnsEl = document.getElementById('modal-buttons');
-
-    if (training) {
-        const levelNames = ['🟢 Новичок', '🟡 Нач.-средний', '🟠 Средний', '🔴 Продвинутый'];
-        titleEl.textContent = `${training.groupName} — ${dayStr}`;
-
-        let list = '';
-        workoutData[training.groupKey].variants[training.level].exercises.forEach((ex, i) => {
-            list += `<p>${i+1}. <strong>${ex[0]}</strong> — ${ex[1]} (${ex[2]})</p>`;
-        });
-
-        bodyEl.innerHTML = `
-            <p>Тренировка #${training.trainNum} | ${levelNames[training.level]}</p>
-            <hr style="border-color:rgba(255,255,255,0.1);margin:10px 0;">
-            ${list}
-            <p style="margin-top:10px;">${isCompleted ? '✅ Выполнена!' : '⬜ Не выполнена'}</p>`;
-
-        btnsEl.innerHTML = isCompleted
-            ? `<button class="modal-btn uncomplete" onclick="toggleComplete('${key}',false)">❌ Отменить</button><button class="modal-btn close" onclick="closeModal()">Закрыть</button>`
-            : `<button class="modal-btn complete" onclick="toggleComplete('${key}',true)">✅ Выполнено!</button><button class="modal-btn close" onclick="closeModal()">Закрыть</button>`;
-    } else {
-        titleEl.textContent = `😴 День отдыха — ${dayStr}`;
-        bodyEl.innerHTML = '<p>Сегодня отдых. Мышцы растут во сне! Можно сделать лёгкую растяжку.</p>';
-        btnsEl.innerHTML = `<button class="modal-btn close" onclick="closeModal()">Закрыть</button>`;
-    }
-
-    document.getElementById('modal-overlay').classList.add('active');
+// ════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════
+function openDayModal(key,date,type){
+    const p=key.split('-');
+    const ds=`${p[2]}.${p[1]}.${p[0]}`;
+    const isDone=state.done[key];
+    const isRest=type==='rest';
+    const typeInfo={
+        push:{name:'Push тренировка 🟣',exs:'Дипсы · Отжимания · Pike push-up · Алмазные · L-sit'},
+        pull:{name:'Pull тренировка 🔵',exs:'Подтягивания широким хватом · Обратным хватом · Австралийские · Подъём ног в висе'},
+        legs:{name:'Ноги + Кор 🟢',exs:'Приседания · Болгарские · Пистолетик · Подъём ног · Берпи'},
+        full:{name:'Full Body HIFT 🟡',exs:'AMRAP 20 мин: Подтягивания × 5 · Дипсы × 8 · Приседания с прыжком × 10 · Отжимания × 10'},
+        rest:{name:'День отдыха / развития 🧘',exs:'Медитация · Шахматы · Чтение · Дыхание HRV'}
+    };
+    const info=typeInfo[type]||typeInfo.rest;
+    document.getElementById('m-title').textContent=info.name+' — '+ds;
+    document.getElementById('m-body').innerHTML=`
+        <p>📋 <strong>Упражнения:</strong> ${info.exs}</p>
+        ${!isRest?`<p>⏱️ Длительность: ~45-55 мин + разминка 7 мин</p>`:'<p>💡 Мышцы растут в дни отдыха. Используй для медитации и чтения.</p>'}
+        <p style="margin-top:8px;">${isDone?'✅ <strong>Выполнено!</strong>':'⬜ <strong>Не выполнено</strong>'}</p>`;
+    document.getElementById('m-btns').innerHTML=isDone
+        ?`<button class="btn btn-red" onclick="toggleDone('${key}',false)">❌ Отменить</button><button class="btn btn-ghost" onclick="closeModal()">Закрыть</button>`
+        :`<button class="btn btn-green" onclick="toggleDone('${key}',true)">✅ Выполнено!</button><button class="btn btn-ghost" onclick="closeModal()">Закрыть</button>`;
+    document.getElementById('modal').classList.add('open');
 }
-
-function toggleComplete(key, completed) {
-    if (completed) {
-        state.completedDays[key] = true;
-        showNotification('✅ Тренировка отмечена!');
-    } else {
-        delete state.completedDays[key];
-        showNotification('❌ Отметка снята');
-    }
-    saveState();
-    closeModal();
-    renderCalendar();
-    updateDashboard();
+function toggleDone(key,v){
+    if(v)state.done[key]=true;else delete state.done[key];
+    saveLocal();closeModal();
+    renderCalendar();renderSchedMonth();updateDash();
+    notify(v?'✅ Отмечено!':'❌ Отметка снята');
 }
+function closeModal(e){if(!e||e.target===document.getElementById('modal'))document.getElementById('modal').classList.remove('open');}
 
-function closeModal(event) {
-    if (!event || event.target === document.getElementById('modal-overlay'))
-        document.getElementById('modal-overlay').classList.remove('active');
-}
-
-// ============================================================
+// ════════════════════════════════════════════════
 // DASHBOARD
-// ============================================================
-function updateDashboard() {
-    const completed = Object.keys(state.completedDays).length;
-    document.getElementById('total-workouts').textContent = completed;
+// ════════════════════════════════════════════════
+function updateDash(){
+    const done=Object.keys(state.done).length;
+    document.getElementById('st-total').textContent=done;
 
-    let counts = { arms: 0, back: 0, abs: 0, legs: 0 };
-    Object.keys(state.completedDays).forEach(key => {
-        const p = key.split('-');
-        const d = new Date(p[0], p[1]-1, p[2]);
-        const t = getTrainingForDate(d);
-        if (t) counts[t.groupKey]++;
-    });
+    // Week count
+    const today=new Date();today.setHours(0,0,0,0);
+    let weekCt=0;
+    for(let i=0;i<7;i++){
+        const d=new Date(today);d.setDate(d.getDate()-i);
+        if(state.done[dKey(d)])weekCt++;
+    }
+    document.getElementById('st-week').textContent=weekCt;
 
-    const perLevel = 8;
-    ['arms','back','abs','legs'].forEach(g => {
-        const pct = Math.min(100, (counts[g] / perLevel) * 100);
-        document.getElementById(g + '-progress').style.width = pct + '%';
-        document.getElementById(g + '-progress-text').textContent = `${counts[g]} / ${perLevel}`;
-    });
+    // Streak
+    let streak=0;let chk=new Date(today);
+    for(let i=0;i<365;i++){
+        const t=getTrainType(chk);
+        const k=dKey(chk);
+        if(t&&t!=='rest'){if(state.done[k])streak++;else break;}
+        chk.setDate(chk.getDate()-1);
+    }
+    document.getElementById('st-streak').textContent=streak;
 
-    // Серия
-    let streak = 0;
-    const today = new Date(); today.setHours(0,0,0,0);
-    let checkDate = new Date(today);
-    for (let i = 0; i < 365; i++) {
-        const t = getTrainingForDate(checkDate);
-        if (t) {
-            if (state.completedDays[dateKey(checkDate)]) streak++;
-            else break;
+    // Next workout
+    let next=new Date(today);
+    for(let i=0;i<14;i++){
+        const t=getTrainType(next);
+        if(t&&t!=='rest'&&!state.done[dKey(next)]){
+            document.getElementById('st-next').textContent=typeNames[t];break;
         }
-        checkDate.setDate(checkDate.getDate() - 1);
-    }
-    document.getElementById('current-streak').textContent = streak;
-
-    // Уровень
-    const min = Math.min(counts.arms, counts.back, counts.abs, counts.legs);
-    document.getElementById('current-level').textContent = min >= 24 ? '🔴' : min >= 16 ? '🟠' : min >= 8 ? '🟡' : '🟢';
-
-    // Следующая
-    let next = new Date(today);
-    for (let i = 0; i < 30; i++) {
-        const t = getTrainingForDate(next);
-        if (t && !state.completedDays[dateKey(next)]) {
-            document.getElementById('next-workout').textContent = t.groupName;
-            document.getElementById('next-workout').style.fontSize = '1.2em';
-            break;
-        }
-        next.setDate(next.getDate() + 1);
+        next.setDate(next.getDate()+1);
     }
 
-    // Дата старта
-    const sd = state.startDate;
-    document.getElementById('start-date-input').value = `${sd.getFullYear()}-${String(sd.getMonth()+1).padStart(2,'0')}-${String(sd.getDate()).padStart(2,'0')}`;
-
-    // Sync status
-    const statusEl = document.getElementById('sync-status');
-    if (firebaseReady) {
-        statusEl.textContent = '🟢 Синхронизация активна';
-        statusEl.className = 'sync-status online';
-    } else {
-        statusEl.textContent = '🔴 Только локально (настройте Firebase)';
-        statusEl.className = 'sync-status offline';
-    }
-
-    document.getElementById('user-id-display').value = userId;
-}
-
-// ============================================================
-// СИНХРОНИЗАЦИЯ
-// ============================================================
-function copyUserId() {
-    const input = document.getElementById('user-id-display');
-    input.select();
-    input.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(input.value).then(() => {
-        showNotification('📋 ID скопирован! Вставь его на другом устройстве');
-    }).catch(() => {
-        document.execCommand('copy');
-        showNotification('📋 ID скопирован!');
+    // Progress by type
+    const cnt={push:0,pull:0,legs:0,full:0};
+    Object.keys(state.done).forEach(k=>{
+        const p=k.split('-');const d=new Date(p[0],p[1]-1,p[2]);
+        const t=getTrainType(d);if(t&&cnt[t]!==undefined)cnt[t]++;
     });
-}
-
-function syncWithId() {
-    const newId = document.getElementById('sync-id-input').value.trim();
-    if (!newId) { showNotification('⚠️ Введите ID'); return; }
-
-    stopRealtimeSync();
-    userId = newId;
-    localStorage.setItem('workout_user_id', userId);
-
-    loadFromCloud(() => {
-        saveState(); // сохраним локально
-        startRealtimeSync();
-        refreshUI();
-        showNotification('✅ Синхронизация выполнена!');
+    const per=8;
+    ['push','pull','legs','full'].forEach(g=>{
+        const pct=Math.min(100,(cnt[g]/per)*100);
+        document.getElementById('pf-'+g).style.width=pct+'%';
+        document.getElementById('pr-'+g).textContent=cnt[g]+'/'+per;
     });
+
+    // Start date
+    const sd=state.startDate;
+    document.getElementById('start-date').value=`${sd.getFullYear()}-${String(sd.getMonth()+1).padStart(2,'0')}-${String(sd.getDate()).padStart(2,'0')}`;
+
+    // Sync
+    const st=document.getElementById('sync-st');
+    if(fbReady){st.textContent='🟢 Синхронизация активна';st.className='sync-status online';}
+    else{st.textContent='🔴 Локально (Firebase недоступен)';st.className='sync-status offline';}
+    document.getElementById('uid-display').value=uid;
 }
-
-function generateNewId() {
-    if (!confirm('Создать новый ID? Текущие облачные данные останутся на старом ID.')) return;
-
-    stopRealtimeSync();
-    userId = 'user_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
-    localStorage.setItem('workout_user_id', userId);
-
-    saveState();
-    startRealtimeSync();
-    refreshUI();
-    showNotification('🆕 Новый ID создан');
+function changeStart(){
+    const v=document.getElementById('start-date').value;
+    if(v){state.startDate=new Date(v+'T00:00:00');saveLocal();renderCalendar();renderSchedMonth();updateDash();notify('📅 Дата начала изменена');}
 }
-
-function changeStartDate() {
-    const val = document.getElementById('start-date-input').value;
-    if (val) {
-        state.startDate = new Date(val + 'T00:00:00');
-        saveState();
-        renderCalendar();
-        updateDashboard();
-        showNotification('📅 Дата начала изменена');
-    }
+function resetAll(){
+    if(!confirm('Сбросить все данные?'))return;
+    state.done={};saveLocal();refreshAll();notify('🗑️ Данные сброшены');
 }
+function refreshAll(){updateDash();renderCalendar();renderSchedMonth();}
 
-// ============================================================
-// ТАЙМЕР
-// ============================================================
-let timerSeconds = 90, timerInterval = null, timerRunning = false, timerInitial = 90;
-
-function updateTimerDisplay() {
-    const m = Math.floor(timerSeconds / 60);
-    const s = timerSeconds % 60;
-    const display = document.getElementById('timer-display');
-    display.textContent = String(m).padStart(2,'0') + ':' + String(s).padStart(2,'0');
-    display.style.color = timerSeconds <= 5 && timerSeconds > 0 ? '#ff6b6b' : timerSeconds === 0 ? '#95e35d' : '#4ecdc4';
+// ════════════════════════════════════════════════
+// TIMER
+// ════════════════════════════════════════════════
+let tSec=90,tInit=90,tInt=null,tRun=false;
+function tDisp(){
+    const m=Math.floor(tSec/60),s=tSec%60;
+    const el=document.getElementById('timer-disp');
+    el.textContent=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    el.style.color=tSec<=5&&tSec>0?'#ef4444':tSec===0?'#10b981':'var(--accent1)';
 }
-
-function startTimer() {
-    if (timerRunning) return;
-    if (timerSeconds <= 0) timerSeconds = timerInitial;
-    timerRunning = true;
-    document.getElementById('timer-start-btn').textContent = '⏳ Идёт...';
-
-    timerInterval = setInterval(() => {
-        timerSeconds--;
-        updateTimerDisplay();
-        if (timerSeconds <= 0) {
-            clearInterval(timerInterval);
-            timerRunning = false;
-            document.getElementById('timer-start-btn').textContent = '▶ Старт';
-            showNotification('⏰ Время вышло! Начинай подход!');
-            try {
-                const ctx = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = ctx.createOscillator();
-                const gain = ctx.createGain();
-                osc.connect(gain); gain.connect(ctx.destination);
-                osc.frequency.value = 800; gain.gain.value = 0.3;
-                osc.start();
-                setTimeout(() => { osc.stop(); ctx.close(); }, 500);
-            } catch(e) {}
+function tStart(){
+    if(tRun)return;if(tSec<=0)tSec=tInit;tRun=true;
+    document.getElementById('t-start').textContent='⏳ Идёт...';
+    tInt=setInterval(()=>{
+        tSec--;tDisp();
+        if(tSec<=0){clearInterval(tInt);tRun=false;document.getElementById('t-start').textContent='▶ Старт';
+            notify('⏰ Время вышло! Начинай подход!');
+            try{const a=new(window.AudioContext||window.webkitAudioContext)();const o=a.createOscillator();const g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=880;g.gain.value=0.2;o.start();setTimeout(()=>{o.stop();a.close();},400);}catch(e){}
         }
-    }, 1000);
+    },1000);
+}
+function tPause(){clearInterval(tInt);tRun=false;document.getElementById('t-start').textContent='▶ Старт';}
+function tReset(){clearInterval(tInt);tRun=false;tSec=tInit;document.getElementById('t-start').textContent='▶ Старт';tDisp();}
+function tSet(s){clearInterval(tInt);tRun=false;tSec=s;tInit=s;document.getElementById('t-start').textContent='▶ Старт';tDisp();}
+
+// ════════════════════════════════════════════════
+// BREATHING ANIMATION
+// ════════════════════════════════════════════════
+let breathInt=null,breathPhase='idle';
+function startBreath(){
+    if(breathInt)clearInterval(breathInt);
+    let phase=0;
+    const el=document.getElementById('breath-circle');
+    const ph=document.getElementById('breath-phase');
+    function cycle(){
+        if(phase===0){el.classList.remove('exhale');el.classList.add('inhale');el.textContent='Вдох';ph.textContent='Вдох — 5 секунд';}
+        else{el.classList.remove('inhale');el.classList.add('exhale');el.textContent='Выдох';ph.textContent='Выдох — 5 секунд';}
+        phase=1-phase;
+    }
+    cycle();
+    breathInt=setInterval(cycle,5000);
+}
+function stopBreath(){
+    if(breathInt)clearInterval(breathInt);breathInt=null;
+    const el=document.getElementById('breath-circle');
+    el.classList.remove('inhale','exhale');el.textContent='Готов';
+    document.getElementById('breath-phase').textContent='Нажми старт для начала';
 }
 
-function pauseTimer() {
-    clearInterval(timerInterval); timerRunning = false;
-    document.getElementById('timer-start-btn').textContent = '▶ Старт';
+// ════════════════════════════════════════════════
+// NOTIFICATION
+// ════════════════════════════════════════════════
+function notify(txt){
+    const el=document.getElementById('notif');el.textContent=txt;el.classList.add('show');
+    setTimeout(()=>el.classList.remove('show'),3000);
 }
 
-function resetTimer() {
-    clearInterval(timerInterval); timerRunning = false;
-    timerSeconds = timerInitial;
-    document.getElementById('timer-start-btn').textContent = '▶ Старт';
-    updateTimerDisplay();
-}
-
-function setTimer(sec) {
-    clearInterval(timerInterval); timerRunning = false;
-    timerSeconds = sec; timerInitial = sec;
-    document.getElementById('timer-start-btn').textContent = '▶ Старт';
-    updateTimerDisplay();
-}
-
-// ============================================================
-// УТИЛИТЫ
-// ============================================================
-function showNotification(text) {
-    const el = document.getElementById('notification');
-    el.textContent = text;
-    el.classList.add('show');
-    setTimeout(() => el.classList.remove('show'), 3000);
-}
-
-function refreshUI() {
-    updateDashboard();
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+(function init(){
+    loadLocal();
+    renderFoods();
+    renderBooks();
+    renderDailySchedule();
+    renderWeekly();
+    renderSchedMonth();
     renderCalendar();
-    ['arms','back','abs','legs'].forEach(renderWorkout);
-}
+    updateDash();
+    tDisp();
 
-function resetAllData() {
-    if (!confirm('Удалить все данные? Это нельзя отменить!')) return;
-    state.completedDays = {};
-    state.currentLevels = { arms: 0, back: 0, abs: 0, legs: 0 };
-    saveState();
-    refreshUI();
-    showNotification('🗑️ Данные сброшены');
-}
-
-// ============================================================
-// ИНИЦИАЛИЗАЦИЯ
-// ============================================================
-(function init() {
-    // Сначала загрузим локальные данные (быстро)
-    loadLocalState();
-    refreshUI();
-    updateTimerDisplay();
-
-    // Потом попробуем загрузить из облака
-    if (firebaseReady) {
-        loadFromCloud(() => {
-            refreshUI();
-            startRealtimeSync();
-            document.getElementById('loading-overlay').classList.add('hidden');
+    if(fbReady){
+        loadCloud(()=>{
+            refreshAll();
+            firebase.database().ref('users/'+uid).on('value',snap=>{
+                const d=snap.val();
+                if(d){state.done=d.done||{};if(d.startDate)state.startDate=new Date(d.startDate);}
+                refreshAll();
+            });
+            document.getElementById('loading').classList.add('done');
         });
     } else {
-        document.getElementById('loading-overlay').classList.add('hidden');
+        document.getElementById('loading').classList.add('done');
     }
-
-    // Убираем загрузку через 3 сек в любом случае
-    setTimeout(() => {
-        document.getElementById('loading-overlay').classList.add('hidden');
-    }, 3000);
+    setTimeout(()=>document.getElementById('loading').classList.add('done'),3000);
 })();
 </script>
-
 </body>
 </html>
