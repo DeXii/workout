@@ -692,48 +692,28 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <button class="it" onclick="sit('mn','jour')">📓 Дневник</button>
   </div>
   <div id="mn-hrv" class="itp active">
-<div class="grid-2">
-            <div class="card">
-                <h3 style="margin-bottom:12px;">🫀 Что такое HRV и почему это важно</h3>
-                <p style="font-size:.84em;color:var(--text2);line-height:1.7;">
-                    HRV (Heart Rate Variability) — вариабельность сердечного ритма. Это разброс между интервалами сердцебиений. <strong>Высокий HRV = гибкая нервная система</strong>, быстрое переключение между стрессом и покоем. По исследованию: именно этот показатель отражает «хладнокровие» Аянокоджи на физиологическом уровне.
-                </p>
-                <div class="hrv-info">
-                    <div class="hrv-item"><div class="hrv-num">4.5–6.5</div><div class="hrv-sub">вдохов/мин — резонансная частота дыхания</div></div>
-                    <div class="hrv-item"><div class="hrv-num">10–12 сек</div><div class="hrv-sub">на полный цикл вдох + выдох</div></div>
-                    <div class="hrv-item"><div class="hrv-num">10 мин</div><div class="hrv-sub">минимум практики для эффекта</div></div>
-                </div>
-            </div>
-            <div class="card" style="text-align:center;">
-                <h3 style="margin-bottom:16px;">🌬️ Резонансное дыхание</h3>
-                <div class="breath-anim" id="breath-circle">Готов</div>
-                <div id="breath-phase" style="font-size:.9em;margin-bottom:14px;color:var(--text2);">Нажми старт для начала</div>
-                <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
-                    <button class="btn btn-primary btn-sm" onclick="startBreath()">▶ Старт</button>
-                    <button class="btn btn-ghost btn-sm" onclick="stopBreath()">⏹ Стоп</button>
-                </div>
-                <p style="font-size:.78em;color:var(--text3);margin-top:12px;">5 сек вдох · 5 сек выдох · 5 мин = 30 циклов</p>
-            </div>
+    <div class="g2">
+      <div class="card">
+        <h3 style="margin-bottom:11px;">🫀 HRV — ключ к хладнокровию</h3>
+        <p style="font-size:.82em;color:var(--t2);line-height:1.65;">HRV — вариабельность сердечного ритма. <strong>Высокий HRV = гибкая нервная система</strong>. Именно это — физиологическая основа невозмутимости Аянокоджи. Тренируется через резонансное дыхание ежедневно.</p>
+        <div class="hrv-g">
+          <div class="hrvi"><div class="hv">4.5–6.5</div><div class="hs">вдохов/мин — резонанс</div></div>
+          <div class="hrvi"><div class="hv">10 мин</div><div class="hs">минимум для эффекта</div></div>
+          <div class="hrvi"><div class="hv">10 сек</div><div class="hs">полный цикл вдох+выдох</div></div>
         </div>
-
-        <div class="card" style="margin-top:16px;">
-            <h3 style="margin-bottom:14px;font-size:.95em;">📋 Протокол HRV-тренировки (утро)</h3>
-            <div class="grid-3">
-                <div style="background:var(--bg3);border-radius:10px;padding:14px;">
-                    <div style="font-size:.82em;font-weight:700;color:var(--accent3);">ШАГ 1 — Измерение (2 мин)</div>
-                    <p style="font-size:.78em;color:var(--text2);margin-top:8px;line-height:1.6;">Сразу после пробуждения, лёжа. Замерь HRV через приложение (Elite HRV, HRV4Training). Следи за трендом — важна динамика, не абсолютное число.</p>
-                </div>
-                <div style="background:var(--bg3);border-radius:10px;padding:14px;">
-                    <div style="font-size:.82em;font-weight:700;color:var(--accent1);">ШАГ 2 — Резонанс (10 мин)</div>
-                    <p style="font-size:.78em;color:var(--text2);margin-top:8px;line-height:1.6;">Резонансное дыхание: вдох 5 сек через нос, выдох 5 сек через рот. Сидя прямо. 10 минут. Фокус на области сердца (техника Quick Coherence, HeartMath).</p>
-                </div>
-                <div style="background:var(--bg3);border-radius:10px;padding:14px;">
-                    <div style="font-size:.82em;font-weight:700;color:var(--accent4);">ШАГ 3 — Якорение (3 мин)</div>
-                    <p style="font-size:.78em;color:var(--text2);margin-top:8px;line-height:1.6;">Намеренно вызови ощущение благодарности или спокойствия — зафиксируй это состояние. По исследованию это «якорит» парасимпатическое состояние на весь день.</p>
-                </div>
-            </div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <h3 style="margin-bottom:14px;">🌬️ Резонансное дыхание</h3>
+        <div class="breath-c" id="bc">Готов</div>
+        <div id="bp" style="font-size:.88em;margin-bottom:12px;color:var(--t2);">Нажми старт</div>
+        <div style="display:flex;gap:7px;justify-content:center;">
+          <button class="btn btn-p btn-sm" onclick="startB()">▶ Старт</button>
+          <button class="btn btn-gh btn-sm" onclick="stopB()">⏹ Стоп</button>
         </div>
+        <p style="font-size:.75em;color:var(--t3);margin-top:10px;">5 сек вдох · 5 сек выдох · 10 мин</p>
+      </div>
     </div>
+  </div>
   <div id="mn-med" class="itp">
     <div class="g2">
       <div class="card">
