@@ -3169,24 +3169,38 @@ async function saveACFT(){
   if(!fbOk){notify('⚠️ Нет подключения к Firebase');return;}
   await firebase.database().ref('users/'+uid+'/acft').push(d);
   notify('🎖️ ACFT результат сохранён!');
-  loadACFT();
+  // Очищаем форму
+  ['acft-deadlift','acft-throw','acft-hrpu','acft-sdc','acft-plank','acft-run'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  await loadACFT();
 }
 
 async function loadACFT(){
   if(!fbOk) return;
+
+  // ✅ ИСПРАВЛЕНО: orderByKey вместо orderByChild('date')
+  // Push-ключи Firebase уже упорядочены по времени создания — индекс не нужен
   const snap=await firebase.database().ref('users/'+uid+'/acft')
-    .orderByChild('date').limitToLast(5).once('value').catch(()=>null);
-  if(!snap) return;
+    .orderByKey().limitToLast(5).once('value').catch(()=>null);
+
+  if(!snap||!snap.exists()) return;
+
   const data=[];
-  snap.forEach(c=>data.push(c.val()));
+  snap.forEach(c=>{
+    const v=c.val();
+    if(v&&v.date) data.push({key:c.key,...v});
+  });
+
+  // Сортируем по дате (строки YYYY-MM-DD сортируются лексикографически корректно)
   data.sort((a,b)=>a.date.localeCompare(b.date));
 
+  // ── График (radar) ──
   const ctx=document.getElementById('acft-chart');
   if(!ctx) return;
   if(acftChartInst){acftChartInst.destroy();acftChartInst=null;}
 
   if(data.length>0){
-    // Normalize each metric to 0–100
     const norm=d=>[
       Math.min(100,d.deadlift/1.5),
       Math.min(100,d.throwM*8),
@@ -3221,17 +3235,24 @@ async function loadACFT(){
     });
   }
 
+  // ── История ──
   const histEl=document.getElementById('acft-history');
   if(!histEl) return;
-  if(data.length===0){histEl.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей.</p>';return;}
+
+  if(data.length===0){
+    histEl.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей. Пройди первый тест!</p>';
+    return;
+  }
 
   const fmt=secs=>secs?`${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`:'-';
+
+  // Показываем последние 3 — сначала самые новые
   histEl.innerHTML=data.slice(-3).reverse().map(d=>`
     <div style="background:var(--bg3);border-radius:9px;padding:10px 12px;margin-bottom:8px;">
       <div style="font-size:.8em;font-weight:700;color:var(--a4);margin-bottom:7px;">📅 ${d.date}</div>
       <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:.78em;">
-        ${d.deadlift?`<span style="background:rgba(124,58,237,.15);color:#a78bfa;padding:2px 8px;border-radius:4px;">🏋️ ${d.deadlift}кг</span>`:''}
-        ${d.throwM?`<span style="background:rgba(0,212,255,.12);color:var(--a1);padding:2px 8px;border-radius:4px;">🎯 ${d.throwM}м</span>`:''}
+        ${d.deadlift?`<span style="background:rgba(124,58,237,.15);color:#a78bfa;padding:2px 8px;border-radius:4px;">🏋️ ${d.deadlift}</span>`:''}
+        ${d.throwM?`<span style="background:rgba(0,212,255,.12);color:var(--a1);padding:2px 8px;border-radius:4px;">🎯 ${d.throwM}</span>`:''}
         ${d.hrpu?`<span style="background:rgba(16,185,129,.12);color:var(--a3);padding:2px 8px;border-radius:4px;">💪 ${d.hrpu}</span>`:''}
         ${d.sdc?`<span style="background:rgba(245,158,11,.12);color:var(--a4);padding:2px 8px;border-radius:4px;">⚡ ${fmt(d.sdc)}</span>`:''}
         ${d.plank?`<span style="background:rgba(99,102,241,.15);color:#a5b4fc;padding:2px 8px;border-radius:4px;">🧱 ${fmt(d.plank)}</span>`:''}
@@ -3239,6 +3260,7 @@ async function loadACFT(){
       </div>
     </div>`).join('');
 }
+
 
 // ── КОГНИТИВНЫЕ ИСКАЖЕНИЯ ──────────────────────
 const BIASES=[
