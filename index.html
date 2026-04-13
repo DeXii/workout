@@ -1596,7 +1596,12 @@ function sit(pfx,name){
   container.querySelectorAll('.itp').forEach(x=>x.classList.remove('active'));
   el.classList.add('active');
   container.querySelectorAll('.it').forEach(b=>{b.classList.toggle('active',b.getAttribute('onclick').includes("'"+name+"'"));});
-  if(name==='jour')loadJournalHistory();
+  if(name==='jour'){
+  const jd=document.getElementById('jour-date');
+  if(jd) jd.value=dKey(new Date()); // всегда обновляем дату на сегодня
+  loadJournalForDate(dKey(new Date())); // загружаем запись за сегодня если есть
+  loadJournalHistory();
+}
 if(name==='tracker')loadMentalTracker();
 }
 
@@ -3380,6 +3385,22 @@ async function loadMentalTracker(){
 }
 
 // ── JOURNAL ────────────────────────────────────
+
+// ✅ ГЛОБАЛЬНАЯ функция (не внутри saveJournal!)
+async function loadJournalForDate(date){
+  if(!fbOk||!date){clearJournal();return;}
+  const snap=await firebase.database().ref('users/'+uid+'/journal/'+date)
+    .once('value').catch(()=>null);
+  if(!snap||!snap.exists()||!snap.val()){
+    clearJournal();
+    return;
+  }
+  const e=snap.val();
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
+  set('j1',e.q1);set('j2',e.q2);set('j3',e.q3);set('j4',e.q4);set('j5',e.q5);
+  const bs=document.getElementById('j3-bias');if(bs)bs.value=e.q3bias||'';
+}
+
 async function saveJournal(){
   const date=document.getElementById('jour-date').value||dKey(new Date());
   const d={
@@ -3395,8 +3416,11 @@ async function saveJournal(){
   if(!d.q1&&!d.q5){notify('⚠️ Заполни хотя бы 1-й и 5-й вопросы');return;}
   if(!fbOk){notify('⚠️ Нет Firebase');return;}
   await firebase.database().ref('users/'+uid+'/journal/'+date).set(d);
-  notify('📓 Запись сохранена!');
-  loadJournalHistory();
+  notify('📓 Запись за '+date+' сохранена!');
+  clearJournal();
+  const jd=document.getElementById('jour-date');
+  if(jd) jd.value=dKey(new Date());
+  await loadJournalHistory();
 }
 
 function clearJournal(){
@@ -3406,14 +3430,24 @@ function clearJournal(){
 
 async function loadJournalHistory(){
   if(!fbOk)return;
-  const snap=await firebase.database().ref('users/'+uid+'/journal')
-    .orderByKey().limitToLast(7).once('value').catch(()=>null);
   const el=document.getElementById('jour-history');if(!el)return;
-  if(!snap){el.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей.</p>';return;}
+  el.innerHTML='<p style="font-size:.82em;color:var(--t3);">⏳ Загрузка...</p>';
+  const snap=await firebase.database().ref('users/'+uid+'/journal')
+    .orderByKey().limitToLast(30).once('value').catch(()=>null);
+  if(!snap||!snap.exists()){
+    el.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей. Напиши первую!</p>';
+    return;
+  }
   const entries=[];
-  snap.forEach(c=>entries.push(c.val()));
+  snap.forEach(c=>{
+    const v=c.val();
+    if(v&&v.date) entries.push(v);
+  });
   entries.sort((a,b)=>b.date.localeCompare(a.date));
-  if(entries.length===0){el.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей.</p>';return;}
+  if(entries.length===0){
+    el.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей. Напиши первую!</p>';
+    return;
+  }
   el.innerHTML=entries.map(e=>`
     <div style="background:var(--bg3);border-radius:9px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;"
          onclick="this.querySelector('.jour-body').style.display=this.querySelector('.jour-body').style.display==='none'?'block':'none'">
@@ -3423,18 +3457,24 @@ async function loadJournalHistory(){
       </div>
       ${e.q5?`<div style="font-size:.78em;color:var(--a3);">💚 ${e.q5.slice(0,60)}${e.q5.length>60?'...':''}</div>`:''}
       <div class="jour-body" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--brd);">
-        ${e.q1?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a5);margin-bottom:2px;">❌ Что не так:</div><div style="font-size:.8em;color:var(--t2);">${e.q1}</div></div>`:''} 
-        ${e.q3bias&&e.q3bias!=='— Выбери из списка —'?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a2);margin-bottom:2px;">🧠 Искажение: ${e.q3bias}</div>${e.q3?`<div style="font-size:.8em;color:var(--t2);">${e.q3}</div>`:''}</div>`:''}
+        ${e.q1?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a5);margin-bottom:2px;">❌ Что не так:</div><div style="font-size:.8em;color:var(--t2);">${e.q1}</div></div>`:''}
+        ${e.q2?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a4);margin-bottom:2px;">🤔 Решение:</div><div style="font-size:.8em;color:var(--t2);">${e.q2}</div></div>`:''}
+        ${e.q3bias&&e.q3bias!=='— Выбери из списка —'&&e.q3bias!==''?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a2);margin-bottom:2px;">🧠 Искажение: ${e.q3bias}</div>${e.q3?`<div style="font-size:.8em;color:var(--t2);">${e.q3}</div>`:''}</div>`:''}
         ${e.q4?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a3);margin-bottom:2px;">✅ Сделаю иначе:</div><div style="font-size:.8em;color:var(--t2);">${e.q4}</div></div>`:''}
         ${e.q5?`<div><div style="font-size:.72em;color:var(--a1);margin-bottom:2px;">💙 Благодарность:</div><div style="font-size:.8em;color:var(--t2);">${e.q5}</div></div>`:''}
       </div>
     </div>`).join('');
 }
 
-// Инициализация журнала при открытии вкладки
+// Инициализация журнала — дата и listener на смену даты
 (function(){
   const jd=document.getElementById('jour-date');
-  if(jd&&!jd.value)jd.value=dKey(new Date());
+  if(jd){
+    jd.value=dKey(new Date());
+    jd.addEventListener('change',function(){
+      loadJournalForDate(this.value);
+    });
+  }
 })();
 
 // ── MEDITATION TIMER ────────────────────────────
