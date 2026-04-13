@@ -891,6 +891,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <button class="it" onclick="sit('mn','jour')">📓 Дневник</button>
 	<button class="it" onclick="sit('mn','qct')">💚 QCT</button>
 	<button class="it" onclick="sit('mn','biases');renderBiases()">🧠 Искажения</button>
+	<button class="it" onclick="sit('mn','tracker');loadMentalTracker()">📊 Трекер</button>
   </div>
   <div id="mn-hrv" class="itp active">
     <div class="g2">
@@ -923,6 +924,20 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
         <div class="tip"><div class="tipico">🌅</div><div><strong style="font-size:.82em;">Утро (10 мин):</strong><br><span style="font-size:.78em;color:var(--t2);">Фокус на дыхании. Мысль появилась — заметь без оценки, вернись к дыханию.</span></div></div>
         <div class="tip"><div class="tipico">⚡</div><div><strong style="font-size:.82em;">Ментальный скан (5 мин перед стрессом):</strong><br><span style="font-size:.78em;color:var(--t2);">С головы до ног. Замечай напряжение. Диафрагмальное дыхание.</span></div></div>
         <div class="tip"><div class="tipico">🌙</div><div><strong style="font-size:.82em;">Вечер — ПМР (10 мин):</strong><br><span style="font-size:.78em;color:var(--t2);">Прогрессивная мышечная релаксация.</span></div></div>
+		<hr class="divider" style="margin:14px 0;">
+<h4 style="font-size:.85em;margin-bottom:10px;color:var(--a2);">⏱️ Таймер медитации</h4>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+  <button class="btn btn-gh btn-sm" onclick="setMedTimer(300)">5 мин</button>
+  <button class="btn btn-gh btn-sm" onclick="setMedTimer(600)">10 мин</button>
+  <button class="btn btn-gh btn-sm" onclick="setMedTimer(900)">15 мин</button>
+  <button class="btn btn-gh btn-sm" onclick="setMedTimer(1200)">20 мин</button>
+</div>
+<div id="med-timer-disp" style="font-size:2.5em;font-weight:800;font-family:'Courier New',monospace;color:var(--a2);margin-bottom:10px;text-align:center;">10:00</div>
+<div style="display:flex;gap:7px;justify-content:center;">
+  <button class="btn btn-v btn-sm" id="med-start-btn" onclick="startMedTimer()">▶ Начать</button>
+  <button class="btn btn-gh btn-sm" onclick="resetMedTimer()">⟲ Сброс</button>
+</div>
+<div id="med-status" style="font-size:.78em;color:var(--t3);text-align:center;margin-top:8px;">Выбери длительность</div>
       </div>
 <div class="card" style="text-align:center;">
   <h3 style="margin-bottom:11px;">📦 Box Breathing</h3>
@@ -955,19 +970,73 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <div class="card card-sm"><h3 style="font-size:.88em;margin-bottom:7px;">🔄 Когнит. гибкость</h3><p style="font-size:.8em;color:var(--t2);">Анализ после партии: когда план устарел? Дневник ошибок мышления.</p></div>
     </div>
   </div>
-  <div id="mn-jour" class="itp">
+<div id="mn-jour" class="itp">
+  <div class="g2">
+    <!-- Форма ввода -->
     <div class="card">
-      <h3 style="margin-bottom:11px;">📓 Метапознавательный дневник (10 мин перед сном)</h3>
-      <div style="background:var(--bg3);border-radius:9px;padding:13px;margin-top:10px;">
-        <div style="font-size:.82em;font-weight:700;margin-bottom:9px;color:var(--a4);">5 вопросов каждый вечер:</div>
-        <div class="tip"><div class="tipico">1️⃣</div><div style="font-size:.8em;color:var(--t2);">Что пошло <strong>не так</strong>? Почему?</div></div>
-        <div class="tip"><div class="tipico">2️⃣</div><div style="font-size:.8em;color:var(--t2);">Какое решение принял? На каком <strong>основании</strong>?</div></div>
-        <div class="tip"><div class="tipico">3️⃣</div><div style="font-size:.8em;color:var(--t2);">Какое <strong>когнитивное искажение</strong> сработало?</div></div>
-        <div class="tip"><div class="tipico">4️⃣</div><div style="font-size:.8em;color:var(--t2);">Что сделаю <strong>иначе</strong>?</div></div>
-        <div class="tip"><div class="tipico">5️⃣</div><div style="font-size:.8em;color:var(--t2);">За что <strong>благодарен</strong> сегодня? (HRV)</div></div>
+      <h3 style="margin-bottom:11px;">📓 Метапознавательный дневник</h3>
+      <p style="font-size:.8em;color:var(--t2);margin-bottom:14px;">10 мин перед сном · 5 вопросов · Синхронизируется через Firebase</p>
+
+      <div id="jour-date-row" style="margin-bottom:12px;">
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">📅 Дата</label>
+        <input type="date" id="jour-date" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div>
+          <div style="font-size:.8em;font-weight:700;color:var(--a5);margin-bottom:4px;">1️⃣ Что пошло <strong>не так</strong>? Почему?</div>
+          <textarea id="j1" placeholder="Опиши ситуацию и причину..." style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:9px 11px;border-radius:8px;font-size:.83em;width:100%;min-height:64px;resize:vertical;font-family:inherit;line-height:1.5;"></textarea>
+        </div>
+        <div>
+          <div style="font-size:.8em;font-weight:700;color:var(--a4);margin-bottom:4px;">2️⃣ Какое решение принял? На каком <strong>основании</strong>?</div>
+          <textarea id="j2" placeholder="Что выбрал и почему именно так..." style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:9px 11px;border-radius:8px;font-size:.83em;width:100%;min-height:64px;resize:vertical;font-family:inherit;line-height:1.5;"></textarea>
+        </div>
+        <div>
+          <div style="font-size:.8em;font-weight:700;color:var(--a2);margin-bottom:4px;">3️⃣ Какое <strong>когнитивное искажение</strong> сработало?</div>
+          <select id="j3-bias" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.83em;width:100%;margin-bottom:6px;">
+            <option value="">— Выбери из списка —</option>
+            <option>⚓ Эффект якоря</option>
+            <option>🔍 Предвзятость подтверждения</option>
+            <option>🏆 Ошибка выживаемости</option>
+            <option>📈 Эффект Даннинга-Крюгера</option>
+            <option>😇 Эффект ореола</option>
+            <option>🎮 Иллюзия контроля</option>
+            <option>📅 Ошибка планирования</option>
+            <option>🎲 Ошибка игрока</option>
+            <option>⬛ Чёрно-белое мышление</option>
+            <option>👥 Групповое мышление</option>
+            <option>🔧 Эффект IKEA</option>
+            <option>🚫 Реактивное сопротивление</option>
+            <option>📢 Каскад информации</option>
+            <option>🧩 Туннельное зрение</option>
+            <option value="none">✅ Не выявлено</option>
+          </select>
+          <textarea id="j3" placeholder="Как оно проявилось..." style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:9px 11px;border-radius:8px;font-size:.83em;width:100%;min-height:50px;resize:vertical;font-family:inherit;line-height:1.5;"></textarea>
+        </div>
+        <div>
+          <div style="font-size:.8em;font-weight:700;color:var(--a3);margin-bottom:4px;">4️⃣ Что сделаю <strong>иначе</strong>?</div>
+          <textarea id="j4" placeholder="Конкретный план на следующий раз..." style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:9px 11px;border-radius:8px;font-size:.83em;width:100%;min-height:64px;resize:vertical;font-family:inherit;line-height:1.5;"></textarea>
+        </div>
+        <div>
+          <div style="font-size:.8em;font-weight:700;color:var(--a1);margin-bottom:4px;">5️⃣ За что <strong>благодарен</strong> сегодня?</div>
+          <textarea id="j5" placeholder="3 вещи, которые были хорошими..." style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:9px 11px;border-radius:8px;font-size:.83em;width:100%;min-height:64px;resize:vertical;font-family:inherit;line-height:1.5;"></textarea>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-g" onclick="saveJournal()">💾 Сохранить запись</button>
+        <button class="btn btn-gh btn-sm" onclick="clearJournal()">🗑️ Очистить</button>
       </div>
     </div>
+
+    <!-- История записей -->
+    <div class="card">
+      <h3 style="margin-bottom:11px;">📚 История записей</h3>
+      <div id="jour-history"><p style="font-size:.82em;color:var(--t2);">Нет записей. Напиши первую!</p></div>
+    </div>
   </div>
+</div>
+
   <!-- ── QCT TAB ── -->
 <div id="mn-qct" class="itp">
   <div class="g2">
@@ -1017,6 +1086,53 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;color:var(--t1);font-size:.85em;box-sizing:border-box;">
   </div>
   <div id="bias-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;"></div>
+</div>
+<!-- ── MENTAL TRACKER TAB ── -->
+<div id="mn-tracker" class="itp">
+
+  <!-- Сегодняшние практики -->
+  <div class="card" style="margin-bottom:14px;">
+    <h3 style="margin-bottom:14px;">✅ Сегодняшние практики</h3>
+    <p style="font-size:.8em;color:var(--t2);margin-bottom:14px;">Отмечай по мере выполнения. Синхронизируется с Firebase.</p>
+    <div id="mt-today" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">
+      <!-- инжектируется JS -->
+    </div>
+    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-g btn-sm" onclick="saveMentalDay()">💾 Сохранить день</button>
+    </div>
+  </div>
+
+  <!-- Статистика -->
+  <div class="g2" style="margin-bottom:14px;">
+    <div class="card" style="text-align:center;">
+      <h4 style="font-size:.88em;margin-bottom:12px;color:var(--a1);">🔥 Серия практик</h4>
+      <div id="mt-streak" style="font-size:3em;font-weight:800;color:var(--a3);">0</div>
+      <div style="font-size:.78em;color:var(--t2);margin-top:4px;">дней подряд (хотя бы 1 практика)</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <h4 style="font-size:.88em;margin-bottom:12px;color:var(--a4);">📅 Этот месяц</h4>
+      <div id="mt-month" style="font-size:3em;font-weight:800;color:var(--a4);">0</div>
+      <div style="font-size:.78em;color:var(--t2);margin-top:4px;">практик всего</div>
+    </div>
+  </div>
+
+  <!-- Тепловая карта последних 28 дней -->
+  <div class="card" style="margin-bottom:14px;">
+    <h4 style="font-size:.88em;margin-bottom:12px;">📆 Активность за 28 дней</h4>
+    <div id="mt-heatmap" style="display:grid;grid-template-columns:repeat(7,1fr);gap:5px;"></div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;">
+      <div style="display:flex;align-items:center;gap:5px;font-size:.75em;color:var(--t2);"><div style="width:10px;height:10px;border-radius:3px;background:rgba(255,255,255,.06);"></div>0</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:.75em;color:var(--t2);"><div style="width:10px;height:10px;border-radius:3px;background:rgba(16,185,129,.3);"></div>1–2</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:.75em;color:var(--t2);"><div style="width:10px;height:10px;border-radius:3px;background:rgba(16,185,129,.6);"></div>3</div>
+      <div style="display:flex;align-items:center;gap:5px;font-size:.75em;color:var(--t2);"><div style="width:10px;height:10px;border-radius:3px;background:#10b981;"></div>4 ✓</div>
+    </div>
+  </div>
+
+  <!-- История последних дней -->
+  <div class="card">
+    <h4 style="font-size:.88em;margin-bottom:12px;">📋 История (последние 7 дней)</h4>
+    <div id="mt-history"><p style="font-size:.82em;color:var(--t2);">Нет данных.</p></div>
+  </div>
 </div>
 </div>
 
@@ -1480,6 +1596,8 @@ function sit(pfx,name){
   container.querySelectorAll('.itp').forEach(x=>x.classList.remove('active'));
   el.classList.add('active');
   container.querySelectorAll('.it').forEach(b=>{b.classList.toggle('active',b.getAttribute('onclick').includes("'"+name+"'"));});
+  if(name==='jour')loadJournalHistory();
+if(name==='tracker')loadMentalTracker();
 }
 
 // Swipes
@@ -3147,6 +3265,233 @@ function renderBiases(filter){
       }
     });
   });
+}
+
+// ── MENTAL TRACKER ─────────────────────────────
+const MT_PRACTICES=[
+  {id:'hrv',   label:'🫀 HRV & Дыхание',    desc:'Резонансное дыхание ≥10 мин', color:'#00d4ff'},
+  {id:'med',   label:'🧘 Медитация',         desc:'MMFT/QCT/Box Breathing',       color:'#7c3aed'},
+  {id:'chess', label:'♟️ Шахматы',           desc:'Тактика + партия + анализ',    color:'#f59e0b'},
+  {id:'jour',  label:'📓 Дневник',           desc:'5 вопросов рефлексии',          color:'#10b981'},
+];
+
+let mtChecked={};
+
+function buildMentalTodayUI(){
+  const el=document.getElementById('mt-today');
+  if(!el)return;
+  el.innerHTML=MT_PRACTICES.map(p=>`
+    <label style="background:var(--bg3);border:2px solid ${mtChecked[p.id]?p.color:'var(--brd)'};border-radius:12px;padding:14px;cursor:pointer;transition:all .2s;display:block;">
+      <input type="checkbox" id="mt-cb-${p.id}" ${mtChecked[p.id]?'checked':''} onchange="mtToggle('${p.id}')" style="display:none;">
+      <div style="display:flex;align-items:center;gap:10px;">
+        <div style="width:24px;height:24px;border-radius:50%;background:${mtChecked[p.id]?p.color:'rgba(255,255,255,.08)'};display:flex;align-items:center;justify-content:center;font-size:.82em;flex-shrink:0;transition:all .2s;">${mtChecked[p.id]?'✓':''}</div>
+        <div>
+          <div style="font-weight:700;font-size:.88em;">${p.label}</div>
+          <div style="font-size:.74em;color:var(--t2);margin-top:2px;">${p.desc}</div>
+        </div>
+      </div>
+    </label>`).join('');
+}
+
+function mtToggle(id){
+  mtChecked[id]=!mtChecked[id];
+  buildMentalTodayUI();
+}
+
+async function saveMentalDay(){
+  const today=dKey(new Date());
+  const count=Object.values(mtChecked).filter(Boolean).length;
+  if(count===0){notify('⚠️ Отметь хотя бы одну практику');return;}
+  if(!fbOk){notify('⚠️ Нет Firebase');return;}
+  await firebase.database().ref('users/'+uid+'/mental/'+today).set({...mtChecked,ts:Date.now()});
+  notify(`✅ Сохранено: ${count}/4 практик`);
+  loadMentalTracker();
+}
+
+async function loadMentalTracker(){
+  const today=dKey(new Date());
+  // load today's data
+  if(fbOk){
+    const snap=await firebase.database().ref('users/'+uid+'/mental/'+today).once('value').catch(()=>null);
+    if(snap&&snap.val()){const d=snap.val();MT_PRACTICES.forEach(p=>{mtChecked[p.id]=!!d[p.id];});}
+    else{mtChecked={};}
+  }
+  buildMentalTodayUI();
+
+  if(!fbOk)return;
+  // load last 30 days
+  const snap30=await firebase.database().ref('users/'+uid+'/mental')
+    .orderByKey().limitToLast(30).once('value').catch(()=>null);
+  const data30={};
+  if(snap30)snap30.forEach(c=>{data30[c.key]=c.val();});
+
+  // Streak
+  let streak=0;
+  const now=new Date();now.setHours(0,0,0,0);
+  for(let i=0;i<30;i++){
+    const d=new Date(now);d.setDate(now.getDate()-i);
+    const k=dKey(d);
+    if(data30[k]&&Object.values(data30[k]).some(v=>v===true))streak++;
+    else break;
+  }
+  const stEl=document.getElementById('mt-streak');if(stEl)stEl.textContent=streak;
+
+  // Month count
+  let monthCount=0;
+  Object.values(data30).forEach(d=>{if(d)monthCount+=Object.values(d).filter(v=>v===true).length;});
+  const mcEl=document.getElementById('mt-month');if(mcEl)mcEl.textContent=monthCount;
+
+  // Heatmap 28 days
+  const hmEl=document.getElementById('mt-heatmap');
+  if(hmEl){
+    hmEl.innerHTML='';
+    for(let i=27;i>=0;i--){
+      const d=new Date(now);d.setDate(now.getDate()-i);
+      const k=dKey(d);
+      const cnt=data30[k]?Object.values(data30[k]).filter(v=>v===true).length:0;
+      const isToday=i===0;
+      const bg=cnt===0?'rgba(255,255,255,.06)':cnt<=2?'rgba(16,185,129,.3)':cnt===3?'rgba(16,185,129,.6)':'#10b981';
+      const cell=document.createElement('div');
+      cell.style.cssText=`aspect-ratio:1;border-radius:5px;background:${bg};${isToday?'outline:2px solid var(--a1);':''} cursor:default;`;
+      cell.title=`${k}: ${cnt}/4 практик`;
+      hmEl.appendChild(cell);
+    }
+  }
+
+  // History
+  const histEl=document.getElementById('mt-history');
+  if(histEl){
+    const days=Object.keys(data30).sort().reverse().slice(0,7);
+    if(days.length===0){histEl.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет данных.</p>';return;}
+    histEl.innerHTML=days.map(k=>{
+      const d=data30[k];
+      const done=MT_PRACTICES.filter(p=>d&&d[p.id]);
+      const pct=Math.round(done.length/4*100);
+      return`<div style="padding:9px 0;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:.8em;color:var(--t3);min-width:80px;">${k.slice(5)}</span>
+        <div style="flex:1;background:rgba(255,255,255,.06);border-radius:4px;height:7px;overflow:hidden;">
+          <div style="width:${pct}%;height:100%;background:${pct===100?'#10b981':'var(--a1)'};border-radius:4px;"></div>
+        </div>
+        <span style="font-size:.78em;color:${pct===100?'var(--a3)':'var(--t2)'};">${done.length}/4</span>
+        <span style="font-size:.75em;">${done.map(p=>p.label.split(' ')[0]).join(' ')}</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ── JOURNAL ────────────────────────────────────
+async function saveJournal(){
+  const date=document.getElementById('jour-date').value||dKey(new Date());
+  const d={
+    date,
+    q1:document.getElementById('j1').value,
+    q2:document.getElementById('j2').value,
+    q3bias:document.getElementById('j3-bias').value,
+    q3:document.getElementById('j3').value,
+    q4:document.getElementById('j4').value,
+    q5:document.getElementById('j5').value,
+    ts:Date.now()
+  };
+  if(!d.q1&&!d.q5){notify('⚠️ Заполни хотя бы 1-й и 5-й вопросы');return;}
+  if(!fbOk){notify('⚠️ Нет Firebase');return;}
+  await firebase.database().ref('users/'+uid+'/journal/'+date).set(d);
+  notify('📓 Запись сохранена!');
+  loadJournalHistory();
+}
+
+function clearJournal(){
+  ['j1','j2','j3','j4','j5'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  const bs=document.getElementById('j3-bias');if(bs)bs.value='';
+}
+
+async function loadJournalHistory(){
+  if(!fbOk)return;
+  const snap=await firebase.database().ref('users/'+uid+'/journal')
+    .orderByKey().limitToLast(7).once('value').catch(()=>null);
+  const el=document.getElementById('jour-history');if(!el)return;
+  if(!snap){el.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей.</p>';return;}
+  const entries=[];
+  snap.forEach(c=>entries.push(c.val()));
+  entries.sort((a,b)=>b.date.localeCompare(a.date));
+  if(entries.length===0){el.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей.</p>';return;}
+  el.innerHTML=entries.map(e=>`
+    <div style="background:var(--bg3);border-radius:9px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;"
+         onclick="this.querySelector('.jour-body').style.display=this.querySelector('.jour-body').style.display==='none'?'block':'none'">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+        <span style="font-weight:700;font-size:.85em;color:var(--a4);">📅 ${e.date}</span>
+        <span style="font-size:.72em;color:var(--t3);">▼ развернуть</span>
+      </div>
+      ${e.q5?`<div style="font-size:.78em;color:var(--a3);">💚 ${e.q5.slice(0,60)}${e.q5.length>60?'...':''}</div>`:''}
+      <div class="jour-body" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--brd);">
+        ${e.q1?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a5);margin-bottom:2px;">❌ Что не так:</div><div style="font-size:.8em;color:var(--t2);">${e.q1}</div></div>`:''} 
+        ${e.q3bias&&e.q3bias!=='— Выбери из списка —'?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a2);margin-bottom:2px;">🧠 Искажение: ${e.q3bias}</div>${e.q3?`<div style="font-size:.8em;color:var(--t2);">${e.q3}</div>`:''}</div>`:''}
+        ${e.q4?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a3);margin-bottom:2px;">✅ Сделаю иначе:</div><div style="font-size:.8em;color:var(--t2);">${e.q4}</div></div>`:''}
+        ${e.q5?`<div><div style="font-size:.72em;color:var(--a1);margin-bottom:2px;">💙 Благодарность:</div><div style="font-size:.8em;color:var(--t2);">${e.q5}</div></div>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// Инициализация журнала при открытии вкладки
+(function(){
+  const jd=document.getElementById('jour-date');
+  if(jd&&!jd.value)jd.value=dKey(new Date());
+})();
+
+// ── MEDITATION TIMER ────────────────────────────
+let medTime=600,medRunning=false,medInt=null;
+
+function medDisp(s){
+  const m=Math.floor(s/60),sec=s%60;
+  const el=document.getElementById('med-timer-disp');
+  if(el)el.textContent=`${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function setMedTimer(s){resetMedTimer();medTime=s;medDisp(s);}
+
+function startMedTimer(){
+  if(medRunning)return;
+  if(medTime<=0){notify('⚠️ Выбери длительность');return;}
+  medRunning=true;
+  const btn=document.getElementById('med-start-btn');
+  if(btn)btn.textContent='⏸ Пауза';
+  const st=document.getElementById('med-status');
+  if(st)st.textContent='🧘 Медитируй...';
+  medInt=setInterval(()=>{
+    medTime--;medDisp(medTime);
+    if(medTime<=0){
+      clearInterval(medInt);medRunning=false;
+      if(btn)btn.textContent='▶ Начать';
+      if(st)st.textContent='✅ Завершено!';
+      medBell();
+      notify('🔔 Медитация завершена!');
+    }
+  },1000);
+}
+
+function resetMedTimer(){
+  clearInterval(medInt);medRunning=false;
+  const btn=document.getElementById('med-start-btn');
+  if(btn)btn.textContent='▶ Начать';
+  const st=document.getElementById('med-status');
+  if(st)st.textContent='Выбери длительность';
+  medTime=600;medDisp(600);
+}
+
+function medBell(){
+  try{
+    const ctx=new(window.AudioContext||window.webkitAudioContext)();
+    // Тибетская чаша — синусоидальный тон с затуханием
+    [0,0.3,0.6].forEach(delay=>{
+      const osc=ctx.createOscillator();
+      const gain=ctx.createGain();
+      osc.connect(gain);gain.connect(ctx.destination);
+      osc.type='sine';osc.frequency.value=432;
+      gain.gain.setValueAtTime(0.5,ctx.currentTime+delay);
+      gain.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+delay+2.5);
+      osc.start(ctx.currentTime+delay);
+      osc.stop(ctx.currentTime+delay+2.5);
+    });
+  }catch(e){console.log('Audio not supported');}
 }
 
 </script>
