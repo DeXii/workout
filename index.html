@@ -601,7 +601,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:13px;overflow:hidden;">
       <div style="padding:14px 18px;background:rgba(124,58,237,.06);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
         <div>
-          <div style="font-size:1em;font-weight:700;">🟣 Тренировка A — Push · Понедельник / возможно Пятница</div>
+          <div style="font-size:1em;font-weight:700;">🟣 Тренировка A — Push · Понедельник</div>
           <div style="font-size:.8em;color:var(--t2);margin-top:3px;">Брусья · Отжимания · Pike push-up | ~45–55 мин (ПОСЛЕ работы 18:30)</div>
         </div>
         <button class="btn btn-v btn-sm" onclick="startWorkoutMode('push')">▶ Начать тренировку</button>
@@ -889,6 +889,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <button class="it" onclick="sit('mn','med')">🧘 Медитация</button>
     <button class="it" onclick="sit('mn','chess')">♟️ Шахматы</button>
     <button class="it" onclick="sit('mn','jour')">📓 Дневник</button>
+	<button class="it" onclick="sit('mn','qct')">💚 QCT</button>
+	<button class="it" onclick="sit('mn','biases');renderBiases()">🧠 Искажения</button>
   </div>
   <div id="mn-hrv" class="itp active">
     <div class="g2">
@@ -922,16 +924,24 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
         <div class="tip"><div class="tipico">⚡</div><div><strong style="font-size:.82em;">Ментальный скан (5 мин перед стрессом):</strong><br><span style="font-size:.78em;color:var(--t2);">С головы до ног. Замечай напряжение. Диафрагмальное дыхание.</span></div></div>
         <div class="tip"><div class="tipico">🌙</div><div><strong style="font-size:.82em;">Вечер — ПМР (10 мин):</strong><br><span style="font-size:.78em;color:var(--t2);">Прогрессивная мышечная релаксация.</span></div></div>
       </div>
-      <div class="card">
-        <h3 style="margin-bottom:11px;">🔢 Box Breathing (4-4-4-4)</h3>
-        <p style="font-size:.82em;color:var(--t2);margin-bottom:12px;">Техника US Navy SEALs. 4–6 циклов = 2 мин для снятия острого стресса.</p>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;">
-          <div style="background:rgba(0,212,255,.07);border-radius:9px;padding:12px;text-align:center;border:1px solid rgba(0,212,255,.18);"><div style="font-size:1.3em;font-weight:800;color:var(--a1);">4 сек</div><div style="font-size:.73em;color:var(--t2);">Вдох через нос</div></div>
-          <div style="background:rgba(124,58,237,.07);border-radius:9px;padding:12px;text-align:center;border:1px solid rgba(124,58,237,.18);"><div style="font-size:1.3em;font-weight:800;color:var(--a2);">4 сек</div><div style="font-size:.73em;color:var(--t2);">Задержка</div></div>
-          <div style="background:rgba(16,185,129,.07);border-radius:9px;padding:12px;text-align:center;border:1px solid rgba(16,185,129,.18);"><div style="font-size:1.3em;font-weight:800;color:var(--a3);">4 сек</div><div style="font-size:.73em;color:var(--t2);">Выдох через рот</div></div>
-          <div style="background:rgba(245,158,11,.07);border-radius:9px;padding:12px;text-align:center;border:1px solid rgba(245,158,11,.18);"><div style="font-size:1.3em;font-weight:800;color:var(--a4);">4 сек</div><div style="font-size:.73em;color:var(--t2);">Задержка на выдохе</div></div>
-        </div>
-      </div>
+<div class="card" style="text-align:center;">
+  <h3 style="margin-bottom:11px;">📦 Box Breathing</h3>
+  <p style="font-size:.8em;color:var(--t2);margin-bottom:14px;">Метод спецназа США · 4-4-4-4 сек · Применяй после спринтов и перед стрессом</p>
+  <div id="box-circle" class="breath-c">
+    <span id="box-count" style="font-size:1.3em;font-weight:800;color:var(--a1);"></span>
+  </div>
+  <div id="box-label" style="font-size:.88em;color:var(--t2);margin-bottom:8px;">Готов к старту</div>
+  <div id="box-rounds" style="font-size:.75em;color:var(--t3);margin-bottom:14px;">Циклов: 0</div>
+  <div style="display:flex;gap:7px;justify-content:center;margin-bottom:14px;">
+    <button id="box-btn" class="btn btn-p btn-sm" onclick="startBoxB()">▶ Старт</button>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;">
+    <div style="background:var(--bg3);border-radius:7px;padding:8px 4px;font-size:.72em;color:var(--t2);text-align:center;">📥<br>Вдох<br><strong style="color:var(--a1);">4 сек</strong></div>
+    <div style="background:var(--bg3);border-radius:7px;padding:8px 4px;font-size:.72em;color:var(--t2);text-align:center;">⏸️<br>Задержка<br><strong style="color:var(--a4);">4 сек</strong></div>
+    <div style="background:var(--bg3);border-radius:7px;padding:8px 4px;font-size:.72em;color:var(--t2);text-align:center;">📤<br>Выдох<br><strong style="color:var(--a1);">4 сек</strong></div>
+    <div style="background:var(--bg3);border-radius:7px;padding:8px 4px;font-size:.72em;color:var(--t2);text-align:center;">⏸️<br>Задержка<br><strong style="color:var(--a4);">4 сек</strong></div>
+  </div>
+</div>
     </div>
   </div>
   <div id="mn-chess" class="itp">
@@ -958,6 +968,56 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       </div>
     </div>
   </div>
+  <!-- ── QCT TAB ── -->
+<div id="mn-qct" class="itp">
+  <div class="g2">
+    <div class="card">
+      <h3 style="margin-bottom:11px;">💚 Quick Coherence Technique</h3>
+      <p style="font-size:.82em;color:var(--t2);line-height:1.65;margin-bottom:14px;">Метод HeartMath · 3–5 минут · Снижает кортизол · Восстанавливает ясность. Применяй перед важными решениями, после стрессовых ситуаций.</p>
+
+      <div id="qct-s1" style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:var(--bg3);border-radius:10px;margin-bottom:8px;border-left:3px solid var(--a1);transition:all .4s;">
+        <div style="width:28px;height:28px;background:var(--a1);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82em;flex-shrink:0;">1</div>
+        <div><div style="font-weight:700;font-size:.88em;margin-bottom:3px;">Фокус на области сердца</div><div style="font-size:.79em;color:var(--t2);">Переведи внимание в центр груди. Мысленно «войди» туда.</div></div>
+      </div>
+      <div id="qct-s2" style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:var(--bg3);border-radius:10px;margin-bottom:8px;border-left:3px solid var(--t3);opacity:.55;transition:all .4s;">
+        <div style="width:28px;height:28px;background:var(--t3);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82em;flex-shrink:0;">2</div>
+        <div><div style="font-weight:700;font-size:.88em;margin-bottom:3px;">Дыхание через сердце</div><div style="font-size:.79em;color:var(--t2);">Вдох 5 сек / выдох 5 сек — представляй что воздух проходит через сердце.</div></div>
+      </div>
+      <div id="qct-s3" style="display:flex;align-items:flex-start;gap:12px;padding:12px;background:var(--bg3);border-radius:10px;margin-bottom:16px;border-left:3px solid var(--t3);opacity:.55;transition:all .4s;">
+        <div style="width:28px;height:28px;background:var(--t3);color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:.82em;flex-shrink:0;">3</div>
+        <div><div style="font-weight:700;font-size:.88em;margin-bottom:3px;">Позитивное чувство</div><div style="font-size:.79em;color:var(--t2);">Вспомни момент искренней благодарности или радости. Удерживай это ощущение в груди.</div></div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+        <div id="qct-timer-display" style="font-size:3em;font-weight:800;font-family:'Courier New',monospace;color:var(--a1);">05:00</div>
+        <button id="qct-btn" class="btn btn-g" onclick="startQCT()">▶ Начать</button>
+      </div>
+    </div>
+
+    <div class="card" style="text-align:center;">
+      <h3 style="margin-bottom:14px;">🫀 Дыхание QCT</h3>
+      <div id="qct-circle" class="breath-c">
+        <span id="qct-count" style="font-size:1.2em;font-weight:800;color:var(--a1);"></span>
+      </div>
+      <div id="qct-label" style="font-size:.88em;color:var(--t2);margin-top:8px;margin-bottom:16px;">Нажми «Начать»</div>
+      <div class="hrv-g" style="margin-top:12px;">
+        <div class="hrvi"><div class="hv" style="color:var(--a3);">3–5</div><div class="hs">минут для эффекта</div></div>
+        <div class="hrvi"><div class="hv" style="color:var(--a1);">5+5</div><div class="hs">сек вдох/выдох</div></div>
+        <div class="hrvi"><div class="hv" style="color:var(--a2);">↓38%</div><div class="hs">снижение кортизола</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ── COGNITIVE BIASES TAB ── -->
+<div id="mn-biases" class="itp">
+  <div class="card" style="margin-bottom:14px;">
+    <h3 style="margin-bottom:8px;">🧠 Топ-15 когнитивных искажений</h3>
+    <p style="font-size:.82em;color:var(--t2);margin-bottom:12px;">Используй при заполнении дневника (вопрос 3: «Какое искажение сработало?»). Нажми на карточку — увидишь пример.</p>
+    <input type="text" id="bias-search" placeholder="🔍 Поиск по названию..." oninput="renderBiases(this.value)"
+      style="width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--brd);border-radius:8px;color:var(--t1);font-size:.85em;box-sizing:border-box;">
+  </div>
+  <div id="bias-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;"></div>
+</div>
 </div>
 
 <!-- ══════════════ ПРОГРЕСС ══════════════ -->
@@ -971,6 +1031,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <button class="it" onclick="sit('pg','rlog')">🏃 Записать бег</button>
     <button class="it" onclick="sit('pg','whist')">📊 История тренировок</button>
     <button class="it" onclick="sit('pg','rhist')">📊 История бега</button>
+	<button class="it" onclick="sit('pg','hrv');loadHRVData()">🫀 HRV Трекер</button>
+	<button class="it" onclick="sit('pg','acft')">🎖️ ACFT</button>
   </div>
 
   <div id="pg-log" class="itp active">
@@ -1037,6 +1099,128 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <div id="rhist-ct"><p style="font-size:.83em;color:var(--t2);">Нет данных. Запиши первую пробежку!</p></div>
     </div>
   </div>
+  <!-- ── HRV TRACKER TAB ── -->
+<div id="pg-hrv" class="itp">
+  <div class="card" style="margin-bottom:14px;">
+    <h3 style="font-size:.95em;margin-bottom:14px;">🫀 Записать HRV</h3>
+    <p style="font-size:.8em;color:var(--t2);margin-bottom:14px;">Измеряй утром лёжа — сразу после пробуждения. Источник: Garmin, Apple Watch, Polar, Whoop.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:12px;">
+      <div>
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">📅 Дата</label>
+        <input type="date" id="hrv-date" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+      <div>
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">💓 HRV (мс)</label>
+        <input type="number" id="hrv-value" placeholder="напр. 68" min="20" max="200" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+      <div>
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">💤 Сон (ч)</label>
+        <input type="number" id="hrv-sleep" placeholder="напр. 7.5" min="0" max="24" step="0.5" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+      <div>
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">⚡ Готовность</label>
+        <select id="hrv-readiness" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+          <option value="">Выбери...</option>
+          <option value="5">⚡ Отлично</option>
+          <option value="4">✅ Хорошо</option>
+          <option value="3">😐 Средне</option>
+          <option value="2">😴 Устал</option>
+          <option value="1">❌ Плохо</option>
+        </select>
+      </div>
+      <div style="grid-column:1/-1;">
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">📝 Заметка</label>
+        <input type="text" id="hrv-note" placeholder="Как спал, стресс, нагрузка..." style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+    </div>
+    <button class="btn btn-p btn-sm" onclick="saveHRV()">💾 Сохранить HRV</button>
+  </div>
+  
+  <div class="chart-wrap">
+    <h3>📈 HRV за последние 30 дней</h3>
+    <div class="chart-container"><canvas id="hrv-chart"></canvas></div>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:.9em;margin-bottom:12px;">📋 Последние записи</h3>
+    <div id="hrv-log"><p style="font-size:.82em;color:var(--t2);">Нет записей. Добавь первую!</p></div>
+  </div>
+
+  <div class="card" style="margin-top:14px;background:rgba(0,212,255,.03);border-color:rgba(0,212,255,.15);">
+    <h4 style="font-size:.85em;margin-bottom:10px;color:var(--a1);">📊 Интерпретация HRV</h4>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;">
+      <div class="hrvi"><div class="hv" style="color:var(--a5);font-size:1.2em;">&lt;40</div><div class="hs">Низкий · Нужен отдых</div></div>
+      <div class="hrvi"><div class="hv" style="color:var(--a4);font-size:1.2em;">40–60</div><div class="hs">Средний · Умеренная нагрузка</div></div>
+      <div class="hrvi"><div class="hv" style="color:var(--a3);font-size:1.2em;">60–80</div><div class="hs">Хороший · Тренируйся</div></div>
+      <div class="hrvi"><div class="hv" style="color:var(--a1);font-size:1.2em;">&gt;80</div><div class="hs">Отличный · Пиковая форма</div></div>
+    </div>
+  </div>
+</div>
+<!-- ── ACFT TAB ── -->
+<div id="pg-acft" class="itp">
+  <div class="card" style="margin-bottom:14px;">
+    <h3 style="font-size:.95em;margin-bottom:8px;">🎖️ Army Combat Fitness Test</h3>
+    <p style="font-size:.8em;color:var(--t2);margin-bottom:14px;">6 компонентов физической готовности · Записывай каждые 4–6 недель · Используй как ориентир прогресса</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:12px;">
+      <div>
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">📅 Дата теста</label>
+        <input type="date" id="acft-date" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+      <div>
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">🏋️ Взрыв. подтягивания (раз)</label>
+        <input type="number" id="acft-deadlift" placeholder="напр. 100" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+      <div>
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">🎯 Отжимания брусьях (раз)</label>
+        <input type="number" id="acft-throw" placeholder="напр. 8.5" step="0.1" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+      <div>
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">💪 Подтягивания (раз)</label>
+        <input type="number" id="acft-hrpu" placeholder="напр. 30" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+      <div>
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">⚡ Спринт 800м (сек)</label>
+        <input type="number" id="acft-sdc" placeholder="напр. 118" step="0.1" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+      <div>
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">🧱 Планка (сек)</label>
+        <input type="number" id="acft-plank" placeholder="напр. 180" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+      <div>
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:3px;">🏃 3.2 км (сек)</label>
+        <input type="number" id="acft-run" placeholder="напр. 900 = 15:00" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+      </div>
+    </div>
+    <button class="btn btn-g btn-sm" onclick="saveACFT()">💾 Сохранить результат</button>
+  </div>
+
+  <div class="chart-wrap">
+    <h3>📊 Прогресс ACFT (radar)</h3>
+    <div class="chart-container"><canvas id="acft-chart"></canvas></div>
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:.9em;margin-bottom:12px;">📋 История тестов</h3>
+    <div id="acft-history"><p style="font-size:.82em;color:var(--t2);">Нет записей. Пройди первый тест!</p></div>
+  </div>
+
+  <div class="card" style="margin-top:14px;background:rgba(245,158,11,.03);border-color:rgba(245,158,11,.18);">
+    <h4 style="font-size:.85em;margin-bottom:10px;color:var(--a4);">📌 Ориентировочные нормы ACFT (мужчины, 17–21 год)</h4>
+    <table class="wtbl" style="font-size:.79em;">
+      <thead><tr><th>Тест</th><th style="color:var(--a3);">Хорошо</th><th style="color:var(--a1);">Отлично</th></tr></thead>
+      <tbody>
+        <tr><td>🏋️ Взрывные подтягивания</td><td style="color:var(--a3);">≥ 15</td><td style="color:var(--a1);">≥ 24</td></tr>
+        <tr><td>🎯 Отжимания брусьях</td><td style="color:var(--a3);">≥ 35</td><td style="color:var(--a1);">≥ 50</td></tr>
+        <tr><td>💪 Подтягивания</td><td style="color:var(--a3);">≥ 25</td><td style="color:var(--a1);">≥ 40</td></tr>
+        <tr><td>⚡ Спринт 800м</td><td style="color:var(--a3);">≤ 130 сек</td><td style="color:var(--a1);">≤ 105 сек</td></tr>
+        <tr><td>🧱 Планка</td><td style="color:var(--a3);">≥ 120 сек</td><td style="color:var(--a1);">≥ 210 сек</td></tr>
+        <tr><td>🏃 3.2 км</td><td style="color:var(--a3);">≤ 990 сек (16:30)</td><td style="color:var(--a1);">≤ 810 сек (13:30)</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 </div>
 
 <!-- ══════════════ ГРАФИКИ ══════════════ -->
@@ -1330,9 +1514,9 @@ function getTT(date){
 function dKey(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 
 const tagMap={train:'t-train',study:'t-study',food:'t-food',mind:'t-mind',rest:'t-rest',chess:'t-chess',sleep:'t-sleep',run:'t-run',work:'t-work'};
-const defaultTrainDay=[['07:00','Подъём + HRV замер (2 мин) — сразу после пробуждения, лёжа','mind','🫀 HRV'],['07:05','Резонансное дыхание 10 мин (5 сек вдох / 5 сек выдох)','mind','🧘 Дыхание'],['07:18','Стакан воды 500 мл + холодный душ 3-5 минут + умывание','rest','💧 Ритуал'],['07:25','Полноценный завтрак (белок + сложные углеводы)','food','🍳 Завтрак'],['08:10','Шахматы / чтение / учёба — утренний блок (75 мин)','study','📖 Учёба'],['08:20','Сборы, дорога на работу','rest','🚶 Дорога'],['08:30','🏢 РАБОТА НАЧИНАЕТСЯ','work','💼 Работа'],['11:00','Перекус на работе (творог / яблоко / орехи)','food','🍎 Перекус'],['13:00','Обед на работе (контейнер или столовая — белок + углеводы)','food','🥗 Обед'],['13:30','Шахматы на телефоне / лёгкая прогулка','chess','♟️ EF'],['14:00','Работа — продолжение','work','💼 Работа'],['16:30','Перекус на работе (за 2–3 ч до тренировки)','food','🍌 Перекус'],['18:00','🏁 РАБОТА ЗАКАНЧИВАЕТСЯ','work','💼 Работа'],['18:45','Переезд на спортплощадку / переодевание','rest','🚶 Дорога'],['18:55','Разминка 7 мин + активация целевых мышц','train','🔥 Разминка'],['19:02','ТРЕНИРОВКА (Push / Pull / Legs) — 45–55 мин','train','💪 Трен.'],['19:55','Заминка и растяжка 10 мин','train','🧘 Заминка'],['20:05','Душ + протеин / восстановительный перекус','food','🥛 Питание'],['20:30','Ужин (белок + овощи + немного углеводов)','food','🍽️ Ужин'],['21:15','Чтение по списку литературы (30 мин)','study','📚 Чтение'],['22:15','Метапознавательный дневник (10 мин)','mind','📓 Рефл.'],['22:30','ПМР / резонансное дыхание (10 мин)','mind','🧘 ПМР'],['22:45','Без экранов, подготовка ко сну','rest','🌙 Подг.'],['23:00','СОН — 8 часов','sleep','😴 Сон']];
-const defaultRunLongDay=[['07:00','Подъём + HRV замер','mind','🫀 HRV'],['07:05','Резонансное дыхание 12 мин','mind','🧘 Дыхание'],['07:20','Стакан воды 500 мл + холодный душ','rest','💧 Ритуал'],['07:28','Завтрак с акцентом на углеводы + белок','food','🍳 Завтрак'],['08:15','Шахматы / чтение (75 мин)','chess','♟️ EF'],['08:20','Дорога на работу','rest','🚶 Дорога'],['08:30','🏢 РАБОТА','work','💼 Работа'],['11:00','Перекус (с углеводами)','food','🍎 Перекус'],['13:00','Обед на работе (углеводы + белок)','food','🥗 Обед'],['13:30','Шахматы / чтение в обед','study','📚 Чтение'],['14:00','Работа','work','💼 Работа'],['16:30','Лёгкий перекус: банан, 2 финика','food','🍌 Перекус'],['18:00','🏁 РАБОТА ЗАКАНЧИВАЕТСЯ','work','💼 Работа'],['18:40','Переодевание. Динамическая разминка 10 мин','train','🔥 Разминка'],['18:50','ДЛИННЫЙ БЕГ ~3.2 км в зоне 2 (ЧСС 65–75%)','run','🏃 Бег'],['19:15','Финиш. Ходьба 5 мин. Растяжка ног 10 мин','train','🧘 Заминка'],['19:30','Душ + протеин 25–30г + углеводы','food','🥛 Питание'],['20:00','Ужин (полноценный)','food','🍽️ Ужин'],['20:45','Углублённое чтение / разбор шахматных партий','study','📚 Чтение'],['22:00','Дневник рефлексии (10 мин)','mind','📓 Рефл.'],['22:15','ПМР + дыхание','mind','🧘 ПМР'],['23:00','СОН 8 часов','sleep','😴 Сон']];
-const defaultRunSprintDay=[['07:00','Подъём + HRV замер','mind','🫀 HRV'],['07:05','Резонансное дыхание 10 мин','mind','🧘 Дыхание'],['07:18','Стакан воды 500 мл + холодный душ','rest','💧 Ритуал'],['07:25','Завтрак (белок + углеводы)','food','🍳 Завтрак'],['08:10','Чтение / шахматы (75 мин)','study','📖 Учёба'],['08:20','Дорога','rest','🚶 Дорога'],['08:30','🏢 РАБОТА','work','💼 Работа'],['11:00','Перекус на работе','food','🍎 Перекус'],['13:00','Обед (полноценный)','food','🥗 Обед'],['13:30','Медитация / шахматы','chess','♟️ EF'],['14:00','Работа','work','💼 Работа'],['16:30','Лёгкий перекус перед спринтами: яблоко или 2 финика','food','🍎 Перекус'],['18:00','🏁 РАБОТА ЗАКАНЧИВАЕТСЯ','work','💼 Работа'],['18:40','РАСШИРЕННАЯ разминка 15 мин','train','🔥 Разминка'],['18:55','⚡ СПРИНТЫ 400м × 4–6','run','⚡ Спринты'],['19:35','Заминка + Box Breathing','train','🧘 Заминка'],['19:50','Душ + протеин 25–30г + углеводы','food','🥛 Питание'],['20:20','Ужин','food','🍽️ Ужин'],['21:05','Чтение по литературе (60 мин)','study','📚 Чтение'],['22:05','Дневник рефлексии','mind','📓 Рефл.'],['22:20','ПМР','mind','🧘 ПМР'],['23:00','СОН 8 часов','sleep','😴 Сон']];
+const defaultTrainDay=[['07:00','Подъём + HRV замер (2 мин) — сразу после пробуждения, лёжа','mind','🫀 HRV'],['07:05','Резонансное дыхание 10 мин (5 сек вдох / 5 сек выдох)','mind','🧘 Дыхание'],['07:18','Стакан воды 500 мл + холодный душ 3-5 минут + умывание','rest','💧 Ритуал'],['07:25','Полноценный завтрак (белок + сложные углеводы)','food','🍳 Завтрак'],['07:55','Шахматы / чтение / учёба — утренний блок (25 мин)','study','📖 Учёба'],['08:20','Сборы, дорога на работу','rest','🚶 Дорога'],['08:30','🏢 РАБОТА НАЧИНАЕТСЯ','work','💼 Работа'],['11:00','Перекус на работе (творог / яблоко / орехи)','food','🍎 Перекус'],['13:00','Обед на работе (контейнер или столовая — белок + углеводы)','food','🥗 Обед'],['13:30','Шахматы на телефоне / лёгкая прогулка','chess','♟️ EF'],['14:00','Работа — продолжение','work','💼 Работа'],['16:30','Перекус на работе (за 2–3 ч до тренировки)','food','🍌 Перекус'],['18:00','🏁 РАБОТА ЗАКАНЧИВАЕТСЯ','work','💼 Работа'],['18:45','Переезд на спортплощадку / переодевание','rest','🚶 Дорога'],['18:55','Разминка 7 мин + активация целевых мышц','train','🔥 Разминка'],['19:02','ТРЕНИРОВКА (Push / Pull / Legs) — 45–55 мин','train','💪 Трен.'],['19:55','Заминка и растяжка 10 мин','train','🧘 Заминка'],['20:05','Душ + протеин / восстановительный перекус','food','🥛 Питание'],['20:30','Ужин (белок + овощи + немного углеводов)','food','🍽️ Ужин'],['21:15','Чтение по списку литературы (30 мин)','study','📚 Чтение'],['22:15','Метапознавательный дневник (10 мин)','mind','📓 Рефл.'],['22:30','ПМР / резонансное дыхание (10 мин)','mind','🧘 ПМР'],['22:45','Без экранов, подготовка ко сну','rest','🌙 Подг.'],['23:00','СОН — 8 часов','sleep','😴 Сон']];
+const defaultRunLongDay=[['07:00','Подъём + HRV замер','mind','🫀 HRV'],['07:05','Резонансное дыхание 12 мин','mind','🧘 Дыхание'],['07:20','Стакан воды 500 мл + холодный душ','rest','💧 Ритуал'],['07:28','Завтрак с акцентом на углеводы + белок','food','🍳 Завтрак'],['08:00','Шахматы / чтение (20 мин)','chess','♟️ EF'],['08:20','Дорога на работу','rest','🚶 Дорога'],['08:30','🏢 РАБОТА','work','💼 Работа'],['11:00','Перекус (с углеводами)','food','🍎 Перекус'],['13:00','Обед на работе (углеводы + белок)','food','🥗 Обед'],['13:30','Шахматы / чтение в обед','study','📚 Чтение'],['14:00','Работа','work','💼 Работа'],['16:30','Лёгкий перекус: банан, 2 финика','food','🍌 Перекус'],['18:00','🏁 РАБОТА ЗАКАНЧИВАЕТСЯ','work','💼 Работа'],['18:40','Переодевание. Динамическая разминка 10 мин','train','🔥 Разминка'],['18:50','ДЛИННЫЙ БЕГ ~3.2 км в зоне 2 (ЧСС 65–75%)','run','🏃 Бег'],['19:15','Финиш. Ходьба 5 мин. Растяжка ног 10 мин','train','🧘 Заминка'],['19:30','Душ + протеин 25–30г + углеводы','food','🥛 Питание'],['20:00','Ужин (полноценный)','food','🍽️ Ужин'],['20:45','Углублённое чтение / разбор шахматных партий','study','📚 Чтение'],['22:00','Дневник рефлексии (10 мин)','mind','📓 Рефл.'],['22:15','ПМР + дыхание','mind','🧘 ПМР'],['23:00','СОН 8 часов','sleep','😴 Сон']];
+const defaultRunSprintDay=[['07:00','Подъём + HRV замер','mind','🫀 HRV'],['07:05','Резонансное дыхание 10 мин','mind','🧘 Дыхание'],['07:18','Стакан воды 500 мл + холодный душ','rest','💧 Ритуал'],['07:25','Завтрак (белок + углеводы)','food','🍳 Завтрак'],['07:55','Чтение / шахматы (25 мин)','study','📖 Учёба'],['08:20','Дорога','rest','🚶 Дорога'],['08:30','🏢 РАБОТА','work','💼 Работа'],['11:00','Перекус на работе','food','🍎 Перекус'],['13:00','Обед (полноценный)','food','🥗 Обед'],['13:30','Медитация / шахматы','chess','♟️ EF'],['14:00','Работа','work','💼 Работа'],['16:30','Лёгкий перекус перед спринтами: яблоко или 2 финика','food','🍎 Перекус'],['18:00','🏁 РАБОТА ЗАКАНЧИВАЕТСЯ','work','💼 Работа'],['18:40','РАСШИРЕННАЯ разминка 15 мин','train','🔥 Разминка'],['18:55','⚡ СПРИНТЫ 400м × 4–6','run','⚡ Спринты'],['19:35','Заминка + Box Breathing','train','🧘 Заминка'],['19:50','Душ + протеин 25–30г + углеводы','food','🥛 Питание'],['20:20','Ужин','food','🍽️ Ужин'],['21:05','Чтение по литературе (60 мин)','study','📚 Чтение'],['22:05','Дневник рефлексии','mind','📓 Рефл.'],['22:20','ПМР','mind','🧘 ПМР'],['23:00','СОН 8 часов','sleep','😴 Сон']];
 const defaultRestDay=[['08:30','Подъём позже — сон приоритет в выходной','sleep','😴 Сон'],['08:35','HRV замер + резонансное дыхание 15 мин','mind','🫀 HRV+'],['08:55','Стакан воды + холодный душ + прогулка 10 мин','rest','🌅 Утро'],['09:10','Большой воскресный завтрак','food','🍳 Завтрак'],['10:00','Длинная сессия чтения (45–60 мин)','study','📚 Чтение'],['11:00','Шахматы — расширенная сессия (45 мин)','chess','♟️ EF+'],['12:00','Лёгкая аэробная прогулка 30–45 мин','run','🚶 Прогулка'],['13:00','Обед (полноценный)','food','🥗 Обед'],['14:00','Планирование следующей недели (20–30 мин)','study','🎯 Планир.'],['14:30','Свободное время / хобби','rest','🎭 Своб.'],['17:00','Перекус','food','🍎 Перекус'],['17:15','Расширенная медитация (20 мин)','mind','🧘 Медит.'],['17:40','Учёба / образовательный контент','study','📖 Учёба'],['19:30','Свободное время','rest','🎯 Своб.'],['20:30','Ужин','food','🍽️ Ужин'],['21:30','Разбор шахматных партий + рефлексия недели','chess','♟️ Анализ'],['22:00','Метапознавательный дневник расширенный (15 мин)','mind','📓 Рефл.'],['22:20','ПМР + резонансное дыхание','mind','🧘 ПМР'],['23:00','СОН — приоритет в воскресенье','sleep','😴 Сон']];
 
 function renderDailySched(){
@@ -1887,16 +2071,16 @@ function toggleShopDay(i){
 // ═══════════════════════════════════════════════
 const SUPPS=[
 	  {ico:'🦠',name:'Пробиотики',sub:'10–15 млрд КОЕ · Лакто-/бифидобактерии',color:'#10b981',rows:[
-		['Дозировка','10–15 млрд КОЕ в день (для поддержки) · до 100 млрд при курсе после антибиотиков [[3]]'],
+		['Дозировка','10–15 млрд КОЕ в день (для поддержки) · до 100 млрд при курсе после антибиотиков'],
 		['Время приёма','Утром натощак или за 30 мин до еды · запивать водой комнатной температуры'],
-		['Длительность','Курс 3–4 недели · повтор при необходимости [[8]]'],
+		['Длительность','Курс 3–4 недели · повтор при необходимости'],
 		['Польза','Микробиом кишечника · Иммунитет · Синтез витаминов группы B · Снижение вздутия'],
 		['Сочетание','✅ С пребиотиками (клетчатка) · ✅ С ферментами · ❌ Не с горячими напитками'],
 		['Цена (Уфа)','~400–1200 руб./мес · Бифидумбактерин, Линекс, Максилак, Now Foods'],
 	  ]},
 	  {ico:'🧬',name:'B-комплекс',sub:'B1–B12 · Энергия и нервная система',color:'#a855f7',rows:[
-		['Дозировка','1 капсула 2× в день (или по инструкции) · с учётом суточных норм: B12 ~2.4 мкг, B6 ~1.3 мг [[18]]'],
-		['Время приёма','Утром и в обед во время еды · избегать вечернего приёма (может бодрить) [[19]]'],
+		['Дозировка','1 капсула 2× в день (или по инструкции) · с учётом суточных норм: B12 ~2.4 мкг, B6 ~1.3 мг'],
+		['Время приёма','Утром и в обед во время еды · избегать вечернего приёма (может бодрить)'],
 		['Длительность','Курс 1 месяц · перерыв 2–4 недели · или постоянно при дефиците'],
 		['Польза','Энергообмен · Работа ЦНС · Синтез нейромедиаторов · Здоровье кожи и волос'],
 		['Сочетание','✅ С магнием · ✅ С едой · ❌ Не с алкоголем (снижает усвоение)'],
@@ -1935,7 +2119,7 @@ const SUPPS=[
 		['Цена (Уфа)','~800–1800 руб./мес · KSM-66 оригинал: Now, Jarrow, MST Nutrition'],
 	  ]},
 	  {ico:'⚡',name:'Цинк',sub:'Пиколинат/хелат · Иммунитет и тестостерон',color:'#10b981',rows:[
-		['Дозировка','15–30 мг элементарного цинка в день · не превышать 40 мг длительно [[50]]'],
+		['Дозировка','15–30 мг элементарного цинка в день · не превышать 40 мг длительно'],
 		['Время приёма','Во время еды (не натощак — может тошнить) · отдельно от кальция/железа'],
 		['Длительность','Курс 1 месяц · перерыв 2–4 недели · или по анализу крови'],
 		['Польза','Иммунная функция · Синтез тестостерона · Здоровье кожи · Антиоксидантная защита'],
@@ -1943,15 +2127,15 @@ const SUPPS=[
 		['Цена (Уфа)','~400–900 руб./мес · Solgar, Now Foods, Эвалар, пиколинат'],
 	  ]},
 	  {ico:'😌',name:'Магний глицинат',sub:'Хелатная форма · Расслабление и сон',color:'#6366f1',rows:[
-		['Дозировка','200–400 мг элементарного магния в день (начинать с 100–200 мг) [[61]]'],
-		['Время приёма','Вечером за 1–2 ч до сна (для расслабления) · или с едой дробно [[64]]'],
+		['Дозировка','200–400 мг элементарного магния в день (начинать с 100–200 мг)'],
+		['Время приёма','Вечером за 1–2 ч до сна (для расслабления) · или с едой дробно'],
 		['Длительность','Постоянно при дефиците · или курсами по 1–2 месяца'],
 		['Польза','Качество сна · Снижение мышечных спазмов · Нервная стабильность · Поддержка сердца'],
 		['Сочетание','✅ С витамином B6 · ✅ С кальцием (вечером) · ❌ Не с антибиотиками (интервал 2 ч)'],
 		['Цена (Уфа)','~500–1200 руб./мес · Now Foods, Solgar, Эвалар, глицинат'],
 	  ]},
 	  {ico:'☀️',name:'Витамин D3 + K2',sub:'Холекальциферол + менахинон · Кости и сосуды',color:'#f59e0b',rows:[
-		['Дозировка','D3: 1000–2000 МЕ/день (профилактика) · K2 (MK-7): 90–120 мкг [[76]]'],
+		['Дозировка','D3: 1000–2000 МЕ/день (профилактика) · K2 (MK-7): 90–120 мкг'],
 		['Время приёма','Утром во время еды с жирами (жирорастворимые) · вместе с омега-3'],
 		['Длительность','Постоянно в осенне-зимний период · контроль 25(OH)D раз в 3–6 мес'],
 		['Польза','Усвоение кальция · Здоровье костей · Иммунитет · Профилактика кальцификации сосудов'],
@@ -1959,7 +2143,7 @@ const SUPPS=[
 		['Цена (Уфа)','~400–800 руб./мес · Эвалар, Now Foods, Solgar, Д3+К2 комплексы'],
 	  ]},
 	  {ico:'💪',name:'Креатин моногидрат',sub:'Энергия для мышц · Сила и выносливость',color:'#7c3aed',rows:[
-		['Дозировка','3–5 г/день постоянно · фаза загрузки (20 г/день 5–7 дней) опциональна [[80]]'],
+		['Дозировка','3–5 г/день постоянно · фаза загрузки (20 г/день 5–7 дней) опциональна'],
 		['Время приёма','После тренировки с углеводами/протеином · или утром в дни отдыха'],
 		['Длительность','Постоянно · безопасно при длительном приёме · перерывы по желанию'],
 		['Польза','Увеличение силы и мощности · Рост мышечной массы · Когнитивная поддержка · Восстановление'],
@@ -1967,7 +2151,7 @@ const SUPPS=[
 		['Цена (Уфа)','~300–700 руб./мес · Now Foods, Maxler, Biotech, PureProtein'],
 	  ]},
 	  {ico:'✨',name:'Коллаген + Витамин C',sub:'Гидролизат 1/2/3 типа · Суставы и кожа',color:'#f43f8f',rows:[
-		['Дозировка','5–10 г гидролизованного коллагена + 50–100 мг витамина С для усвоения [[91]]'],
+		['Дозировка','5–10 г гидролизованного коллагена + 50–100 мг витамина С для усвоения'],
 		['Время приёма','Натощак утром или перед сном · отдельно от белковой еды (на 30–60 мин)'],
 		['Длительность','Курс 2–3 месяца · перерыв 1 месяц · эффект накопительный (4–8 недель)'],
 		['Польза','Эластичность кожи · Здоровье суставов и связок · Укрепление волос и ногтей'],
@@ -2004,7 +2188,6 @@ function renderSupps(){
 // ═══════════════════════════════════════════════
 const BOOKS=[
   {level:1,title:'🏋️ Уровень 1 — Физический фундамент',cls:'bt1',items:[
-    {n:'Зубной эликсир питания',auth:'Мэтт Уокер',tags:['сон','восстановление','HRV'],desc:'«Почему мы спим» — исчерпывающая наука сна. Обязательно для понимания восстановления и когниций.'},
     {n:'Почему мы спим',auth:'Мэтт Уокер',tags:['сон','ЦНС','обучение'],desc:'Как 8 часов сна превращают обучение в долгосрочную память. Фундамент программы.'},
     {n:'Endure',auth:'Алекс Хатчинсон',tags:['бег','ментальная сила','GPP'],desc:'Наука выносливости. Почему ментальный фактор важнее физического на 30%.'},
     {n:'Can\'t Hurt Me',auth:'Дэвид Гоггинс',tags:['ментальность','GPP','холодный ум'],desc:'Методология военного тренинга и преодоления пределов. Практическое применение HIFT-подхода.'},
@@ -2552,7 +2735,13 @@ if(fbOk){
 // Load from cloud then init
 loadCloud(()=>{
   refreshAll();
+  const hrvDateEl=document.getElementById('hrv-date');
+if(hrvDateEl&&!hrvDateEl.value) hrvDateEl.value=dKey(new Date());
   setTodayDates();
+  const acftD=document.getElementById('acft-date');
+if(acftD&&!acftD.value) acftD.value=dKey(new Date());
+const hrvD=document.getElementById('hrv-date');
+if(hrvD&&!hrvD.value) hrvD.value=dKey(new Date());
   buildLogForm();
   renderMealPlan();
   renderShopping();
@@ -2618,6 +2807,346 @@ function openRecipeModal(type, idx){
     `<button class="btn btn-gh btn-sm" onclick="closeMod()">✕ Закрыть</button>`;
 
   document.getElementById('modal').classList.add('open');
+}
+
+// ── Box Breathing ──────────────────────────────
+const boxPhases=[
+  {t:'Вдох',     d:4000, cls:'inh'},
+  {t:'Задержка', d:4000, cls:''},
+  {t:'Выдох',    d:4000, cls:'exh'},
+  {t:'Задержка', d:4000, cls:''}
+];
+let boxIdx=0,boxTimer=null,boxRunning=false,boxRound=0,boxTick=null;
+
+function startBoxB(){
+  if(boxRunning){
+    clearTimeout(boxTimer); clearInterval(boxTick);
+    boxRunning=false;
+    document.getElementById('box-btn').textContent='▶ Начать';
+    document.getElementById('box-circle').className='breath-c';
+    document.getElementById('box-label').textContent='Остановлено';
+    return;
+  }
+  boxRunning=true; boxRound=0; boxIdx=0;
+  document.getElementById('box-btn').textContent='⏹ Стоп';
+  runBoxPhase();
+}
+
+function runBoxPhase(){
+  if(!boxRunning) return;
+  const p=boxPhases[boxIdx];
+  const circ=document.getElementById('box-circle');
+  const lbl=document.getElementById('box-label');
+  const cnt=document.getElementById('box-count');
+  circ.className='breath-c '+(p.cls||'');
+  lbl.textContent=p.t;
+  let sec=p.d/1000;
+  cnt.textContent=sec;
+  clearInterval(boxTick);
+  boxTick=setInterval(()=>{
+    sec--;
+    cnt.textContent=sec>0?sec:'';
+    if(sec<=0) clearInterval(boxTick);
+  },1000);
+  boxTimer=setTimeout(()=>{
+    boxIdx=(boxIdx+1)%4;
+    if(boxIdx===0){
+      boxRound++;
+      document.getElementById('box-rounds').textContent='Циклов: '+boxRound;
+    }
+    runBoxPhase();
+  },p.d);
+}
+
+// ── HRV TRACKER ────────────────────────────────
+let hrvChartInst=null;
+
+async function saveHRV(){
+  const d={
+    date: document.getElementById('hrv-date').value||dKey(new Date()),
+    hrv:  +document.getElementById('hrv-value').value,
+    sleep:+document.getElementById('hrv-sleep').value,
+    readiness:+document.getElementById('hrv-readiness').value||0,
+    note: document.getElementById('hrv-note').value,
+    ts:   Date.now()
+  };
+  if(!d.hrv){notify('⚠️ Введи HRV значение');return;}
+  if(!fbOk){notify('⚠️ Нет подключения к Firebase');return;}
+  await firebase.database().ref('users/'+uid+'/hrv').push(d);
+  notify('🫀 HRV сохранён!');
+  document.getElementById('hrv-value').value='';
+  document.getElementById('hrv-note').value='';
+  loadHRVData();
+}
+
+async function loadHRVData(){
+  if(!fbOk) return;
+  const snap=await firebase.database().ref('users/'+uid+'/hrv')
+    .orderByChild('date').limitToLast(30).once('value').catch(()=>null);
+  if(!snap) return;
+  const data=[];
+  snap.forEach(c=>data.push({key:c.key,...c.val()}));
+  data.sort((a,b)=>a.date.localeCompare(b.date));
+
+  const ctx=document.getElementById('hrv-chart');
+  if(!ctx) return;
+  if(hrvChartInst){hrvChartInst.destroy();hrvChartInst=null;}
+
+  if(data.length>0){
+    hrvChartInst=new Chart(ctx,{
+      type:'line',
+      data:{
+        labels:data.map(d=>d.date.slice(5)),
+        datasets:[{
+          label:'HRV (мс)',
+          data:data.map(d=>d.hrv),
+          borderColor:'var(--a1)',
+          backgroundColor:'rgba(0,212,255,.08)',
+          tension:.4,fill:true,pointRadius:4,
+          pointBackgroundColor:data.map(d=>d.hrv>=70?'#10b981':d.hrv>=50?'#f59e0b':'#ef4444')
+        },{
+          label:'Сон ×10',
+          data:data.map(d=>d.sleep?d.sleep*10:null),
+          borderColor:'#7c3aed',
+          backgroundColor:'rgba(124,58,237,.06)',
+          tension:.4,fill:false,pointRadius:3,borderDash:[4,3]
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#a0a0b0',font:{size:11}}}},
+        scales:{
+          x:{ticks:{color:'#606070'},grid:{color:'rgba(255,255,255,.04)'}},
+          y:{ticks:{color:'#606070'},grid:{color:'rgba(255,255,255,.06)'},
+             title:{display:true,text:'мс / ч×10',color:'#606070',font:{size:10}}}
+        }
+      }
+    });
+  }
+
+  const rdMap={5:'⚡ Отлично',4:'✅ Хорошо',3:'😐 Средне',2:'😴 Устал',1:'❌ Плохо'};
+  const logEl=document.getElementById('hrv-log');
+  if(!logEl) return;
+  if(data.length===0){logEl.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей. Добавь первую!</p>';return;}
+
+  logEl.innerHTML=data.slice(-7).reverse().map(d=>`
+    <div style="display:flex;flex-wrap:wrap;gap:10px;padding:9px 11px;background:var(--bg3);border-radius:8px;margin-bottom:5px;font-size:.8em;align-items:center;">
+      <span style="color:var(--t3);min-width:65px;">${d.date.slice(5)}</span>
+      <span style="color:var(--a1);font-weight:700;">💓 ${d.hrv} мс</span>
+      ${d.sleep?`<span>💤 ${d.sleep}ч</span>`:''}
+      ${d.readiness?`<span>${rdMap[d.readiness]||''}</span>`:''}
+      ${d.note?`<span style="color:var(--t3);font-style:italic;">${d.note}</span>`:''}
+    </div>`).join('');
+}
+
+// ── QUICK COHERENCE TECHNIQUE ──────────────────
+let qctRunning=false,qctMainTimer=null,qctBreathTimer=null,qctSecs=300,qctPhase='inh',qctPhaseSec=5;
+
+function startQCT(){
+  if(qctRunning){
+    clearInterval(qctMainTimer);clearInterval(qctBreathTimer);
+    qctRunning=false;
+    document.getElementById('qct-btn').textContent='▶ Начать';
+    document.getElementById('qct-btn').className='btn btn-g';
+    document.getElementById('qct-circle').className='breath-c';
+    document.getElementById('qct-label').textContent='Нажми «Начать»';
+    document.getElementById('qct-timer-display').textContent='05:00';
+    document.getElementById('qct-count').textContent='';
+    // Reset steps
+    ['qct-s2','qct-s3'].forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){el.style.opacity='.55';el.style.borderLeftColor='var(--t3)';}
+    });
+    return;
+  }
+  qctRunning=true;qctSecs=300;qctPhase='inh';qctPhaseSec=5;
+  document.getElementById('qct-btn').textContent='⏹ Стоп';
+  document.getElementById('qct-btn').className='btn btn-r';
+  document.getElementById('qct-circle').className='breath-c inh';
+  document.getElementById('qct-label').textContent='Вдох через сердце';
+
+  // Unlock steps with delay
+  setTimeout(()=>{
+    const s2=document.getElementById('qct-s2');
+    if(s2){s2.style.opacity='1';s2.style.borderLeftColor='var(--a1)';}
+  },3000);
+  setTimeout(()=>{
+    const s3=document.getElementById('qct-s3');
+    if(s3){s3.style.opacity='1';s3.style.borderLeftColor='var(--a1)';}
+  },20000);
+
+  // Main countdown
+  qctMainTimer=setInterval(()=>{
+    qctSecs--;
+    const m=Math.floor(qctSecs/60),s=qctSecs%60;
+    const disp=document.getElementById('qct-timer-display');
+    if(disp)disp.textContent=`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if(qctSecs<=0){
+      clearInterval(qctMainTimer);clearInterval(qctBreathTimer);
+      qctRunning=false;
+      document.getElementById('qct-btn').textContent='▶ Начать';
+      document.getElementById('qct-btn').className='btn btn-g';
+      document.getElementById('qct-circle').className='breath-c';
+      document.getElementById('qct-label').textContent='Завершено 💚';
+      document.getElementById('qct-count').textContent='';
+      notify('💚 QCT завершён! Отличная работа!');
+    }
+  },1000);
+
+  // Breath cycle 5/5
+  qctBreathTimer=setInterval(()=>{
+    qctPhaseSec--;
+    const cnt=document.getElementById('qct-count');
+    if(cnt)cnt.textContent=qctPhaseSec>0?qctPhaseSec:'';
+    if(qctPhaseSec<=0){
+      qctPhase=qctPhase==='inh'?'exh':'inh';
+      qctPhaseSec=5;
+      const circ=document.getElementById('qct-circle');
+      const lbl=document.getElementById('qct-label');
+      if(circ)circ.className='breath-c '+(qctPhase==='inh'?'inh':'exh');
+      if(lbl)lbl.textContent=qctPhase==='inh'?'Вдох через сердце':'Выдох через сердце';
+    }
+  },1000);
+}
+
+// ── ACFT ───────────────────────────────────────
+let acftChartInst=null;
+
+async function saveACFT(){
+  const d={
+    date:     document.getElementById('acft-date').value||dKey(new Date()),
+    deadlift: +document.getElementById('acft-deadlift').value||0,
+    throwM:   +document.getElementById('acft-throw').value||0,
+    hrpu:     +document.getElementById('acft-hrpu').value||0,
+    sdc:      +document.getElementById('acft-sdc').value||0,
+    plank:    +document.getElementById('acft-plank').value||0,
+    run:      +document.getElementById('acft-run').value||0,
+    ts: Date.now()
+  };
+  if(!d.deadlift&&!d.hrpu&&!d.plank){notify('⚠️ Заполни хотя бы одно поле');return;}
+  if(!fbOk){notify('⚠️ Нет подключения к Firebase');return;}
+  await firebase.database().ref('users/'+uid+'/acft').push(d);
+  notify('🎖️ ACFT результат сохранён!');
+  loadACFT();
+}
+
+async function loadACFT(){
+  if(!fbOk) return;
+  const snap=await firebase.database().ref('users/'+uid+'/acft')
+    .orderByChild('date').limitToLast(5).once('value').catch(()=>null);
+  if(!snap) return;
+  const data=[];
+  snap.forEach(c=>data.push(c.val()));
+  data.sort((a,b)=>a.date.localeCompare(b.date));
+
+  const ctx=document.getElementById('acft-chart');
+  if(!ctx) return;
+  if(acftChartInst){acftChartInst.destroy();acftChartInst=null;}
+
+  if(data.length>0){
+    // Normalize each metric to 0–100
+    const norm=d=>[
+      Math.min(100,d.deadlift/1.5),
+      Math.min(100,d.throwM*8),
+      Math.min(100,d.hrpu*2.5),
+      Math.min(100,d.sdc>0?Math.max(0,(180-d.sdc)/180*100):0),
+      Math.min(100,d.plank/2.7),
+      Math.min(100,d.run>0?Math.max(0,(1100-d.run)/1100*100):0)
+    ];
+    const colors=['#00d4ff','#f43f8f','#10b981','#f59e0b','#7c3aed'];
+    acftChartInst=new Chart(ctx,{
+      type:'radar',
+      data:{
+        labels:['Взрывные подтягивания','Отжимания брусьях','Подтягивания','Спринт 800м','Планка','3.2 км'],
+        datasets:data.map((d,i)=>({
+          label:d.date,
+          data:norm(d),
+          borderColor:colors[i%colors.length],
+          backgroundColor:colors[i%colors.length]+'1a',
+          fill:true,pointRadius:4
+        }))
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{labels:{color:'#a0a0b0',font:{size:10}}}},
+        scales:{r:{
+          min:0,max:100,
+          ticks:{color:'#606070',backdropColor:'transparent',stepSize:25},
+          grid:{color:'rgba(255,255,255,.07)'},
+          pointLabels:{color:'#a0a0b0',font:{size:10}}
+        }}
+      }
+    });
+  }
+
+  const histEl=document.getElementById('acft-history');
+  if(!histEl) return;
+  if(data.length===0){histEl.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей.</p>';return;}
+
+  const fmt=secs=>secs?`${Math.floor(secs/60)}:${String(secs%60).padStart(2,'0')}`:'-';
+  histEl.innerHTML=data.slice(-3).reverse().map(d=>`
+    <div style="background:var(--bg3);border-radius:9px;padding:10px 12px;margin-bottom:8px;">
+      <div style="font-size:.8em;font-weight:700;color:var(--a4);margin-bottom:7px;">📅 ${d.date}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;font-size:.78em;">
+        ${d.deadlift?`<span style="background:rgba(124,58,237,.15);color:#a78bfa;padding:2px 8px;border-radius:4px;">🏋️ ${d.deadlift}кг</span>`:''}
+        ${d.throwM?`<span style="background:rgba(0,212,255,.12);color:var(--a1);padding:2px 8px;border-radius:4px;">🎯 ${d.throwM}м</span>`:''}
+        ${d.hrpu?`<span style="background:rgba(16,185,129,.12);color:var(--a3);padding:2px 8px;border-radius:4px;">💪 ${d.hrpu}</span>`:''}
+        ${d.sdc?`<span style="background:rgba(245,158,11,.12);color:var(--a4);padding:2px 8px;border-radius:4px;">⚡ ${fmt(d.sdc)}</span>`:''}
+        ${d.plank?`<span style="background:rgba(99,102,241,.15);color:#a5b4fc;padding:2px 8px;border-radius:4px;">🧱 ${fmt(d.plank)}</span>`:''}
+        ${d.run?`<span style="background:rgba(244,63,143,.12);color:#f9a8d4;padding:2px 8px;border-radius:4px;">🏃 ${fmt(d.run)}</span>`:''}
+      </div>
+    </div>`).join('');
+}
+
+// ── КОГНИТИВНЫЕ ИСКАЖЕНИЯ ──────────────────────
+const BIASES=[
+  {i:'⚓',n:'Эффект якоря',d:'Первая информация слишком сильно влияет на все последующие суждения.',e:'Видел ценник ₽1000 → ₽700 кажется «дёшево»'},
+  {i:'🔍',n:'Предвзятость подтверждения',d:'Ищем только то, что подтверждает наши убеждения, игнорируя противоречия.',e:'Читаешь только новости, совпадающие с твоей позицией'},
+  {i:'🏆',n:'Ошибка выживаемости',d:'Видим только успешные примеры, не замечая тех кто провалился.',e:'«Все миллиардеры бросили универ» — не видим тысячи бросивших и не добившихся'},
+  {i:'📈',n:'Эффект Даннинга-Крюгера',d:'Некомпетентные переоценивают себя; эксперты — недооценивают.',e:'Новичок уверен, мастер сомневается'},
+  {i:'😇',n:'Эффект ореола',d:'Одно позитивное качество человека заставляет нас приписывать ему все другие.',e:'Привлекательный человек кажется умнее и добросовестнее'},
+  {i:'🎮',n:'Иллюзия контроля',d:'Убеждение что можно контролировать случайные события.',e:'Ритуалы перед важным матчем — «если не сделаю, проиграем»'},
+  {i:'📅',n:'Ошибка планирования',d:'Систематическое недооценивание времени и ресурсов на задачи.',e:'«Сделаю за 2 часа» → занимает 6'},
+  {i:'🎲',n:'Ошибка игрока',d:'Прошлые случайные события влияют на ожидания будущих.',e:'«Орёл 5 раз подряд — значит скоро решка»'},
+  {i:'🔄',n:'Эффект знакомости',d:'Мы предпочитаем знакомое только потому, что знаем его.',e:'Покупаешь один бренд годами без сравнения аналогов'},
+  {i:'⬛',n:'Чёрно-белое мышление',d:'Восприятие только в крайностях — без промежуточных вариантов.',e:'«Если я не лучший — я неудачник»'},
+  {i:'👥',n:'Групповое мышление',d:'Желание сохранить гармонию в группе подавляет критику.',e:'Все видят проблему, но никто не возражает'},
+  {i:'🔧',n:'Эффект IKEA',d:'Вещи, созданные своими руками, ценятся выше объективного качества.',e:'Своя идея всегда кажется лучше чужой'},
+  {i:'🚫',n:'Реактивное сопротивление',d:'При угрозе свободе мы хотим сделать обратное.',e:'«Мне запрещают X» → хочу X ещё сильнее'},
+  {i:'📢',n:'Каскад доступной информации',d:'Многократное повторение делает ложную идею правдой.',e:'Частые новости о редких событиях → переоценка их вероятности'},
+  {i:'🧩',n:'Туннельное зрение',d:'Фокус на одном аспекте при игнорировании всех остальных.',e:'Видишь только риски сделки, не замечая возможностей'},
+];
+
+function renderBiases(filter){
+  const grid=document.getElementById('bias-grid');
+  if(!grid) return;
+  const f=(filter||'').toLowerCase();
+  const list=f?BIASES.filter(b=>b.n.toLowerCase().includes(f)||b.d.toLowerCase().includes(f)):BIASES;
+  grid.innerHTML=list.map(b=>`
+    <div onclick="this.classList.toggle('bias-open')"
+      style="background:var(--bg2);border:1px solid var(--brd);border-radius:11px;padding:14px;cursor:pointer;transition:all .2s;border-left:3px solid transparent;"
+      onmouseover="this.style.borderColor='rgba(0,212,255,.25)'" onmouseout="this.style.borderColor=this.classList.contains('bias-open')?'rgba(0,212,255,.4)':'transparent'">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">
+        <span style="font-size:1.4em;">${b.i}</span>
+        <span style="font-weight:700;font-size:.88em;color:var(--t1);">${b.n}</span>
+      </div>
+      <div style="font-size:.8em;color:var(--t2);line-height:1.55;">${b.d}</div>
+      <div class="bias-ex" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--brd);font-size:.78em;color:var(--a1);">💡 Пример: ${b.e}</div>
+    </div>`).join('');
+
+  // Toggle example visibility
+  grid.querySelectorAll('[onclick]').forEach(card=>{
+    const origClick=card.getAttribute('onclick');
+    card.addEventListener('click',function(){
+      const ex=this.querySelector('.bias-ex');
+      if(ex){
+        const isOpen=this.classList.contains('bias-open');
+        ex.style.display=isOpen?'block':'none';
+        this.style.borderLeftColor=isOpen?'rgba(0,212,255,.4)':'transparent';
+        this.style.background=isOpen?'var(--bg3)':'var(--bg2)';
+      }
+    });
+  });
 }
 
 </script>
