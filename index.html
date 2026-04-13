@@ -2999,18 +2999,31 @@ async function saveHRV(){
   notify('🫀 HRV сохранён!');
   document.getElementById('hrv-value').value='';
   document.getElementById('hrv-note').value='';
-  loadHRVData();
+  document.getElementById('hrv-sleep').value='';
+  document.getElementById('hrv-readiness').value='';
+  await loadHRVData();
 }
 
 async function loadHRVData(){
   if(!fbOk) return;
+
+  // ✅ ИСПРАВЛЕНО: orderByKey вместо orderByChild('date')
+  // Push-ключи Firebase уже упорядочены по времени — индекс не нужен
   const snap=await firebase.database().ref('users/'+uid+'/hrv')
-    .orderByChild('date').limitToLast(30).once('value').catch(()=>null);
-  if(!snap) return;
+    .orderByKey().limitToLast(30).once('value').catch(()=>null);
+
+  if(!snap||!snap.exists()) return;
+
   const data=[];
-  snap.forEach(c=>data.push({key:c.key,...c.val()}));
+  snap.forEach(c=>{
+    const v=c.val();
+    if(v&&v.hrv) data.push({key:c.key,...v});
+  });
+
+  // Сортируем по дате (строки YYYY-MM-DD сортируются лексикографически корректно)
   data.sort((a,b)=>a.date.localeCompare(b.date));
 
+  // ── График ──
   const ctx=document.getElementById('hrv-chart');
   if(!ctx) return;
   if(hrvChartInst){hrvChartInst.destroy();hrvChartInst=null;}
@@ -3047,11 +3060,17 @@ async function loadHRVData(){
     });
   }
 
+  // ── Список записей ──
   const rdMap={5:'⚡ Отлично',4:'✅ Хорошо',3:'😐 Средне',2:'😴 Устал',1:'❌ Плохо'};
   const logEl=document.getElementById('hrv-log');
   if(!logEl) return;
-  if(data.length===0){logEl.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей. Добавь первую!</p>';return;}
 
+  if(data.length===0){
+    logEl.innerHTML='<p style="font-size:.82em;color:var(--t2);">Нет записей. Добавь первую!</p>';
+    return;
+  }
+
+  // Показываем последние 7 — сначала самые новые
   logEl.innerHTML=data.slice(-7).reverse().map(d=>`
     <div style="display:flex;flex-wrap:wrap;gap:10px;padding:9px 11px;background:var(--bg3);border-radius:8px;margin-bottom:5px;font-size:.8em;align-items:center;">
       <span style="color:var(--t3);min-width:65px;">${d.date.slice(5)}</span>
