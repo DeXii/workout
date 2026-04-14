@@ -1535,14 +1535,8 @@ function loadLocal(){
 }
 function saveLocal(){
   localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
-    if(fbOk){
-    // Используем update() вместо set(), чтобы не затирать hrv и journal
-    firebase.database().ref('users/'+uid).update({
-      done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,
-      startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,
-      upd:new Date().toISOString()
-    });
-  }
+    if(fbOk){firebase.database().ref('users/'+uid).set({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
+}
 function loadCloud(cb){
   if(!fbOk){if(cb)cb();return;}
   firebase.database().ref('users/'+uid).once('value',snap=>{
@@ -2466,7 +2460,7 @@ function updDash(){
   const uid_d=document.getElementById('uid-d');if(uid_d)uid_d.value=uid;
 }
 function chStart(){const v=document.getElementById('start-date').value;if(v){S.startDate=new Date(v+'T00:00:00');saveLocal();renderCal();renderSM();updDash();notify('📅 Дата старта обновлена');}}
-function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.customSchedule=null;saveLocal();if(fbOk){firebase.database().ref('users/'+uid+'/hrv').remove();firebase.database().ref('users/'+uid+'/journal').remove();}refreshAll();notify('🗑️Все данные сброшены');}
+function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.customSchedule=null;saveLocal();refreshAll();notify('🗑️ Все данные сброшены');}
 
 // ═══════════════════════════════════════════════
 // CHARTS (Chart.js)
