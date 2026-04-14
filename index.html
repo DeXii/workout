@@ -1535,7 +1535,7 @@ function loadLocal(){
 }
 function saveLocal(){
   localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
-       if(fbOk){firebase.database().ref('users/'+uid).set({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
+       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
 }
 function loadCloud(cb){
   if(!fbOk){if(cb)cb();return;}
