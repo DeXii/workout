@@ -185,12 +185,17 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 .bt4{background:rgba(239,68,68,.09);color:var(--a5);border:1px solid rgba(239,68,68,.18);}
 .bcard{background:var(--bg2);border:1px solid var(--brd);border-radius:11px;padding:14px;display:flex;gap:12px;align-items:flex-start;transition:all .2s;margin-bottom:7px;}
 .bcard:hover{border-color:rgba(255,255,255,.13);transform:translateX(4px);}
+.bcard.read{border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.04);}
 .bnum{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.77em;font-weight:700;flex-shrink:0;margin-top:2px;}
 .binfo h4{font-size:.88em;font-weight:700;margin-bottom:2px;}
 .binfo .bauth{font-size:.76em;color:var(--t3);margin-bottom:4px;}
 .binfo p{font-size:.79em;color:var(--t2);line-height:1.5;}
 .btags{display:flex;gap:3px;flex-wrap:wrap;margin-top:6px;}
 .btag{padding:2px 6px;border-radius:3px;font-size:.67em;background:rgba(255,255,255,.05);color:var(--t2);}
+.bcheck{cursor:pointer;width:22px;height:22px;border-radius:5px;border:2px solid var(--brd);display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;transition:all .2s;}
+.bcheck:hover{border-color:var(--a1);}
+.bcheck.checked{background:var(--a3);border-color:var(--a3);color:#fff;}
+.bcheck.checked::after{content:'✓';font-size:.85em;font-weight:700;}
 
 /* SUPPLEMENTS */
 .supcard{background:var(--bg2);border:1px solid var(--brd);border-radius:14px;overflow:hidden;transition:all .2s;}
@@ -1524,24 +1529,24 @@ let uid=localStorage.getItem('ay_uid')||('u_'+Math.random().toString(36).substr(
 localStorage.setItem('ay_uid',uid);
 
 let S={
-  done:{},workoutLogs:{},runLogs:{},customSchedule:null,
+  done:{},workoutLogs:{},runLogs:{},readBooks:{},customSchedule:null,
   startDate:new Date(2025,0,6),
   calMonth:new Date().getMonth(),calYear:new Date().getFullYear(),
   smMonth:new Date().getMonth(),smYear:new Date().getFullYear()
 };
 
 function loadLocal(){
-  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
+  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.readBooks=p.readBooks||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
 }
 function saveLocal(){
-  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
-       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
+  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,readBooks:S.readBooks,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
+       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,readBooks:S.readBooks,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
 }
 function loadCloud(cb){
   if(!fbOk){if(cb)cb();return;}
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
+    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.readBooks=d.readBooks||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
     if(cb)cb();
   }).catch(()=>{if(cb)cb();});
 }
@@ -2354,8 +2359,11 @@ function renderBooks(){
   el.innerHTML=BOOKS.map((bl,bi)=>`
     <div class="bt">
       <div class="btl bt${bi+1}">${bl.title}</div>
-      ${bl.items.map((b,i)=>`
-        <div class="bcard">
+      ${bl.items.map((b,i)=>{
+        const bookKey=`book_${bi}_${i}`;
+        const isRead=S.readBooks&&S.readBooks[bookKey];
+        return `
+        <div class="bcard${isRead?' read':''}">
           <div class="bnum" style="background:${clrs[bi]}22;color:${clrs[bi]};">${bi+1}.${i+1}</div>
           <div class="binfo">
             <h4>${b.n}</h4>
@@ -2363,8 +2371,15 @@ function renderBooks(){
             <p>${b.desc}</p>
             <div class="btags">${b.tags.map(t=>`<span class="btag">#${t}</span>`).join('')}</div>
           </div>
-        </div>`).join('')}
+          <div class="bcheck${isRead?' checked':''}" onclick="toggleBook('${bookKey}')" title="${isRead?'Отметить как непрочитанную':'Отметить как прочитанную'}"></div>
+        </div>`;
+      }).join('')}
     </div>`).join('');
+}
+
+function toggleBook(key){
+  if(!S.readBooks[key]){S.readBooks[key]=true;}else{delete S.readBooks[key];}
+  saveLocal();renderBooks();notify(S.readBooks[key]?'✅ Книга отмечена как прочитанная!':'↩️ Отметка снята');
 }
 
 // ═══════════════════════════════════════════════
@@ -2460,7 +2475,7 @@ function updDash(){
   const uid_d=document.getElementById('uid-d');if(uid_d)uid_d.value=uid;
 }
 function chStart(){const v=document.getElementById('start-date').value;if(v){S.startDate=new Date(v+'T00:00:00');saveLocal();renderCal();renderSM();updDash();notify('📅 Дата старта обновлена');}}
-function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.customSchedule=null;saveLocal();refreshAll();notify('🗑️ Все данные сброшены');}
+function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.readBooks={};S.customSchedule=null;saveLocal();refreshAll();notify('🗑️ Все данные сброшены');}
 
 // ═══════════════════════════════════════════════
 // CHARTS (Chart.js)
