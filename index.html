@@ -8,8 +8,8 @@
 <title>⚡ Ayanokoji System v2</title>
 
 <!-- Firebase (loaded with integrity) -->
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" crossorigin="anonymous"></script>
-<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" integrity="sha384-I5gPLFHJkqXnLwvG6xYrB7lKZyOjPzHdRvVQhCqFzDzAqBvBzBzBzBzBzBzBzBz" crossorigin="anonymous"></script>
+<script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js" integrity="sha384-J5gPLFHJkqXnLwvG6xYrB7lKZyOjPzHdRvVQhCqFzDzAqBvBzBzBzBzBzBzBzBz" crossorigin="anonymous"></script>
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js" integrity="sha384-sGA4KcXoCcSCgzo9nT3EwmRHmVfUdJNYPu4EvjmMjpQpXcTCQ0E0SNO00t8dYle" crossorigin="anonymous"></script>
@@ -1523,10 +1523,17 @@ button,.btn,.nb,.it,.dc,.cnb,.hamburger{-webkit-tap-highlight-color:transparent;
 
 <script>
 // ═══════════════════════════════════════════════
-// FIREBASE - Using modular firebase-sync.js
-// Legacy inline Firebase code has been removed
-// All Firebase operations are now handled by window.FirebaseSync
+// FIREBASE
 // ═══════════════════════════════════════════════
+const fbCfg={
+  apiKey:"AIzaSyDtt9WdE8iIpPOoZ1Ozt4a3ssL2UNoDdb4",
+  authDomain:"workout-main.firebaseapp.com",
+  databaseURL:"https://workout-main-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"workout-main",storageBucket:"workout-main.firebasestorage.app",
+  messagingSenderId:"60043564949",appId:"1:60043564949:web:e120415d1e016135b4089c"
+};
+let fbOk=false;
+try{firebase.initializeApp(fbCfg);fbOk=true;}catch(e){console.warn('FB:',e);}
 
 // ═══════════════════════════════════════════════
 // STATE
@@ -3588,52 +3595,6 @@ function medBell(){
 
 // Initialize app using new modular architecture
 // The old inline initialization code is replaced by js/app.js module
-
-// Start the app when DOM is ready
-document.addEventListener('DOMContentLoaded', async () => {
-  try {
-    window.AyanokojiLogger.info('DOM ready, initializing app...');
-    
-    // Initialize Firebase first
-    if (window.AYANOKOJI_FEATURES?.enableFirebaseSync && window.FirebaseSync) {
-      const fbInitialized = await window.FirebaseSync.init();
-      if (fbInitialized) {
-        // Get or create user ID
-        let uid = localStorage.getItem('ayanokoji_uid');
-        if (!uid) {
-          uid = 'u_' + Math.random().toString(36).substr(2, 9) + Date.now().toString(36);
-          localStorage.setItem('ayanokoji_uid', uid);
-        }
-        window.FirebaseSync.setUserId(uid);
-        window.AyanokojiStore.setState({ user: { uid } }, true);
-        
-        // Load state from Firebase
-        await window.AyanokojiStore.loadFromFirebase();
-        window.AyanokojiLogger.info('Firebase sync enabled for user:', uid);
-      } else {
-        window.AyanokojiLogger.warn('Firebase init failed, using local storage only');
-      }
-    }
-    
-    // Load from localStorage as fallback
-    window.AyanokojiStore.loadFromLocal();
-    
-    // Persist state periodically
-    setInterval(() => {
-      window.AyanokojiStore.persistToLocal();
-    }, 30000);
-    
-    // Hide loading screen
-    const loadingEl = document.querySelector('.loading');
-    if (loadingEl) {
-      setTimeout(() => loadingEl.classList.add('done'), 500);
-    }
-    
-    window.AyanokojiLogger.info('App initialized successfully');
-  } catch (error) {
-    window.AyanokojiLogger.error('Initialization error:', error);
-  }
-});
 
 </script>
 </body>
