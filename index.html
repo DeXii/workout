@@ -2399,13 +2399,12 @@ function renderBooks(){
 
 function normalizeKey(str){
   if(!str)return '';
-  return str.toLowerCase().replace(/[^a-zа-яё0-9]+/gi,'_').replace(/^_|_$/g,'');
+  return str.toLowerCase().replace(/[^a-zа-яё0-9]/gi,'_');
 }
 
 function toggleBook(key){
-  const wasRead = !!S.readBooks[key];
-  if(wasRead){delete S.readBooks[key];}else{S.readBooks[key]=true;}
-  saveLocal();renderBooks();notify(!wasRead?'✅ Книга отмечена как прочитанная!':'↩️ Отметка снята');
+  if(!S.readBooks[key]){S.readBooks[key]=true;}else{delete S.readBooks[key];}
+  saveLocal();renderBooks();notify(S.readBooks[key]?'✅ Книга отмечена как прочитанная!':'↩️ Отметка снята');
 }
 
 // ═══════════════════════════════════════════════
@@ -2876,7 +2875,7 @@ function updFbStatus(ok){
 // ═══════════════════════════════════════════════
 function refreshAll(){
   updDash();renderCal();renderSM();renderDailySched();
-  renderWHist();renderRHist();renderBooks();
+  renderWHist();renderRHist();
 }
 
 // ═══════════════════════════════════════════════
