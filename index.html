@@ -421,7 +421,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <button class="nb" data-s="mealplan">🥗 План питания</button>
       <button class="nb" data-s="shopping">🛒 Закупки</button>
       <button class="nb" data-s="supps">💊 БАДы</button>
-      <button class="nb" data-s="books">📚 Литература</button>
+      <button class="nb" data-s="s">📚 Литература</button>
       <button class="nb" data-s="mental">🧠 Ментал</button>
       <button class="nb" data-s="progress">📈 Прогресс</button>
       <button class="nb" data-s="charts">📊 Графики</button>
@@ -448,7 +448,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   <button class="nb" data-s="mealplan" onclick="toggleMobNav()">🥗 План питания</button>
   <button class="nb" data-s="shopping" onclick="toggleMobNav()">🛒 Закупки</button>
   <button class="nb" data-s="supps" onclick="toggleMobNav()">💊 БАДы</button>
-  <button class="nb" data-s="books" onclick="toggleMobNav()">📚 Литература</button>
+  <button class="nb" data-s="s" onclick="toggleMobNav()">📚 Литература</button>
   <button class="nb" data-s="mental" onclick="toggleMobNav()">🧠 Ментал</button>
   <button class="nb" data-s="progress" onclick="toggleMobNav()">📈 Прогресс</button>
   <button class="nb" data-s="charts" onclick="toggleMobNav()">📊 Графики</button>
@@ -872,7 +872,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 </div>
 
 <!-- ══════════════ ЛИТЕРАТУРА ══════════════ -->
-<div id="s-books" class="sec">
+<div id="s-s" class="sec">
   <div class="sec-hdr">
     <div class="sec-t">📚 Список литературы</div>
     <div class="sec-s">4 уровня пирамиды — от физического фундамента к социальному влиянию</div>
@@ -880,7 +880,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   <div class="card" style="margin-bottom:18px;padding:13px 16px;">
     <p style="font-size:.82em;color:var(--t2);line-height:1.65;">📌 Читай последовательно по уровням. 30 мин ежедневно = 1–2 книги в месяц.</p>
   </div>
-  <div id="books-ct"></div>
+  <div id="s-ct"></div>
 </div>
 
 <!-- ══════════════ МЕНТАЛ ══════════════ -->
@@ -1536,7 +1536,7 @@ let S={
 };
 
 function loadLocal(){
-  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.readBooks=p.readBooks||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
+  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.reads=p.readBooks||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
 }
 function saveLocal(){
   localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,readBooks:S.readBooks,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
@@ -2322,6 +2322,12 @@ const BOOKS=[
     {n:'Racing Weight',auth:'Мэтт Фицджеральд',tags:['питание','бег','тело'],desc:'Оптимизация состава тела для спортивных результатов. Углубление по питанию для бегуна.'},
 	{n:'Atomic Habits',auth:'Джеймс Клир',tags:['привычки','система','GPP'],desc:'Механика формирования привычек. Метасистема для всей программы.'},
 	{n:'Never Let Go',auth:'Дэн Джон',desc:'Практическое руководство по функциональному GPP-тренингу — основа программы тренировок системы.',tags:['GPP','Сила','Функциональность']},
+	  {
+        n: '8 Weeks to SEALFIT',
+        auth: 'Марк Дивайн',
+        tags: ['спецназ', 'стойкость', 'GPP'],
+        desc: '8-недельная программа ментальной и физической закалки от экс-командира SEAL. Прямое применение в «адских неделях» фазы 0.'
+      },
   ]},
   {level:2,title:'🧠 Уровень 2 — Когнитивный фундамент',cls:'bt2',items:[
     {n:'Мозг на пенсии',auth:'Дэниел Левитин',tags:['когниции','EF','HRV'],desc:'Нейробиология оптимальной производительности мозга. Прямая связь с Executive Functions.'},
