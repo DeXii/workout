@@ -2360,14 +2360,14 @@ function renderBooks(){
     <div class="bt">
       <div class="btl bt${bi+1}">${bl.title}</div>
       ${bl.items.map((b,i)=>{
-        const bookKey=`book_${bi}_${i}`;
+        const bookKey=`book_${normalizeKey(b.n)}_${normalizeKey(b.auth)}`;
         const isRead=S.readBooks&&S.readBooks[bookKey];
         return `
         <div class="bcard${isRead?' read':''}">
           <div class="bnum" style="background:${clrs[bi]}22;color:${clrs[bi]};">${bi+1}.${i+1}</div>
           <div class="binfo">
             <h4>${b.n}</h4>
-            <div class="bauth">✍️ ${b.auth}</div>
+            <div class="bauth">✍️ ${b.auth||'Автор не указан'}</div>
             <p>${b.desc}</p>
             <div class="btags">${b.tags.map(t=>`<span class="btag">#${t}</span>`).join('')}</div>
           </div>
@@ -2375,6 +2375,11 @@ function renderBooks(){
         </div>`;
       }).join('')}
     </div>`).join('');
+}
+
+function normalizeKey(str){
+  if(!str)return '';
+  return str.toLowerCase().replace(/[^a-zа-яё0-9]/gi,'_');
 }
 
 function toggleBook(key){
