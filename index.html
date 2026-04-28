@@ -500,6 +500,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="stat"><span class="stat-n" id="st4" style="color:var(--a5);font-size:1.1em;">—</span><div class="stat-l">Следующая тренировка</div></div>
     <div class="stat"><span class="stat-n" id="st5" style="color:var(--a6);">0</span><div class="stat-l">Пробежек всего</div></div>
     <div class="stat"><span class="stat-n" id="st6" style="color:#fb923c;">0</span><div class="stat-l">Км пробежано</div></div>
+    <div class="stat"><span class="stat-n" id="st7" style="color:#10b981;">0</span><div class="stat-l">Книг прочитано</div></div>
   </div>
 
   <div class="card" style="margin-bottom:18px;">
@@ -1524,24 +1525,24 @@ let uid=localStorage.getItem('ay_uid')||('u_'+Math.random().toString(36).substr(
 localStorage.setItem('ay_uid',uid);
 
 let S={
-  done:{},workoutLogs:{},runLogs:{},customSchedule:null,
+  done:{},workoutLogs:{},runLogs:{},booksRead:{},customSchedule:null,
   startDate:new Date(2025,0,6),
   calMonth:new Date().getMonth(),calYear:new Date().getFullYear(),
   smMonth:new Date().getMonth(),smYear:new Date().getFullYear()
 };
 
 function loadLocal(){
-  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
+  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.booksRead=p.booksRead||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
 }
 function saveLocal(){
-  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
-       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
+  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
+       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
 }
 function loadCloud(cb){
   if(!fbOk){if(cb)cb();return;}
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
+    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.booksRead=d.booksRead||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
     if(cb)cb();
   }).catch(()=>{if(cb)cb();});
 }
@@ -2372,17 +2373,33 @@ function renderBooks(){
   el.innerHTML=BOOKS.map((bl,bi)=>`
     <div class="bt">
       <div class="btl bt${bi+1}">${bl.title}</div>
-      ${bl.items.map((b,i)=>`
-        <div class="bcard">
-          <div class="bnum" style="background:${clrs[bi]}22;color:${clrs[bi]};">${bi+1}.${i+1}</div>
+      ${bl.items.map((b,i)=>{
+        const bookKey=`${bi+1}.${i+1}`;
+        const isRead=!!S.booksRead[bookKey];
+        return `
+        <div class="bcard" style="${isRead?'opacity:0.6;':''}">
+          <div class="bnum" style="background:${clrs[bi]}22;color:${clrs[bi]};cursor:pointer;" onclick="toggleBook('${bookKey}')" title="Нажми чтобы отметить">${isRead?'✓':bookKey}</div>
           <div class="binfo">
             <h4>${b.n}</h4>
             <div class="bauth">✍️ ${b.auth}</div>
             <p>${b.desc}</p>
             <div class="btags">${b.tags.map(t=>`<span class="btag">#${t}</span>`).join('')}</div>
           </div>
-        </div>`).join('')}
+        </div>`;
+      }).join('')}
     </div>`).join('');
+}
+
+function toggleBook(bookKey){
+  if(S.booksRead[bookKey]){
+    delete S.booksRead[bookKey];
+  }else{
+    S.booksRead[bookKey]=Date.now();
+  }
+  saveLocal();
+  renderBooks();
+  updDash();
+  notify(S.booksRead[bookKey]?'✅ Книга отмечена!':'↩️ Отметка снята');
 }
 
 // ═══════════════════════════════════════════════
@@ -2476,9 +2493,13 @@ function updDash(){
 
   const sd=document.getElementById('start-date');if(sd)sd.value=dKey(S.startDate);
   const uid_d=document.getElementById('uid-d');if(uid_d)uid_d.value=uid;
+  
+  // Books read count
+  const booksReadCount=Object.keys(S.booksRead).length;
+  const st7=document.getElementById('st7');if(st7)st7.textContent=booksReadCount;
 }
 function chStart(){const v=document.getElementById('start-date').value;if(v){S.startDate=new Date(v+'T00:00:00');saveLocal();renderCal();renderSM();updDash();notify('📅 Дата старта обновлена');}}
-function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.customSchedule=null;saveLocal();refreshAll();notify('🗑️ Все данные сброшены');}
+function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.booksRead={};S.customSchedule=null;saveLocal();refreshAll();notify('🗑️ Все данные сброшены');}
 
 // ═══════════════════════════════════════════════
 // CHARTS (Chart.js)
@@ -2854,6 +2875,7 @@ function updFbStatus(ok){
 function refreshAll(){
   updDash();renderCal();renderSM();renderDailySched();
   renderWHist();renderRHist();
+  renderBooks();
 }
 
 // ═══════════════════════════════════════════════
