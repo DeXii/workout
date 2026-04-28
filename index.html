@@ -191,6 +191,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 .binfo p{font-size:.79em;color:var(--t2);line-height:1.5;}
 .btags{display:flex;gap:3px;flex-wrap:wrap;margin-top:6px;}
 .btag{padding:2px 6px;border-radius:3px;font-size:.67em;background:rgba(255,255,255,.05);color:var(--t2);}
+.book-check{margin-top:10px;display:flex;align-items:center;gap:8px;font-size:.78em;color:var(--t2);}
+.book-check input{width:16px;height:16px;accent-color:var(--a3);cursor:pointer;}
+.bcard.read{border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.06);}
+.bcard.read .binfo h4{text-decoration:line-through;color:var(--a3);}
 
 /* SUPPLEMENTS */
 .supcard{background:var(--bg2);border:1px solid var(--brd);border-radius:14px;overflow:hidden;transition:all .2s;}
@@ -423,6 +427,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <button class="nb" data-s="macros">🧮 Макросы</button>
       <button class="nb" data-s="cal">📅 Трекер</button>
       <button class="nb" data-s="timer">⏱️ Таймер</button>
+	  <button class="nb" data-s="knowledge">🧠 База знаний</button>
     </div>
     <!-- Hamburger -->
     <div class="hamburger" id="hamburger" onclick="toggleMobNav()">
@@ -450,6 +455,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   <button class="nb" data-s="macros" onclick="toggleMobNav()">🧮 Макросы</button>
   <button class="nb" data-s="cal" onclick="toggleMobNav()">📅 Трекер</button>
   <button class="nb" data-s="timer" onclick="toggleMobNav()">⏱️ Таймер</button>
+  <button class="nb" data-s="knowledge" onclick="toggleMobNav()">🧠 База знаний</button>
 </div>
 
 <!-- Bottom nav (mobile) -->
@@ -870,13 +876,164 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <div id="s-books" class="sec">
   <div class="sec-hdr">
     <div class="sec-t">📚 Список литературы</div>
-    <div class="sec-s">4 уровня пирамиды — от физического фундамента к социальному влиянию</div>
+    <div class="sec-s">4 уровня пирамиды — от физического фундамента к социальному влиянию + отметки прочитанного с Firebase</div>
   </div>
   <div class="card" style="margin-bottom:18px;padding:13px 16px;">
     <p style="font-size:.82em;color:var(--t2);line-height:1.65;">📌 Читай последовательно по уровням. 30 мин ежедневно = 1–2 книги в месяц.</p>
   </div>
+	<div class="card" style="margin-bottom:18px;padding:12px 16px;">
+    <div id="books-read-stats" style="font-size:.83em;color:var(--a3);font-weight:700;">Прочитано: 0 / 0</div>
+  </div>
   <div id="books-ct"></div>
 </div>
+
+	<!-- ══════════════ БАЗА ЗНАНИЙ ══════════════ -->
+<div id="s-knowledge" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">🧠 База знаний</div>
+    <div class="sec-s">Научная и прикладная база · долгосрочный план · метрики оценки</div>
+  </div>
+  <div class="itabs">
+    <button class="it active" onclick="sit('kb','science')">📘 Научная и прикладная база</button>
+    <button class="it" onclick="sit('kb','plan')">🗺️ План адаптированная программа на 12–15 лет</button>
+    <button class="it" onclick="sit('kb','metrics')">📏 Метрики оценки прогресса</button>
+  </div>
+
+  <div id="kb-science" class="itp active">
+    <div class="card">
+      <h3 style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.1. Поведенческая и когнитивная психология, теория игр</h3>
+      <p style="font-size:.83em;font-weight:700;color:var(--a3);margin-bottom:6px;">Литература:</p>
+      <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
+        <li>Даниэль Канеман, «Думай медленно... решай быстро» (Система 1 и Система 2).</li>
+        <li>Роберт Чалдини, «Психология влияния» (основные принципы убеждения).</li>
+        <li>Эрик Берн, «Игры, в которые играют люди» (транзактный анализ).</li>
+        <li>Джон фон Нейман, Оскар Моргенштерн, «Теория игр и экономическое поведение» (базовый учебник).</li>
+        <li>Авинаш Диксит, Барри Нейлбафф, «Теория игр. Искусство стратегического мышления».</li>
+        <li>Пол Экман, «Психология лжи», «Узнай лжеца по выражению лица» (микровыражения).</li>
+      </ul>
+      <p style="font-size:.83em;font-weight:700;color:var(--a4);margin:12px 0 6px;">Курсы/практика:</p>
+      <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
+        <li>Курс Yale University «The Science of Well-Being» (понимание базовых механизмов счастья для управления).</li>
+        <li>Онлайн-тренажёры профайлинга (Micro Expressions Training Tool П. Экмана).</li>
+        <li>Практикум по холодному чтению (книга Яна Роуза «Холодное чтение»).</li>
+        <li>Постоянный анализ кейсов из судебной психологии, переговорных практик.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="kb-plan" class="itp">
+    <div class="itabs" style="margin-bottom:14px;">
+      <button class="it active" onclick="sit('kbp','p0')">Фаза 0</button>
+      <button class="it" onclick="sit('kbp','p1')">Фаза 1</button>
+      <button class="it" onclick="sit('kbp','p2')">Фаза 2</button>
+      <button class="it" onclick="sit('kbp','p3')">Фаза 3</button>
+    </div>
+
+    <div id="kbp-p0" class="itp active">
+      <div class="card">
+        <h3 style="font-size:.93em;margin-bottom:11px;color:var(--a2);">Фаза 0. Психологическая перепрошивка (1–2 года)</h3>
+        <p style="font-size:.82em;color:var(--t2);margin-bottom:9px;"><strong>Цель:</strong> разрушить старые социально-эмоциональные паттерны и выстроить базовый самоконтроль.</p>
+        <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
+          <li><strong>Изоляция:</strong> полностью исключить соцсети, развлекательный контент, пустые разговоры. Допускается только учебная/тренировочная коммуникация и минимальный быт.</li>
+          <li><strong>Сенсорная диета:</strong> 30 дней без музыки, фильмов, игр. Только научная литература, классические тексты, тренировки.</li>
+          <li><strong>Протокол дисциплины:</strong>
+            <ul style="padding-left:18px;margin-top:4px;">
+              <li>Ежедневный подъём в 4:30, отбой в 22:00 без исключений.</li>
+              <li>Холодный душ утром и вечером.</li>
+              <li>Дневник самоконтроля с метриками: время нецелевых мыслей, количество эмоциональных всплесков, выполнение распорядка (в %).</li>
+              <li>Практика «пустого взгляда»: 20 минут в день фиксация расфокусированного взгляда на точке, контроль мыслей.</li>
+            </ul>
+          </li>
+          <li><strong>Медитативный интенсив:</strong> 10-дневный курс випассаны (по Гоенке) для обуздания ума, встречи с болью/дискомфортом.</li>
+          <li><strong>Методики подавления эмоций:</strong>
+            <ul style="padding-left:18px;margin-top:4px;">
+              <li>Техника «Стена» (мысленное отгораживание от раздражителя).</li>
+              <li>Когнитивная переоценка (ABC-техника из КПТ): событие → мысль → реакция, замена интерпретации.</li>
+              <li>Просмотр провоцирующих сцен (кино, новости) с тренировкой нейтрального выражения лица перед зеркалом.</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="kbp-p1" class="itp">
+      <div class="card">
+        <h3 style="font-size:.93em;margin-bottom:11px;color:var(--a1);">Фаза 1. Когнитивный фундамент (3–5 годы)</h3>
+        <p style="font-size:.82em;color:var(--t2);margin-bottom:9px;"><strong>Цель:</strong> развить устойчивое стратегическое мышление и базовую интеллектуальную выносливость.</p>
+        <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
+          <li><strong>Режим обучения:</strong> ежедневные блоки глубокой работы 2–4 часа, исключение многозадачности, недельные спринты по темам.</li>
+          <li><strong>Когнитивные тренировки:</strong> шахматы/го, логические задачи, интервальное повторение, анализ ошибок в дневнике.</li>
+          <li><strong>Система чтения:</strong> конспекты по каждой книге, карта понятий, применение принципов на практике через кейсы.</li>
+          <li><strong>Математическая база:</strong> вероятность, статистика, теория игр, принятие решений под неопределённостью.</li>
+          <li><strong>Контроль прогресса:</strong> ежемесячные контрольные недели с замером скорости мышления и качества решений.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="kbp-p2" class="itp">
+      <div class="card">
+        <h3 style="font-size:.93em;margin-bottom:11px;color:var(--a4);">Фаза 2. Социальная инженерия и влияние (6–9 годы)</h3>
+        <p style="font-size:.82em;color:var(--t2);margin-bottom:9px;"><strong>Цель:</strong> выстроить управляемую коммуникацию и прогнозируемое влияние в групповой динамике.</p>
+        <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
+          <li><strong>Наблюдение:</strong> системно фиксировать паттерны поведения, мотивации и триггеры в реальных диалогах.</li>
+          <li><strong>Коммуникативные протоколы:</strong> активное слушание, калибровка речи, управление темпом и фокусом беседы.</li>
+          <li><strong>Переговорная практика:</strong> сценарные тренировки, дебаты, отработка контраргументов под давлением.</li>
+          <li><strong>Этика воздействия:</strong> использовать методы без причинения вреда, с фокусом на развитие и безопасность.</li>
+          <li><strong>Разбор кейсов:</strong> еженедельный ретро-анализ успешных и неуспешных коммуникаций.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="kbp-p3" class="itp">
+      <div class="card">
+        <h3 style="font-size:.93em;margin-bottom:11px;color:var(--a3);">Фаза 3. Интеграция и мастерство (10–15 годы)</h3>
+        <p style="font-size:.82em;color:var(--t2);margin-bottom:9px;"><strong>Цель:</strong> объединить интеллект, физическую и социальную эффективность в единую адаптивную систему.</p>
+        <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
+          <li><strong>Интеграция доменов:</strong> единый цикл планирования «анализ → решение → действие → ретроспектива».</li>
+          <li><strong>Стресс-менеджмент:</strong> регулярные нагрузки с контролем восстановления (сон, HRV, дыхание, восстановительные недели).</li>
+          <li><strong>Высокоуровневые симуляции:</strong> моделирование переговоров, конфликтов и стратегических игр с неопределённостью.</li>
+          <li><strong>Лидерские навыки:</strong> обучение командному управлению, делегированию и долгосрочному видению.</li>
+          <li><strong>Поддержание формы:</strong> квартальные аудиты метрик и корректировка программы по данным.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div id="kb-metrics" class="itp">
+    <div class="card">
+      <h3 style="font-size:.93em;margin-bottom:12px;color:var(--a3);">Метрики оценки прогресса</h3>
+      <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
+        <li><strong>Интеллект:</strong>
+          <ul style="padding-left:18px;margin-top:4px;">
+            <li>IQ-тесты (WAIS-IV) раз в полгода — отслеживание индекса рабочей памяти, скорости обработки.</li>
+            <li>Число успешных симуляций шахмат/го с рейтингом от 2200 Elo и выше.</li>
+            <li>Способность решать задачи уровня Математического GRE за ограниченное время.</li>
+          </ul>
+        </li>
+        <li><strong>Социальная эффективность:</strong>
+          <ul style="padding-left:18px;margin-top:4px;">
+            <li>Ведение анонимного дневника «серых» манипуляций и их исходов. Метрика — процент успешных предсказанных реакций на собственное воздействие (без вреда).</li>
+            <li>Дебаты: количество побед в формате «Линкольн-Дуглас» против подготовленных оппонентов при сохранении образа некомпетентности до решающего раунда.</li>
+          </ul>
+        </li>
+        <li><strong>Физический уровень:</strong>
+          <ul style="padding-left:18px;margin-top:4px;">
+            <li>Нормативы спецназа: бег 3 км &lt; 10:30, подтягивания &gt; 25, отжимания &gt; 80, жим штанги лёжа 1,2 собств. веса.</li>
+            <li>Спарринг-показатель: способность защищаться от двух противников низкого уровня одновременно (учётное занятие).</li>
+            <li>Тест Кубы (ситуационная осознанность): выходить на улицу и через 5 минут перечислить все потенциальные угрозы, детали окружения, количество людей.</li>
+          </ul>
+        </li>
+        <li><strong>Самоконтроль:</strong>
+          <ul style="padding-left:18px;margin-top:4px;">
+            <li>Тест на удержание покоя: просмотр эмоционально заряженного видео (жестокость, раздражающие звуки) с камерой, оценивающей микровыражения. Цель — менее 5% непроизвольных движений.</li>
+            <li>Холодовой тест (рука в ледяной воде &gt;3 мин) с ровным дыханием и фокусом.</li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
 
 <!-- ══════════════ МЕНТАЛ ══════════════ -->
 <div id="s-mental" class="sec">
@@ -1525,23 +1682,24 @@ localStorage.setItem('ay_uid',uid);
 
 let S={
   done:{},workoutLogs:{},runLogs:{},customSchedule:null,
+  booksRead:{},
   startDate:new Date(2025,0,6),
   calMonth:new Date().getMonth(),calYear:new Date().getFullYear(),
   smMonth:new Date().getMonth(),smYear:new Date().getFullYear()
 };
 
 function loadLocal(){
-  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
+  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.booksRead=p.booksRead||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
 }
 function saveLocal(){
-  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
-       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
+  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
+       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
 }
 function loadCloud(cb){
   if(!fbOk){if(cb)cb();return;}
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
+    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.booksRead=d.booksRead||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
     if(cb)cb();
   }).catch(()=>{if(cb)cb();});
 }
@@ -1612,7 +1770,7 @@ document.getElementById('main-wrap').addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-touchStartX;
   const dy=e.changedTouches[0].clientY-touchStartY;
   if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){
-    const secs=['dash','sched','workout','run','food','mealplan','shopping','supps','books','mental','progress','charts','macros','cal','timer'];
+    const secs=['dash','sched','workout','run','food','mealplan','shopping','supps','books','knowledge','mental','progress','charts','macros','cal','timer'];
     const cur=Array.from(document.querySelectorAll('.sec')).findIndex(s=>s.classList.contains('active'));
     let next=cur+(dx<0?1:-1);
     if(next>=0&&next<secs.length)goSec(secs[next]);
@@ -2369,20 +2527,34 @@ const BOOKS=[
 function renderBooks(){
   const el=document.getElementById('books-ct');if(!el)return;
   const clrs=['#10b981','#00d4ff','#f59e0b','#ef4444'];
+  const total=BOOKS.reduce((acc,bl)=>acc+bl.items.length,0);
+  const readCount=Object.values(S.booksRead||{}).filter(Boolean).length;
+  const statsEl=document.getElementById('books-read-stats');
+  if(statsEl)statsEl.textContent=`Прочитано: ${readCount} / ${total}`;
   el.innerHTML=BOOKS.map((bl,bi)=>`
     <div class="bt">
       <div class="btl bt${bi+1}">${bl.title}</div>
       ${bl.items.map((b,i)=>`
-        <div class="bcard">
+        <div class="bcard ${S.booksRead?.[`${bl.level}-${i}`]?'read':''}">
           <div class="bnum" style="background:${clrs[bi]}22;color:${clrs[bi]};">${bi+1}.${i+1}</div>
           <div class="binfo">
             <h4>${b.n}</h4>
             <div class="bauth">✍️ ${b.auth}</div>
             <p>${b.desc}</p>
             <div class="btags">${b.tags.map(t=>`<span class="btag">#${t}</span>`).join('')}</div>
+			<label class="book-check">
+              <input type="checkbox" ${S.booksRead?.[`${bl.level}-${i}`]?'checked':''} onchange="toggleBookRead('${bl.level}-${i}', this.checked)">
+              Прочитано
+            </label>
           </div>
         </div>`).join('')}
     </div>`).join('');
+}
+function toggleBookRead(key,val){
+  S.booksRead[key]=!!val;
+  saveLocal();
+  renderBooks();
+  notify(val?'✅ Книга отмечена как прочитанная':'↩️ Отметка снята');
 }
 
 // ═══════════════════════════════════════════════
@@ -2478,7 +2650,7 @@ function updDash(){
   const uid_d=document.getElementById('uid-d');if(uid_d)uid_d.value=uid;
 }
 function chStart(){const v=document.getElementById('start-date').value;if(v){S.startDate=new Date(v+'T00:00:00');saveLocal();renderCal();renderSM();updDash();notify('📅 Дата старта обновлена');}}
-function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.customSchedule=null;saveLocal();refreshAll();notify('🗑️ Все данные сброшены');}
+function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.booksRead={};S.customSchedule=null;saveLocal();refreshAll();notify('🗑️ Все данные сброшены');}
 
 // ═══════════════════════════════════════════════
 // CHARTS (Chart.js)
@@ -2853,7 +3025,7 @@ function updFbStatus(ok){
 // ═══════════════════════════════════════════════
 function refreshAll(){
   updDash();renderCal();renderSM();renderDailySched();
-  renderWHist();renderRHist();
+  renderWHist();renderRHist();renderBooks();
 }
 
 // ═══════════════════════════════════════════════
