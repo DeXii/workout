@@ -442,8 +442,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <button class="nb" data-s="progress">📈 Прогресс</button>
       <button class="nb" data-s="charts">📊 Графики</button>
       <button class="nb" data-s="macros">🧮 Макросы</button>
-      <button class="nb" data-s="cal">📅 Трекер</button>
-      <button class="nb" data-s="timer">⏱️ Таймер</button>
     </div>
     <!-- Hamburger -->
     <div class="hamburger" id="hamburger" onclick="toggleMobNav()">
@@ -470,8 +468,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   <button class="nb" data-s="progress" onclick="toggleMobNav()">📈 Прогресс</button>
   <button class="nb" data-s="charts" onclick="toggleMobNav()">📊 Графики</button>
   <button class="nb" data-s="macros" onclick="toggleMobNav()">🧮 Макросы</button>
-  <button class="nb" data-s="cal" onclick="toggleMobNav()">📅 Трекер</button>
-  <button class="nb" data-s="timer" onclick="toggleMobNav()">⏱️ Таймер</button>
 </div>
 
 <!-- Bottom nav (mobile) -->
@@ -1738,57 +1734,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   </div>
 </div>
 
-<!-- ══════════════ ТРЕКЕР ══════════════ -->
-<div id="s-cal" class="sec">
-  <div class="sec-hdr">
-    <div class="sec-t">📅 Трекер тренировок</div>
-    <div class="sec-s">Отмечай выполненные тренировки — синхронизируется через Firebase</div>
-  </div>
-  <div class="card">
-    <div class="leg">
-      <div class="li"><div class="ld" style="background:#7c3aed;"></div>Push</div>
-      <div class="li"><div class="ld" style="background:#00d4ff;"></div>Pull</div>
-      <div class="li"><div class="ld" style="background:#10b981;"></div>Ноги</div>
-      <div class="li"><div class="ld" style="background:#f59e0b;"></div>Full</div>
-      <div class="li"><div class="ld" style="background:#f43f8f;"></div>Бег длинный</div>
-      <div class="li"><div class="ld" style="background:#fb923c;"></div>Спринты</div>
-    </div>
-    <div class="cn">
-      <button class="cnb" onclick="chCM(-1)">◀</button>
-      <div class="cmt" id="cm-t"></div>
-      <button class="cnb" onclick="chCM(1)">▶</button>
-    </div>
-    <div class="mgrid" id="cal-grid">
-      <div class="dh">Пн</div><div class="dh">Вт</div><div class="dh">Ср</div>
-      <div class="dh">Чт</div><div class="dh">Пт</div><div class="dh">Сб</div><div class="dh">Вс</div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════ ТАЙМЕР ══════════════ -->
-<div id="s-timer" class="sec">
-  <div class="sec-hdr">
-    <div class="sec-t">⏱️ Таймер отдыха</div>
-    <div class="sec-s">Между подходами · 60–90 сек оптимально для выносливости</div>
-  </div>
-  <div class="card" style="text-align:center;padding:36px 20px;">
-    <div class="tdisp" id="tdisp">01:30</div>
-    <div style="display:flex;gap:9px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;">
-      <button class="btn btn-g" id="ts" onclick="tStart()">▶ Старт</button>
-      <button class="btn btn-o" onclick="tPause()">⏸ Пауза</button>
-      <button class="btn btn-r" onclick="tReset()">⟲ Сброс</button>
-    </div>
-    <div class="tpre">
-      <button class="btn btn-gh btn-sm" onclick="tSet(30)">30 сек</button>
-      <button class="btn btn-gh btn-sm" onclick="tSet(60)">60 сек</button>
-      <button class="btn btn-gh btn-sm" onclick="tSet(90)">90 сек</button>
-      <button class="btn btn-gh btn-sm" onclick="tSet(120)">2 мин</button>
-      <button class="btn btn-gh btn-sm" onclick="tSet(150)">2:30</button>
-      <button class="btn btn-gh btn-sm" onclick="tSet(180)">3 мин</button>
-    </div>
-  </div>
-</div>
-
 </div><!-- /wrap -->
 
 <!-- MODAL -->
@@ -1891,7 +1836,6 @@ document.querySelectorAll('.mob-nav .nb').forEach(b=>{
 function onSecLoad(s){
   if(s==='dash')updDash();
   if(s==='sched'){renderSM();renderDailySched();}
-  if(s==='cal')renderCal();
   if(s==='progress'){setTodayDates();renderWHist();renderRHist();}
   if(s==='knowledge'){updateKnowledgeSeen();saveLocal();updDash();}
   if(s==='charts')renderCharts();
@@ -1930,7 +1874,7 @@ document.getElementById('main-wrap').addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-touchStartX;
   const dy=e.changedTouches[0].clientY-touchStartY;
   if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){
-    const secs=['dash','sched','workout','run','food','mealplan','shopping','supps','books','knowledge','mental','progress','charts','macros','cal','timer'];
+    const secs=['dash','sched','workout','run','food','mealplan','shopping','supps','books','knowledge','mental','progress','charts','macros'];
     const cur=Array.from(document.querySelectorAll('.sec')).findIndex(s=>s.classList.contains('active'));
     let next=cur+(dx<0?1:-1);
     if(next>=0&&next<secs.length)goSec(secs[next]);
@@ -2787,8 +2731,10 @@ function toggleFocusMode(){
 // ═══════════════════════════════════════════════
 function renderCal(){
   const y=S.calYear,m=S.calMonth;
-  document.getElementById('cm-t').textContent=MONTHS[m]+' '+y;
   const grid=document.getElementById('cal-grid');
+  const title=document.getElementById('cm-t');
+  if(!grid||!title)return;
+  title.textContent=MONTHS[m]+' '+y;
   grid.querySelectorAll('.dc').forEach(c=>c.remove());
   const first=new Date(y,m,1);let dow=first.getDay();if(dow===0)dow=7;dow--;
   const days=new Date(y,m+1,0).getDate();
@@ -3210,16 +3156,6 @@ function wmFinish(){
   closeWorkoutMode();
   notify('🏆 Тренировка завершена и сохранена!');
 }
-
-// ═══════════════════════════════════════════════
-// TIMER
-// ═══════════════════════════════════════════════
-let tTime=90,tRunning=false,tInt=null;
-function tDisp(s){const m=Math.floor(s/60);document.getElementById('tdisp').textContent=`${String(m).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
-function tSet(s){tReset();tTime=s;tDisp(s);}
-function tStart(){if(tRunning)return;tRunning=true;document.getElementById('ts').textContent='⏳ Идёт...';tInt=setInterval(()=>{tTime--;tDisp(tTime);if(tTime<=0){clearInterval(tInt);tRunning=false;tDisp(0);notify('⏰ Время вышло! Следующий подход!');document.getElementById('ts').textContent='▶ Старт';}},1000);}
-function tPause(){clearInterval(tInt);tRunning=false;document.getElementById('ts').textContent='▶ Старт';}
-function tReset(){clearInterval(tInt);tRunning=false;tTime=90;tDisp(90);document.getElementById('ts').textContent='▶ Старт';}
 
 // ═══════════════════════════════════════════════
 // BREATHING
