@@ -8,6 +8,9 @@
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="./js/core/macros.js"></script>
+<script src="./js/core/validation.js"></script>
+<script src="./js/core/state.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -1777,6 +1780,7 @@ let S={
   calMonth:new Date().getMonth(),calYear:new Date().getFullYear(),
   smMonth:new Date().getMonth(),smYear:new Date().getFullYear()
 };
+window.S=S;
 
 function loadLocal(){
   try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
@@ -2026,19 +2030,36 @@ function addSetRow(ei){const container=document.getElementById('sets-'+ei);const
 function addSprintRow(){const container=document.getElementById('sprint-rows');const existing=container.querySelectorAll('.set-row').length;const row=document.createElement('div');row.className='set-row';row.innerHTML=`<span class="set-n">Спринт ${existing+1}:</span><input type="number" id="sp${existing}-m" placeholder="мин" min="0" max="5" style="width:52px;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:5px;border-radius:6px;text-align:center;"><span style="color:var(--t2);">:</span><input type="number" id="sp${existing}-s" placeholder="сек" min="0" max="59" style="width:52px;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:5px;border-radius:6px;text-align:center;"><span style="color:var(--t2);font-size:.78em;">мин:сек</span>`;container.appendChild(row);}
 
 function saveWorkoutLog(){
-  const date=document.getElementById('wl-date').value;const type=document.getElementById('wl-type').value;const note=document.getElementById('wl-note').value;
+  const v=window.ASCore?.validation;
+  const date=v?.sanitizeWorkoutDate(document.getElementById('wl-date').value);
+  const type=document.getElementById('wl-type').value;
+  const note=v?.sanitizeText(document.getElementById('wl-note').value,300)??document.getElementById('wl-note').value;
   if(!date){notify('⚠️ Выбери дату!');return;}
   const exs=WO[type]||WO.push;
   const result={type,note,date,exercises:{},timestamp:new Date().toISOString()};
-  exs.forEach((ex,ei)=>{const sets=[];document.querySelectorAll(`#sets-${ei} .rep-in`).forEach(inp=>{if(inp.value)sets.push(parseInt(inp.value));});if(sets.length>0)result.exercises[ex[0]]=sets;});
+  exs.forEach((ex,ei)=>{
+    const rawSets=[];
+    document.querySelectorAll(`#sets-${ei} .rep-in`).forEach(inp=>rawSets.push(inp.value));
+    const sets=v?.sanitizeWorkoutSets(rawSets)??rawSets.map(s=>parseInt(s,10)).filter(Boolean);
+    if(sets.length>0)result.exercises[ex[0]]=sets;
+  });
   if(!S.workoutLogs[date])S.workoutLogs[date]={};
   S.workoutLogs[date][type]=result;S.done[date]=true;
   logAction('Добавлен лог тренировки '+type.toUpperCase()+' '+date);
   saveLocal();updDash();renderCal();renderWHist();renderHistory();notify('✅ Тренировка сохранена!');
 }
 function saveRunLog(){
-  const date=document.getElementById('rl-date').value;const type=document.getElementById('rl-type').value;const dist=parseFloat(document.getElementById('rl-dist').value)||0;const min=parseInt(document.getElementById('rl-min').value)||0;const sec=parseInt(document.getElementById('rl-sec').value)||0;const hr=parseInt(document.getElementById('rl-hr').value)||0;const note=document.getElementById('rl-note').value;
-  if(!date){notify('⚠️ Выбери дату!');return;}
+  const parsed=window.ASCore?.validation?.sanitizeRunInput({
+    date:document.getElementById('rl-date').value,
+    type:document.getElementById('rl-type').value,
+    dist:document.getElementById('rl-dist').value,
+    min:document.getElementById('rl-min').value,
+    sec:document.getElementById('rl-sec').value,
+    hr:document.getElementById('rl-hr').value,
+    note:document.getElementById('rl-note').value
+  });
+  if(!parsed?.ok){notify(parsed?.error||'⚠️ Проверь данные пробежки');return;}
+  const {date,type,dist,min,sec,hr,note}=parsed.value;
   const totalSec=min*60+sec;const pace=dist>0?Math.round(totalSec/dist):0;
   const sprints=[];document.querySelectorAll('#sprint-rows .set-row').forEach((row,i)=>{const sm=document.getElementById('sp'+i+'-m');const ss=document.getElementById('sp'+i+'-s');if(sm&&ss)sprints.push({m:parseInt(sm.value)||0,s:parseInt(ss.value)||0});});
   const result={type,dist,min,sec,totalSec,pace,hr,note,sprints,timestamp:new Date().toISOString()};
@@ -2770,7 +2791,12 @@ function openDayMod(key,date,type){
   document.querySelectorAll('.mod-opt').forEach(b=>b.addEventListener('click',()=>{S.done[key]=b.dataset.o;saveLocal();renderCal();renderSM();closeMod();}));
   document.getElementById('modal').classList.add('open');
 }
-function markDay(key,val){S.done[key]=val;logAction((val?'Отмечен':'Снят')+' день '+key);saveLocal();updDash();renderCal();renderSM();renderHistory();closeMod();notify(val?'✅ День отмечен!':'↩️ Снято');}
+function markDay(key,val){
+  const updater=window.ASCore?.state?.updateState;
+  if(updater){updater(()=>{S.done[key]=val;});}
+  else {S.done[key]=val;saveLocal();}
+  logAction((val?'Отмечен':'Снят')+' день '+key);updDash();renderCal();renderSM();renderHistory();closeMod();notify(val?'✅ День отмечен!':'↩️ Снято');
+}
 function closeMod(e){if(e&&e.target!==document.getElementById('modal'))return;document.getElementById('modal').classList.remove('open');}
 
 // ═══════════════════════════════════════════════
@@ -2827,8 +2853,23 @@ function updDash(){
   const phasePct=getPhaseOverallProgress();
   const sk=document.getElementById('st-kb');if(sk)sk.textContent=`${phasePct}%`;
 }
-function chStart(){const v=document.getElementById('start-date').value;if(v){S.startDate=new Date(v+'T00:00:00');saveLocal();renderCal();renderSM();updDash();notify('📅 Дата старта обновлена');}}
-function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.booksRead={};S.phaseChecks={p0:{},p1:{},p2:{},p3:{}};S.history=[];S.seenKnowledge={};S.customSchedule=null;saveLocal();refreshAll();notify('🗑️ Все данные сброшены');}
+function chStart(){
+  const v=document.getElementById('start-date').value;
+  const date=window.ASCore?.validation?.sanitizeWorkoutDate(v);
+  if(!date){notify('⚠️ Укажи корректную дату старта');return;}
+  S.startDate=new Date(date+'T00:00:00');
+  saveLocal();renderCal();renderSM();updDash();notify('📅 Дата старта обновлена');
+}
+function resetAll(){
+  if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;
+  const updater=window.ASCore?.state?.updateState;
+  const clearFn=()=>{
+    S.done={};S.workoutLogs={};S.runLogs={};S.booksRead={};S.phaseChecks={p0:{},p1:{},p2:{},p3:{}};
+    S.history=[];S.seenKnowledge={};S.customSchedule=null;
+  };
+  if(updater){updater(clearFn);}else{clearFn();saveLocal();}
+  refreshAll();notify('🗑️ Все данные сброшены');
+}
 
 // ═══════════════════════════════════════════════
 // CHARTS (Chart.js)
@@ -2987,31 +3028,16 @@ function renderChartsStats(){
 // MACROS CALCULATOR
 // ═══════════════════════════════════════════════
 function calcMacros(){
-  const w=parseFloat(document.getElementById('mc-weight').value)||70;
-  const h=parseFloat(document.getElementById('mc-height').value)||175;
-  const age=parseFloat(document.getElementById('mc-age').value)||22;
-  const sex=document.getElementById('mc-sex').value;
-  const act=parseFloat(document.getElementById('mc-activity').value)||1.55;
-  const goal=document.getElementById('mc-goal').value;
-
-  // Mifflin-St Jeor
-  let bmr=sex==='m'?(10*w)+(6.25*h)-(5*age)+5:(10*w)+(6.25*h)-(5*age)-161;
-  const tdee=Math.round(bmr*act);
-
-  let target=tdee;
-  if(goal==='cut')target=Math.round(tdee*0.90);
-  else if(goal==='bulk')target=Math.round(tdee*1.05);
-  else if(goal==='recomp')target=tdee;
-
-  // Macros
-  const protein=Math.round(w*1.8); // 1.8g/kg
-  const fat=Math.round(w*0.9);     // 0.9g/kg
-  const proteinKcal=protein*4;
-  const fatKcal=fat*9;
-  const carbsKcal=Math.max(0,target-proteinKcal-fatKcal);
-  const carbs=Math.round(carbsKcal/4);
-
-  const bmi=(w/(h/100)**2).toFixed(1);
+  const result=window.ASCore?.calculateMacros({
+    weight:document.getElementById('mc-weight').value,
+    height:document.getElementById('mc-height').value,
+    age:document.getElementById('mc-age').value,
+    sex:document.getElementById('mc-sex').value,
+    activity:document.getElementById('mc-activity').value,
+    goal:document.getElementById('mc-goal').value
+  });
+  if(!result){notify('⚠️ Не удалось рассчитать макросы');return;}
+  const {weight:w,tdee,target,protein,fat,carbs,bmi,proteinKcal,fatKcal,carbsKcal,totalKcal,percents,goal}=result;
 
   document.getElementById('cr-tdee').textContent=tdee;
   document.getElementById('cr-target').textContent=target;
@@ -3021,19 +3047,18 @@ function calcMacros(){
   document.getElementById('cr-bmi').textContent=bmi;
 
   // Bars
-  const totalKcal=proteinKcal+fatKcal+carbsKcal;
   document.getElementById('macro-bars').innerHTML=`
     <div class="macro-bar">
-      <div class="macro-bar-lbl"><span>🔵 Белок</span><span>${protein}г · ${proteinKcal} ккал · ${Math.round(proteinKcal/totalKcal*100)}%</span></div>
-      <div class="macro-bar-bg"><div class="macro-bar-fill" style="width:${Math.round(proteinKcal/totalKcal*100)}%;background:var(--a1);"></div></div>
+      <div class="macro-bar-lbl"><span>🔵 Белок</span><span>${protein}г · ${proteinKcal} ккал · ${percents.protein}%</span></div>
+      <div class="macro-bar-bg"><div class="macro-bar-fill" style="width:${percents.protein}%;background:var(--a1);"></div></div>
     </div>
     <div class="macro-bar">
-      <div class="macro-bar-lbl"><span>🔴 Жиры</span><span>${fat}г · ${fatKcal} ккал · ${Math.round(fatKcal/totalKcal*100)}%</span></div>
-      <div class="macro-bar-bg"><div class="macro-bar-fill" style="width:${Math.round(fatKcal/totalKcal*100)}%;background:var(--a5);"></div></div>
+      <div class="macro-bar-lbl"><span>🔴 Жиры</span><span>${fat}г · ${fatKcal} ккал · ${percents.fat}%</span></div>
+      <div class="macro-bar-bg"><div class="macro-bar-fill" style="width:${percents.fat}%;background:var(--a5);"></div></div>
     </div>
     <div class="macro-bar">
-      <div class="macro-bar-lbl"><span>🟢 Углеводы</span><span>${carbs}г · ${carbsKcal} ккал · ${Math.round(carbsKcal/totalKcal*100)}%</span></div>
-      <div class="macro-bar-bg"><div class="macro-bar-fill" style="width:${Math.round(carbsKcal/totalKcal*100)}%;background:var(--a3);"></div></div>
+      <div class="macro-bar-lbl"><span>🟢 Углеводы</span><span>${carbs}г · ${carbsKcal} ккал · ${percents.carbs}%</span></div>
+      <div class="macro-bar-bg"><div class="macro-bar-fill" style="width:${percents.carbs}%;background:var(--a3);"></div></div>
     </div>`;
 
   const goalAdvice={
