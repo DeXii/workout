@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>⚡ Ayanokoji System v2</title>
+<link rel="manifest" href="./manifest.webmanifest">
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -195,6 +196,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 .book-check input{width:16px;height:16px;accent-color:var(--a3);cursor:pointer;}
 .bcard.read{border-color:rgba(16,185,129,.35);background:rgba(16,185,129,.06);}
 .bcard.read .binfo h4{text-decoration:line-through;color:var(--a3);}
+.search-input{background:rgba(255,255,255,.06);border:1px solid var(--brd);color:var(--t1);padding:6px 10px;border-radius:8px;font-size:.8em;min-width:230px;}
+.search-input:focus{outline:none;border-color:var(--a1);}
+.search-panel{display:none;margin-bottom:14px;}
+.search-panel.show{display:block;}
+.search-hit{padding:8px 10px;border-radius:8px;background:var(--bg3);margin-bottom:6px;cursor:pointer;font-size:.81em;border:1px solid transparent;}
+.search-hit:hover{border-color:rgba(0,212,255,.3);}
+.search-hit .sh-sec{color:var(--a1);font-size:.75em;margin-bottom:2px;}
+.focus-mode .sec .card:not(.focus-keep),.focus-mode .sec .stat,.focus-mode .sec .chart-wrap{opacity:.6;}
+.focus-mode .sec.active .card.focus-keep{opacity:1;}
+.top-link{display:inline-block;margin-top:8px;font-size:.75em;color:var(--a1);cursor:pointer;}
+.phase-check{margin-top:12px;padding-top:10px;border-top:1px solid var(--brd);}
+.phase-check .set-row{margin:7px 0;}
+.phase-progress{font-size:.78em;color:var(--a3);font-weight:700;margin-top:8px;}
 
 /* SUPPLEMENTS */
 .supcard{background:var(--bg2);border:1px solid var(--brd);border-radius:14px;overflow:hidden;transition:all .2s;}
@@ -411,6 +425,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <nav class="nav">
   <div class="nav-inner">
     <div class="logo">⚡ AYANOKOJI v2</div>
+    <input class="search-input" id="global-search" placeholder="Поиск по сайту..." oninput="runGlobalSearch(this.value)">
+    <button class="btn btn-gh btn-sm" onclick="toggleFocusMode()">🎯 Фокус</button>
     <div id="navlinks" style="display:flex;gap:4px;flex-wrap:wrap;">
       <button class="nb active" data-s="dash">📊 Главная</button>
       <button class="nb" data-s="sched">🗓️ График</button>
@@ -471,6 +487,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 </div>
 
 <div class="wrap" id="main-wrap">
+<div id="global-search-panel" class="card search-panel focus-keep">
+  <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px;">
+    <h3 style="font-size:.9em;">🔎 Результаты поиска</h3>
+    <button class="btn btn-gh btn-xs" onclick="clearGlobalSearch()">Очистить</button>
+  </div>
+  <div id="global-search-results"></div>
+</div>
 
 <!-- ══════════════ ГЛАВНАЯ ══════════════ -->
 <div id="s-dash" class="sec active">
@@ -507,6 +530,11 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="stat"><span class="stat-n" id="st5" style="color:var(--a6);">0</span><div class="stat-l">Пробежек всего</div></div>
     <div class="stat"><span class="stat-n" id="st6" style="color:#fb923c;">0</span><div class="stat-l">Км пробежано</div></div>
   </div>
+  <div class="g3" style="margin-bottom:18px;">
+    <div class="stat"><span class="stat-n" id="st-books" style="color:var(--a3);">0/0</span><div class="stat-l">Книг прочитано</div></div>
+    <div class="stat"><span class="stat-n" id="st-kb" style="color:var(--a1);">0%</span><div class="stat-l">План 12–15 лет</div></div>
+    <div class="stat"><span class="stat-n" id="st-kbsec" style="color:var(--a4);">0/6</span><div class="stat-l">Темы базы знаний</div></div>
+  </div>
 
   <div class="card" style="margin-bottom:18px;">
     <h3 style="margin-bottom:14px;font-size:.93em;">📈 Прогресс тренировок</h3>
@@ -520,6 +548,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 
   <div style="text-align:center;">
     <button class="btn btn-r btn-sm" onclick="resetAll()">🗑️ Сбросить все данные</button>
+  </div>
+  <div class="card focus-keep" style="margin-top:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+      <h3 style="font-size:.9em;">🕒 История изменений</h3>
+      <button class="btn btn-gh btn-xs" onclick="clearHistory()">Очистить</button>
+    </div>
+    <div id="history-list" style="margin-top:10px;font-size:.8em;color:var(--t2);"></div>
   </div>
 </div>
 
@@ -883,6 +918,15 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   </div>
   <div class="card" style="margin-bottom:18px;padding:12px 16px;">
     <div id="books-read-stats" style="font-size:.83em;color:var(--a3);font-weight:700;">Прочитано: 0 / 0</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+      <select id="books-filter-status" onchange="renderBooks()" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:6px 9px;border-radius:7px;font-size:.8em;">
+        <option value="all">Все</option>
+        <option value="read">Прочитанные</option>
+        <option value="unread">Непрочитанные</option>
+      </select>
+      <input id="books-filter-tag" oninput="renderBooks()" placeholder="Фильтр по тегу..." style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:6px 9px;border-radius:7px;font-size:.8em;min-width:170px;">
+      <input id="books-filter-text" oninput="renderBooks()" placeholder="Поиск по названию/автору..." style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:6px 9px;border-radius:7px;font-size:.8em;min-width:220px;">
+    </div>
   </div>
   <div id="books-ct"></div>
 </div>
@@ -898,10 +942,20 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <button class="it" onclick="sit('kb','plan')">🗺️ План адаптированная программа на 12–15 лет</button>
     <button class="it" onclick="sit('kb','metrics')">📏 Метрики оценки прогресса</button>
   </div>
+  <div class="card focus-keep" style="margin-bottom:14px;padding:10px 14px;">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-gh btn-xs" onclick="jumpToKnowledge('k-21')">2.1</button>
+      <button class="btn btn-gh btn-xs" onclick="jumpToKnowledge('k-22')">2.2</button>
+      <button class="btn btn-gh btn-xs" onclick="jumpToKnowledge('k-23')">2.3</button>
+      <button class="btn btn-gh btn-xs" onclick="jumpToKnowledge('k-24')">2.4</button>
+      <button class="btn btn-gh btn-xs" onclick="jumpToKnowledge('k-25')">2.5</button>
+      <button class="btn btn-gh btn-xs" onclick="jumpToKnowledge('k-26')">2.6</button>
+    </div>
+  </div>
 
   <div id="kb-science" class="itp active">
     <div class="card">
-      <h3 style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.1. Поведенческая и когнитивная психология, теория игр</h3>
+      <h3 id="k-21" style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.1. Поведенческая и когнитивная психология, теория игр</h3>
       <p style="font-size:.83em;font-weight:700;color:var(--a3);margin-bottom:6px;">Литература:</p>
       <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
         <li>Даниэль Канеман, «Думай медленно... решай быстро» (Система 1 и Система 2).</li>
@@ -920,7 +974,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       </ul>
 
       <hr style="border:none;border-top:1px solid var(--brd);margin:14px 0;">
-      <h3 style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.2. Социальная инженерия и профайлинг (этичный уровень)</h3>
+      <h3 id="k-22" style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.2. Социальная инженерия и профайлинг (этичный уровень)</h3>
       <p style="font-size:.83em;font-weight:700;color:var(--a3);margin-bottom:6px;">Источники:</p>
       <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
         <li>Кевин Митник, «Искусство обмана» (социнженерия, методы защиты).</li>
@@ -931,7 +985,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <p style="font-size:.82em;color:var(--t2);line-height:1.7;"><strong>Практика:</strong> ведение досье на реальные ситуации с рефлексией; разбор политических и корпоративных кейсов скрытого влияния.</p>
 
       <hr style="border:none;border-top:1px solid var(--brd);margin:14px 0;">
-      <h3 style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.3. Философия и стратегия</h3>
+      <h3 id="k-23" style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.3. Философия и стратегия</h3>
       <p style="font-size:.83em;font-weight:700;color:var(--a3);margin-bottom:6px;">Книги:</p>
       <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
         <li>Сунь-цзы, «Искусство войны».</li>
@@ -944,7 +998,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       </ul>
 
       <hr style="border:none;border-top:1px solid var(--brd);margin:14px 0;">
-      <h3 style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.4. Математика, логика, статистика</h3>
+      <h3 id="k-24" style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.4. Математика, логика, статистика</h3>
       <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
         <li>Фундаментальные курсы: MIT OpenCourseWare «Mathematics for Computer Science», «Probability and Statistics».</li>
         <li>Отдельно: математическая логика (булева алгебра, предикаты), теория вероятностей, байесовский анализ (книга «The Signal and the Noise» Нейта Сильвера).</li>
@@ -952,7 +1006,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       </ul>
 
       <hr style="border:none;border-top:1px solid var(--brd);margin:14px 0;">
-      <h3 style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.5. Педагогика и нейробиология форсированного обучения</h3>
+      <h3 id="k-25" style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.5. Педагогика и нейробиология форсированного обучения</h3>
       <p style="font-size:.82em;color:var(--t2);line-height:1.7;"><strong>Формирование привычек / управление дофамином:</strong> книга «Атомные привычки» Джеймса Клира, «Сила воли» Роя Баумайстера, протоколы депривации (ограничение удовольствий для повышения чувствительности).</p>
       <p style="font-size:.83em;font-weight:700;color:var(--a4);margin:10px 0 6px;">Управление стрессом и восстановлением:</p>
       <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
@@ -963,7 +1017,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       </ul>
 
       <hr style="border:none;border-top:1px solid var(--brd);margin:14px 0;">
-      <h3 style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.6. Боевые искусства и физическая подготовка</h3>
+      <h3 id="k-26" style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.6. Боевые искусства и физическая подготовка</h3>
       <p style="font-size:.83em;font-weight:700;color:var(--a3);margin-bottom:6px;">Направления (синтез):</p>
       <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
         <li>Кратом маг (филиппинское боевое искусство: работа с холодным оружием, пустыми руками, развитие периферийного зрения).</li>
@@ -978,6 +1032,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
         <li>Павел Цацулин, «Войди в зону» (система силы и гибкости).</li>
         <li>Видеокурс «SEALFIT Kokoro Camp» как ориентир экстремальной подготовки.</li>
       </ul>
+      <span class="top-link" onclick="document.getElementById('s-knowledge').scrollIntoView({behavior:'smooth'})">↑ Наверх раздела</span>
     </div>
   </div>
 
@@ -1013,6 +1068,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
             </ul>
           </li>
         </ul>
+        <div class="phase-check" id="phase-check-p0"></div>
       </div>
     </div>
 
@@ -1045,6 +1101,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
           </li>
           <li><strong>Маскировка:</strong> работа над выражением лица — постоянное ношение «нейтральной маски» в общественных местах (магазин, транспорт). Общение с людьми на минималках, отработка безэмоциональных фраз.</li>
         </ul>
+        <div class="phase-check" id="phase-check-p1"></div>
       </div>
     </div>
 
@@ -1066,6 +1123,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
           </li>
           <li><strong>Безопасное тестирование:</strong> дебаты, переговоры, модельные ООН, городские квесты с психологическим давлением.</li>
         </ul>
+        <div class="phase-check" id="phase-check-p2"></div>
       </div>
     </div>
 
@@ -1079,6 +1137,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
           <li><strong>Стресс-тест:</strong> работа кризис-менеджером в реальном бизнесе, участие в соревнованиях по экстремальному ультрамарафону или специализированных лагерях выживания.</li>
           <li><strong>Финальный экзамен:</strong> разработать и реализовать сложный социальный проект (благотворительный фонд, стартап), удерживая управление в тени и при этом искренне взаимодействуя с командой.</li>
         </ul>
+        <div class="phase-check" id="phase-check-p3"></div>
       </div>
     </div>
   </div>
@@ -1766,26 +1825,43 @@ localStorage.setItem('ay_uid',uid);
 let S={
   done:{},workoutLogs:{},runLogs:{},customSchedule:null,
   booksRead:{},
+  phaseChecks:{p0:{},p1:{},p2:{},p3:{}},
+  history:[],
+  seenKnowledge:{},
   startDate:new Date(2025,0,6),
   calMonth:new Date().getMonth(),calYear:new Date().getFullYear(),
   smMonth:new Date().getMonth(),smYear:new Date().getFullYear()
 };
 
 function loadLocal(){
-  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.booksRead=p.booksRead||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
+  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
 }
 function saveLocal(){
-  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
-       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
+  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
+       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
 }
 function loadCloud(cb){
   if(!fbOk){if(cb)cb();return;}
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.booksRead=d.booksRead||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
+    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
     if(cb)cb();
   }).catch(()=>{if(cb)cb();});
 }
+
+function esc(v){
+  return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function logAction(text){
+  const item={ts:Date.now(),text};
+  S.history=[item,...(S.history||[])].slice(0,80);
+}
+function renderHistory(){
+  const el=document.getElementById('history-list');if(!el)return;
+  if(!S.history||S.history.length===0){el.innerHTML='<p style="color:var(--t3);">Пока нет изменений.</p>';return;}
+  el.innerHTML=S.history.slice(0,12).map(h=>`<div style="padding:7px 0;border-bottom:1px solid var(--brd);display:flex;justify-content:space-between;gap:10px;"><span>${esc(h.text)}</span><span style="color:var(--t3);white-space:nowrap;">${new Date(h.ts).toLocaleString('ru-RU',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit'})}</span></div>`).join('');
+}
+function clearHistory(){S.history=[];saveLocal();renderHistory();notify('🧹 История очищена');}
 function syncId(){const v=document.getElementById('sync-in').value.trim();if(!v){notify('⚠️ Введи ID');return;}uid=v;localStorage.setItem('ay_uid',uid);loadCloud(()=>{saveLocal();refreshAll();notify('✅ Синхронизировано!');});}
 function cpUid(){navigator.clipboard.writeText(uid).then(()=>notify('📋 ID скопирован!')).catch(()=>notify('ID: '+uid));}
 function newId(){if(!confirm('Создать новый ID?'))return;uid='u_'+Math.random().toString(36).substr(2,9)+Date.now().toString(36);localStorage.setItem('ay_uid',uid);saveLocal();refreshAll();notify('🆕 Новый ID создан');}
@@ -1817,6 +1893,7 @@ function onSecLoad(s){
   if(s==='sched'){renderSM();renderDailySched();}
   if(s==='cal')renderCal();
   if(s==='progress'){setTodayDates();renderWHist();renderRHist();}
+  if(s==='knowledge'){updateKnowledgeSeen();saveLocal();updDash();}
   if(s==='charts')renderCharts();
   if(s==='mealplan')renderMealPlan();
   if(s==='shopping')renderShopping();
@@ -1899,7 +1976,7 @@ function buildEditorForms(trainData,restData){
 }
 function addSchedRow(){['ed-train','ed-rest'].forEach(id=>{const el=document.getElementById(id);const div=document.createElement('div');div.className='edit-row';div.innerHTML=`<input class="et" value="00:00"><input class="ec" value="Новая активность"><select class="eg">${['train','study','food','mind','rest','chess','sleep','run','work'].map(v=>`<option value="${v}">${v}</option>`).join('')}</select>`;el.appendChild(div);});}
 function getEdData(containerId){const rows=document.querySelectorAll(`#${containerId} .edit-row`);return Array.from(rows).map(r=>{const t=r.querySelector('.et').value;const c=r.querySelector('.ec').value;const g=r.querySelector('.eg').value;const tagLabels={train:'💪 Трен.',study:'📖 Учёба',food:'🍽️ Еда',mind:'🧘 Ментал',rest:'🎯 Отдых',chess:'♟️ EF',sleep:'😴 Сон',run:'🏃 Бег',work:'💼 Работа'};return[t,c,g,tagLabels[g]||'🎯'];});}
-function saveCustomSched(){S.customSchedule={trainDay:getEdData('ed-train'),restDay:getEdData('ed-rest')};saveLocal();renderDailySched();notify('✅ Расписание сохранено!');}
+function saveCustomSched(){S.customSchedule={trainDay:getEdData('ed-train'),restDay:getEdData('ed-rest')};logAction('Обновлено расписание');saveLocal();renderDailySched();renderHistory();notify('✅ Расписание сохранено!');}
 function resetCustomSched(){if(!confirm('Сбросить?'))return;S.customSchedule=null;saveLocal();renderDailySched();notify('↩️ Сброшено');}
 
 function renderSM(){
@@ -2012,7 +2089,8 @@ function saveWorkoutLog(){
   exs.forEach((ex,ei)=>{const sets=[];document.querySelectorAll(`#sets-${ei} .rep-in`).forEach(inp=>{if(inp.value)sets.push(parseInt(inp.value));});if(sets.length>0)result.exercises[ex[0]]=sets;});
   if(!S.workoutLogs[date])S.workoutLogs[date]={};
   S.workoutLogs[date][type]=result;S.done[date]=true;
-  saveLocal();updDash();renderCal();renderWHist();notify('✅ Тренировка сохранена!');
+  logAction('Добавлен лог тренировки '+type.toUpperCase()+' '+date);
+  saveLocal();updDash();renderCal();renderWHist();renderHistory();notify('✅ Тренировка сохранена!');
 }
 function saveRunLog(){
   const date=document.getElementById('rl-date').value;const type=document.getElementById('rl-type').value;const dist=parseFloat(document.getElementById('rl-dist').value)||0;const min=parseInt(document.getElementById('rl-min').value)||0;const sec=parseInt(document.getElementById('rl-sec').value)||0;const hr=parseInt(document.getElementById('rl-hr').value)||0;const note=document.getElementById('rl-note').value;
@@ -2021,7 +2099,8 @@ function saveRunLog(){
   const sprints=[];document.querySelectorAll('#sprint-rows .set-row').forEach((row,i)=>{const sm=document.getElementById('sp'+i+'-m');const ss=document.getElementById('sp'+i+'-s');if(sm&&ss)sprints.push({m:parseInt(sm.value)||0,s:parseInt(ss.value)||0});});
   const result={type,dist,min,sec,totalSec,pace,hr,note,sprints,timestamp:new Date().toISOString()};
   if(!S.runLogs[date])S.runLogs[date]={};S.runLogs[date][type]=result;S.done[date]=true;
-  saveLocal();updDash();renderCal();renderRHist();notify('✅ Пробежка сохранена!');
+  logAction('Добавлен лог бега '+type+' '+date);
+  saveLocal();updDash();renderCal();renderRHist();renderHistory();notify('✅ Пробежка сохранена!');
 }
 function setTodayDates(){const t=new Date();const ds=`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}-${String(t.getDate()).padStart(2,'0')}`;const wld=document.getElementById('wl-date');if(wld&&!wld.value)wld.value=ds;const rld=document.getElementById('rl-date');if(rld&&!rld.value)rld.value=ds;buildLogForm();}
 
@@ -2614,10 +2693,29 @@ function renderBooks(){
   const readCount=Object.values(S.booksRead||{}).filter(Boolean).length;
   const statsEl=document.getElementById('books-read-stats');
   if(statsEl)statsEl.textContent=`Прочитано: ${readCount} / ${total}`;
-  el.innerHTML=BOOKS.map((bl,bi)=>`
+  const status=(document.getElementById('books-filter-status')?.value||'all').toLowerCase();
+  const tagQ=(document.getElementById('books-filter-tag')?.value||'').trim().toLowerCase();
+  const textQ=(document.getElementById('books-filter-text')?.value||'').trim().toLowerCase();
+  el.innerHTML=BOOKS.map((bl,bi)=>{
+    const items=bl.items.filter((b,i)=>{
+      const key=`${bl.level}-${i}`;
+      const isRead=!!S.booksRead?.[key];
+      if(status==='read'&&!isRead)return false;
+      if(status==='unread'&&isRead)return false;
+      if(tagQ&&!b.tags.some(t=>String(t).toLowerCase().includes(tagQ)))return false;
+      if(textQ){
+        const hay=`${b.n} ${b.auth} ${b.desc} ${b.tags.join(' ')}`.toLowerCase();
+        if(!hay.includes(textQ))return false;
+      }
+      return true;
+    });
+    if(items.length===0)return '';
+    return`
     <div class="bt">
       <div class="btl bt${bi+1}">${bl.title}</div>
-      ${bl.items.map((b,i)=>`
+      ${items.map((b,iRaw)=>{
+        const i=bl.items.indexOf(b);
+        return`
         <div class="bcard ${S.booksRead?.[`${bl.level}-${i}`]?'read':''}">
           <div class="bnum" style="background:${clrs[bi]}22;color:${clrs[bi]};">${bi+1}.${i+1}</div>
           <div class="binfo">
@@ -2630,14 +2728,58 @@ function renderBooks(){
               Прочитано
             </label>
           </div>
-        </div>`).join('')}
-    </div>`).join('');
+        </div>`;}).join('')}
+    </div>`;}).join('');
 }
 function toggleBookRead(key,val){
   S.booksRead[key]=!!val;
+  logAction((val?'Прочитана':'Снята отметка')+' книга '+key);
   saveLocal();
   renderBooks();
+  updDash();
+  renderHistory();
   notify(val?'✅ Книга отмечена как прочитанная':'↩️ Отметка снята');
+}
+
+function jumpToKnowledge(id){
+  sit('kb','science');
+  const el=document.getElementById(id);
+  if(el)el.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function runGlobalSearch(q){
+  const panel=document.getElementById('global-search-panel');
+  const res=document.getElementById('global-search-results');
+  if(!panel||!res)return;
+  const v=(q||'').trim().toLowerCase();
+  if(!v){panel.classList.remove('show');res.innerHTML='';return;}
+  const scopes=[
+    {sec:'books',title:'Литература',el:document.getElementById('s-books')},
+    {sec:'knowledge',title:'База знаний',el:document.getElementById('s-knowledge')},
+    {sec:'mental',title:'Ментал',el:document.getElementById('s-mental')},
+    {sec:'progress',title:'Прогресс',el:document.getElementById('s-progress')},
+  ].filter(s=>s.el);
+  const hits=[];
+  scopes.forEach(s=>{
+    const text=(s.el.innerText||'').toLowerCase();
+    const idx=text.indexOf(v);
+    if(idx>=0){
+      const sn=s.el.innerText.slice(Math.max(0,idx-70),Math.min(s.el.innerText.length,idx+130)).replace(/\s+/g,' ').trim();
+      hits.push({sec:s.sec,title:s.title,sn});
+    }
+  });
+  panel.classList.add('show');
+  if(hits.length===0){res.innerHTML='<p style="font-size:.8em;color:var(--t3);">Ничего не найдено.</p>';return;}
+  res.innerHTML=hits.map(h=>`<div class="search-hit" onclick="goSec('${h.sec}')"><div class="sh-sec">${h.title}</div><div>${esc(h.sn)}</div></div>`).join('');
+}
+function clearGlobalSearch(){
+  const i=document.getElementById('global-search');if(i)i.value='';
+  runGlobalSearch('');
+}
+function toggleFocusMode(){
+  document.body.classList.toggle('focus-mode');
+  localStorage.setItem('ay_focus_mode',document.body.classList.contains('focus-mode')?'1':'0');
+  notify(document.body.classList.contains('focus-mode')?'🎯 Режим фокуса включён':'📖 Режим фокуса выключен');
 }
 
 // ═══════════════════════════════════════════════
@@ -2682,7 +2824,7 @@ function openDayMod(key,date,type){
   document.querySelectorAll('.mod-opt').forEach(b=>b.addEventListener('click',()=>{S.done[key]=b.dataset.o;saveLocal();renderCal();renderSM();closeMod();}));
   document.getElementById('modal').classList.add('open');
 }
-function markDay(key,val){S.done[key]=val;saveLocal();updDash();renderCal();renderSM();closeMod();notify(val?'✅ День отмечен!':'↩️ Снято');}
+function markDay(key,val){S.done[key]=val;logAction((val?'Отмечен':'Снят')+' день '+key);saveLocal();updDash();renderCal();renderSM();renderHistory();closeMod();notify(val?'✅ День отмечен!':'↩️ Снято');}
 function closeMod(e){if(e&&e.target!==document.getElementById('modal'))return;document.getElementById('modal').classList.remove('open');}
 
 // ═══════════════════════════════════════════════
@@ -2731,9 +2873,16 @@ function updDash(){
 
   const sd=document.getElementById('start-date');if(sd)sd.value=dKey(S.startDate);
   const uid_d=document.getElementById('uid-d');if(uid_d)uid_d.value=uid;
+  const booksTotal=BOOKS.reduce((a,b)=>a+b.items.length,0);
+  const booksRead=Object.values(S.booksRead||{}).filter(Boolean).length;
+  const sb=document.getElementById('st-books');if(sb)sb.textContent=`${booksRead}/${booksTotal}`;
+  const secDone=Object.keys(S.seenKnowledge||{}).length;
+  const sks=document.getElementById('st-kbsec');if(sks)sks.textContent=`${secDone}/6`;
+  const phasePct=getPhaseOverallProgress();
+  const sk=document.getElementById('st-kb');if(sk)sk.textContent=`${phasePct}%`;
 }
 function chStart(){const v=document.getElementById('start-date').value;if(v){S.startDate=new Date(v+'T00:00:00');saveLocal();renderCal();renderSM();updDash();notify('📅 Дата старта обновлена');}}
-function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.booksRead={};S.customSchedule=null;saveLocal();refreshAll();notify('🗑️ Все данные сброшены');}
+function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.booksRead={};S.phaseChecks={p0:{},p1:{},p2:{},p3:{}};S.history=[];S.seenKnowledge={};S.customSchedule=null;saveLocal();refreshAll();notify('🗑️ Все данные сброшены');}
 
 // ═══════════════════════════════════════════════
 // CHARTS (Chart.js)
@@ -3056,7 +3205,8 @@ function wmFinish(){
   if(!S.workoutLogs[dateStr])S.workoutLogs[dateStr]={};
   S.workoutLogs[dateStr][WM.type]=log;
   S.done[dateStr]=true;
-  saveLocal();updDash();renderCal();renderSM();
+  logAction('Завершена тренировка '+WM.type.toUpperCase()+' '+dateStr);
+  saveLocal();updDash();renderCal();renderSM();renderHistory();
   closeWorkoutMode();
   notify('🏆 Тренировка завершена и сохранена!');
 }
@@ -3094,6 +3244,51 @@ function notify(msg){
   if(notifT)clearTimeout(notifT);notifT=setTimeout(()=>n.classList.remove('show'),3000);
 }
 
+const PHASE_TASKS={
+  p0:['Изоляция','Сенсорная диета','Протокол дисциплины','Медитативный интенсив','Методики подавления эмоций'],
+  p1:['Образование','Физический блок','Тренировка интеллекта','Маскировка'],
+  p2:['Выбор среды','Входная позиция','Практические шаги','Безопасное тестирование'],
+  p3:['Постановка личных целей','Эмоциональная реабилитация','Стресс-тест','Финальный экзамен']
+};
+function getPhaseProgress(phase){
+  const tasks=PHASE_TASKS[phase]||[];
+  const done=tasks.filter((_,i)=>S.phaseChecks?.[phase]?.[i]).length;
+  const pct=tasks.length?Math.round(done/tasks.length*100):0;
+  return{done,total:tasks.length,pct};
+}
+function getPhaseOverallProgress(){
+  const vals=Object.keys(PHASE_TASKS).map(p=>getPhaseProgress(p).pct);
+  return Math.round(vals.reduce((a,b)=>a+b,0)/vals.length||0);
+}
+function togglePhaseTask(phase,idx,val){
+  if(!S.phaseChecks[phase])S.phaseChecks[phase]={};
+  S.phaseChecks[phase][idx]=!!val;
+  logAction(`Обновлена ${phase.toUpperCase()} задача ${idx+1}`);
+  saveLocal();
+  renderPhaseChecks();
+  updDash();
+  renderHistory();
+}
+function renderPhaseChecks(){
+  Object.keys(PHASE_TASKS).forEach(phase=>{
+    const el=document.getElementById(`phase-check-${phase}`);if(!el)return;
+    const p=getPhaseProgress(phase);
+    el.innerHTML=`
+      <h4 style="font-size:.82em;color:var(--a1);margin-bottom:6px;">✅ Чеклист фазы</h4>
+      ${PHASE_TASKS[phase].map((task,i)=>`<label class="set-row"><input type="checkbox" ${S.phaseChecks?.[phase]?.[i]?'checked':''} onchange="togglePhaseTask('${phase}',${i},this.checked)"> ${task}</label>`).join('')}
+      <div class="phase-progress">Прогресс: ${p.done}/${p.total} (${p.pct}%)</div>
+    `;
+  });
+}
+
+function updateKnowledgeSeen(){
+  const ids=['k-21','k-22','k-23','k-24','k-25','k-26'];
+  ids.forEach(id=>{
+    const el=document.getElementById(id);
+    if(el&&el.getBoundingClientRect().top<window.innerHeight)S.seenKnowledge[id]=true;
+  });
+}
+
 // ═══════════════════════════════════════════════
 // FIREBASE STATUS
 // ═══════════════════════════════════════════════
@@ -3108,7 +3303,20 @@ function updFbStatus(ok){
 // ═══════════════════════════════════════════════
 function refreshAll(){
   updDash();renderCal();renderSM();renderDailySched();
-  renderWHist();renderRHist();renderBooks();
+  renderWHist();renderRHist();renderBooks();renderPhaseChecks();renderHistory();updateKnowledgeSeen();
+}
+
+function maybeShowDailyReminder(){
+  const key='ay_last_reminder';
+  const today=dKey(new Date());
+  if(localStorage.getItem(key)===today)return;
+  const booksRead=Object.values(S.booksRead||{}).filter(Boolean).length;
+  const totalBooks=BOOKS.reduce((a,b)=>a+b.items.length,0);
+  const phaseProgress=getPhaseOverallProgress();
+  setTimeout(()=>{
+    notify(`📌 План дня: чтение 30 мин · книги ${booksRead}/${totalBooks} · план ${phaseProgress}%`);
+    localStorage.setItem(key,today);
+  },1200);
 }
 
 // ═══════════════════════════════════════════════
@@ -3120,6 +3328,11 @@ loadLocal();
 renderFoods();
 renderSupps();
 renderBooks();
+renderPhaseChecks();
+renderHistory();
+
+if(localStorage.getItem('ay_focus_mode')==='1'){document.body.classList.add('focus-mode');}
+window.addEventListener('scroll',()=>{updateKnowledgeSeen();});
 
 // Firebase status check
 if(fbOk){
@@ -3141,6 +3354,7 @@ if(hrvD&&!hrvD.value) hrvD.value=dKey(new Date());
   buildLogForm();
   renderMealPlan();
   renderShopping();
+  maybeShowDailyReminder();
 
   // Hide loading
   setTimeout(()=>{
@@ -3148,6 +3362,10 @@ if(hrvD&&!hrvD.value) hrvD.value=dKey(new Date());
     if(ld)ld.classList.add('done');
   },600);
 });
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
 
 // ═══════════════════════════════════════════════
 // RECIPE MODAL (клик по блюду в плане питания)
@@ -3752,6 +3970,9 @@ async function saveJournal(){
   if(!d.q1&&!d.q5){notify('⚠️ Заполни хотя бы 1-й и 5-й вопросы');return;}
   if(!fbOk){notify('⚠️ Нет Firebase');return;}
   await firebase.database().ref('users/'+uid+'/journal/'+date).set(d);
+  logAction('Сохранена запись дневника '+date);
+  saveLocal();
+  renderHistory();
   notify('📓 Запись за '+date+' сохранена!');
   clearJournal();
   const jd=document.getElementById('jour-date');
@@ -3788,16 +4009,16 @@ async function loadJournalHistory(){
     <div style="background:var(--bg3);border-radius:9px;padding:12px;margin-bottom:8px;cursor:pointer;transition:all .2s;"
          onclick="this.querySelector('.jour-body').style.display=this.querySelector('.jour-body').style.display==='none'?'block':'none'">
       <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-        <span style="font-weight:700;font-size:.85em;color:var(--a4);">📅 ${e.date}</span>
+        <span style="font-weight:700;font-size:.85em;color:var(--a4);">📅 ${esc(e.date)}</span>
         <span style="font-size:.72em;color:var(--t3);">▼ развернуть</span>
       </div>
-      ${e.q5?`<div style="font-size:.78em;color:var(--a3);">💚 ${e.q5.slice(0,60)}${e.q5.length>60?'...':''}</div>`:''}
+      ${e.q5?`<div style="font-size:.78em;color:var(--a3);">💚 ${esc(e.q5.slice(0,60))}${e.q5.length>60?'...':''}</div>`:''}
       <div class="jour-body" style="display:none;margin-top:10px;padding-top:10px;border-top:1px solid var(--brd);">
-        ${e.q1?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a5);margin-bottom:2px;">❌ Что не так:</div><div style="font-size:.8em;color:var(--t2);">${e.q1}</div></div>`:''}
-        ${e.q2?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a4);margin-bottom:2px;">🤔 Решение:</div><div style="font-size:.8em;color:var(--t2);">${e.q2}</div></div>`:''}
-        ${e.q3bias&&e.q3bias!=='— Выбери из списка —'&&e.q3bias!==''?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a2);margin-bottom:2px;">🧠 Искажение: ${e.q3bias}</div>${e.q3?`<div style="font-size:.8em;color:var(--t2);">${e.q3}</div>`:''}</div>`:''}
-        ${e.q4?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a3);margin-bottom:2px;">✅ Сделаю иначе:</div><div style="font-size:.8em;color:var(--t2);">${e.q4}</div></div>`:''}
-        ${e.q5?`<div><div style="font-size:.72em;color:var(--a1);margin-bottom:2px;">💙 Благодарность:</div><div style="font-size:.8em;color:var(--t2);">${e.q5}</div></div>`:''}
+        ${e.q1?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a5);margin-bottom:2px;">❌ Что не так:</div><div style="font-size:.8em;color:var(--t2);">${esc(e.q1)}</div></div>`:''}
+        ${e.q2?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a4);margin-bottom:2px;">🤔 Решение:</div><div style="font-size:.8em;color:var(--t2);">${esc(e.q2)}</div></div>`:''}
+        ${e.q3bias&&e.q3bias!=='— Выбери из списка —'&&e.q3bias!==''?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a2);margin-bottom:2px;">🧠 Искажение: ${esc(e.q3bias)}</div>${e.q3?`<div style="font-size:.8em;color:var(--t2);">${esc(e.q3)}</div>`:''}</div>`:''}
+        ${e.q4?`<div style="margin-bottom:8px;"><div style="font-size:.72em;color:var(--a3);margin-bottom:2px;">✅ Сделаю иначе:</div><div style="font-size:.8em;color:var(--t2);">${esc(e.q4)}</div></div>`:''}
+        ${e.q5?`<div><div style="font-size:.72em;color:var(--a1);margin-bottom:2px;">💙 Благодарность:</div><div style="font-size:.8em;color:var(--t2);">${esc(e.q5)}</div></div>`:''}
       </div>
     </div>`).join('');
 }
