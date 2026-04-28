@@ -1,0 +1,9 @@
+{
+  "name": "Ayanokoji System v2",
+  "short_name": "Ayanokoji",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0a0a0f",
+  "theme_color": "#00d4ff",
+  "icons": []
+}
