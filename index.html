@@ -421,13 +421,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <button class="nb" data-s="shopping">🛒 Закупки</button>
       <button class="nb" data-s="supps">💊 БАДы</button>
       <button class="nb" data-s="books">📚 Литература</button>
+      <button class="nb" data-s="knowledge">🧠 База знаний</button>
       <button class="nb" data-s="mental">🧠 Ментал</button>
       <button class="nb" data-s="progress">📈 Прогресс</button>
       <button class="nb" data-s="charts">📊 Графики</button>
       <button class="nb" data-s="macros">🧮 Макросы</button>
       <button class="nb" data-s="cal">📅 Трекер</button>
       <button class="nb" data-s="timer">⏱️ Таймер</button>
-	  <button class="nb" data-s="knowledge">🧠 База знаний</button>
     </div>
     <!-- Hamburger -->
     <div class="hamburger" id="hamburger" onclick="toggleMobNav()">
@@ -449,13 +449,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   <button class="nb" data-s="shopping" onclick="toggleMobNav()">🛒 Закупки</button>
   <button class="nb" data-s="supps" onclick="toggleMobNav()">💊 БАДы</button>
   <button class="nb" data-s="books" onclick="toggleMobNav()">📚 Литература</button>
+  <button class="nb" data-s="knowledge" onclick="toggleMobNav()">🧠 База знаний</button>
   <button class="nb" data-s="mental" onclick="toggleMobNav()">🧠 Ментал</button>
   <button class="nb" data-s="progress" onclick="toggleMobNav()">📈 Прогресс</button>
   <button class="nb" data-s="charts" onclick="toggleMobNav()">📊 Графики</button>
   <button class="nb" data-s="macros" onclick="toggleMobNav()">🧮 Макросы</button>
   <button class="nb" data-s="cal" onclick="toggleMobNav()">📅 Трекер</button>
   <button class="nb" data-s="timer" onclick="toggleMobNav()">⏱️ Таймер</button>
-  <button class="nb" data-s="knowledge" onclick="toggleMobNav()">🧠 База знаний</button>
 </div>
 
 <!-- Bottom nav (mobile) -->
@@ -881,13 +881,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   <div class="card" style="margin-bottom:18px;padding:13px 16px;">
     <p style="font-size:.82em;color:var(--t2);line-height:1.65;">📌 Читай последовательно по уровням. 30 мин ежедневно = 1–2 книги в месяц.</p>
   </div>
-	<div class="card" style="margin-bottom:18px;padding:12px 16px;">
+  <div class="card" style="margin-bottom:18px;padding:12px 16px;">
     <div id="books-read-stats" style="font-size:.83em;color:var(--a3);font-weight:700;">Прочитано: 0 / 0</div>
   </div>
   <div id="books-ct"></div>
 </div>
 
-	<!-- ══════════════ БАЗА ЗНАНИЙ ══════════════ -->
+<!-- ══════════════ БАЗА ЗНАНИЙ ══════════════ -->
 <div id="s-knowledge" class="sec">
   <div class="sec-hdr">
     <div class="sec-t">🧠 База знаний</div>
@@ -918,7 +918,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
         <li>Практикум по холодному чтению (книга Яна Роуза «Холодное чтение»).</li>
         <li>Постоянный анализ кейсов из судебной психологии, переговорных практик.</li>
       </ul>
-   <hr style="border:none;border-top:1px solid var(--brd);margin:14px 0;">
+
+      <hr style="border:none;border-top:1px solid var(--brd);margin:14px 0;">
       <h3 style="font-size:.93em;margin-bottom:12px;color:var(--a1);">2.2. Социальная инженерия и профайлинг (этичный уровень)</h3>
       <p style="font-size:.83em;font-weight:700;color:var(--a3);margin-bottom:6px;">Источники:</p>
       <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
@@ -977,19 +978,106 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
         <li>Павел Цацулин, «Войди в зону» (система силы и гибкости).</li>
         <li>Видеокурс «SEALFIT Kokoro Camp» как ориентир экстремальной подготовки.</li>
       </ul>
+    </div>
+  </div>
+
+  <div id="kb-plan" class="itp">
+    <div class="itabs" style="margin-bottom:14px;">
+      <button class="it active" onclick="sit('kbp','p0')">Фаза 0</button>
+      <button class="it" onclick="sit('kbp','p1')">Фаза 1</button>
+      <button class="it" onclick="sit('kbp','p2')">Фаза 2</button>
+      <button class="it" onclick="sit('kbp','p3')">Фаза 3</button>
+    </div>
+
+    <div id="kbp-p0" class="itp active">
+      <div class="card">
+        <h3 style="font-size:.93em;margin-bottom:11px;color:var(--a2);">Фаза 0. Психологическая перепрошивка (1–2 года)</h3>
+        <p style="font-size:.82em;color:var(--t2);margin-bottom:9px;"><strong>Цель:</strong> разрушить старые социально-эмоциональные паттерны и выстроить базовый самоконтроль.</p>
+        <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
+          <li><strong>Изоляция:</strong> полностью исключить соцсети, развлекательный контент, пустые разговоры. Допускается только учебная/тренировочная коммуникация и минимальный быт.</li>
+          <li><strong>Сенсорная диета:</strong> 30 дней без музыки, фильмов, игр. Только научная литература, классические тексты, тренировки.</li>
+          <li><strong>Протокол дисциплины:</strong>
+            <ul style="padding-left:18px;margin-top:4px;">
+              <li>Ежедневный подъём в 4:30, отбой в 22:00 без исключений.</li>
+              <li>Холодный душ утром и вечером.</li>
+              <li>Дневник самоконтроля с метриками: время нецелевых мыслей, количество эмоциональных всплесков, выполнение распорядка (в %).</li>
+              <li>Практика «пустого взгляда»: 20 минут в день фиксация расфокусированного взгляда на точке, контроль мыслей.</li>
+            </ul>
+          </li>
+          <li><strong>Медитативный интенсив:</strong> 10-дневный курс випассаны (по Гоенке) для обуздания ума, встречи с болью/дискомфортом.</li>
+          <li><strong>Методики подавления эмоций:</strong>
+            <ul style="padding-left:18px;margin-top:4px;">
+              <li>Техника «Стена» (мысленное отгораживание от раздражителя).</li>
+              <li>Когнитивная переоценка (ABC-техника из КПТ): событие → мысль → реакция, замена интерпретации.</li>
+              <li>Просмотр провоцирующих сцен (кино, новости) с тренировкой нейтрального выражения лица перед зеркалом.</li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="kbp-p1" class="itp">
+      <div class="card">
+        <h3 style="font-size:.93em;margin-bottom:11px;color:var(--a1);">Фаза 1. Академический и физический фундамент (3–4 года)</h3>
+        <p style="font-size:.82em;color:var(--t2);margin-bottom:9px;"><strong>Цель:</strong> выйти на уровень выпускника топ-вуза по основным дисциплинам и мастера спорта в боевых единоборствах (норматив).</p>
+        <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
+          <li><strong>Образование:</strong> экстернат или интенсивная самоподготовка по программам:
+            <ul style="padding-left:18px;margin-top:4px;">
+              <li>Математика и статистика (MIT OCW).</li>
+              <li>Физика (Фейнмановские лекции).</li>
+              <li>Философия (курс «Философия человека» от ВШЭ на openedu).</li>
+              <li>Психология (базовый курс + отдельные модули по влиянию).</li>
+            </ul>
+          </li>
+          <li><strong>Физический блок:</strong> 2 раза в день, 6 дней в неделю.
+            <ul style="padding-left:18px;margin-top:4px;">
+              <li>Утро: бег 10 км / интервальный спринт + силовая работа (приседания, становая, подтягивания).</li>
+              <li>Вечер: 2–3 часа боевых искусств (кратом маг + самбо), спарринги, добивание на снарядах.</li>
+            </ul>
+          </li>
+          <li><strong>Тренировка интеллекта:</strong>
+            <ul style="padding-left:18px;margin-top:4px;">
+              <li>Ежедневно: шахматы/го против сильного движка, разбор партий.</li>
+              <li>Dual N-Back (30 минут в день).</li>
+              <li>Чтение с усложнением: 3 книги в неделю (одна по специальности, одна философская, одна прикладная).</li>
+              <li>Решение кейсов: «Дилемма заключённого» и её вариации, анализ многоходовых политических/экономических ситуаций.</li>
+            </ul>
+          </li>
+          <li><strong>Маскировка:</strong> работа над выражением лица — постоянное ношение «нейтральной маски» в общественных местах (магазин, транспорт). Общение с людьми на минималках, отработка безэмоциональных фраз.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="kbp-p2" class="itp">
+      <div class="card">
+        <h3 style="font-size:.93em;margin-bottom:11px;color:var(--a4);">Фаза 2. Полевая интеграция — «социальная лаборатория» (3 года)</h3>
+        <p style="font-size:.82em;color:var(--t2);margin-bottom:9px;"><strong>Цель:</strong> имплантация в конкурентную среду, отработка манипуляций и теневого лидерства.</p>
+        <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
+          <li><strong>Выбор среды:</strong> престижный университет с общежитием, стартап-акселератор или закрытый клуб (например, дебатный клуб высокого уровня).</li>
+          <li><strong>Входная позиция:</strong> тихого среднего участника. На первом этапе — наблюдение, сбор данных.</li>
+          <li><strong>Практические шаги (этическая ремарка в конце):</strong>
+            <ul style="padding-left:18px;margin-top:4px;">
+              <li>Создание «карты власти»: кто реально на что влияет, неформальные лидеры, слабости.</li>
+              <li>Точечная помощь ключевым игрокам без раскрытия своего вклада.</li>
+              <li>Создание ситуаций, в которых коллектив вынужден обратиться к заранее подготовленным решениям (посев идей через случайные разговоры).</li>
+              <li>Управление конфликтами: подогревание противоречий между конкурентами для усиления собственной позиции (строго в рамках дозволенного законом и без клеветы).</li>
+              <li>Тренировка «теневого альянса»: как в ранобэ «класс D», собрать группу лоялистов, знающих лидера, но не афиширующих его роль.</li>
+            </ul>
+          </li>
+          <li><strong>Безопасное тестирование:</strong> дебаты, переговоры, модельные ООН, городские квесты с психологическим давлением.</li>
+        </ul>
       </div>
     </div>
 
     <div id="kbp-p3" class="itp">
       <div class="card">
-        <h3 style="font-size:.93em;margin-bottom:11px;color:var(--a3);">Фаза 3. Интеграция и мастерство (10–15 годы)</h3>
-        <p style="font-size:.82em;color:var(--t2);margin-bottom:9px;"><strong>Цель:</strong> объединить интеллект, физическую и социальную эффективность в единую адаптивную систему.</p>
+        <h3 style="font-size:.93em;margin-bottom:11px;color:var(--a3);">Фаза 3. Достижение «свободы» и рефлексия (2–3 года)</h3>
+        <p style="font-size:.82em;color:var(--t2);margin-bottom:9px;"><strong>Цель:</strong> переход от инструмента к субъекту, соединение железной воли с осознанной эмпатией.</p>
         <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
-          <li><strong>Интеграция доменов:</strong> единый цикл планирования «анализ → решение → действие → ретроспектива».</li>
-          <li><strong>Стресс-менеджмент:</strong> регулярные нагрузки с контролем восстановления (сон, HRV, дыхание, восстановительные недели).</li>
-          <li><strong>Высокоуровневые симуляции:</strong> моделирование переговоров, конфликтов и стратегических игр с неопределённостью.</li>
-          <li><strong>Лидерские навыки:</strong> обучение командному управлению, делегированию и долгосрочному видению.</li>
-          <li><strong>Поддержание формы:</strong> квартальные аудиты метрик и корректировка программы по данным.</li>
+          <li><strong>Постановка личных целей:</strong> через дневниковые практики, психотерапию (не для лечения, а для самопознания) и одиночные путешествия, формулируются истинные желания (что Аянокоджи искал в «свободе»).</li>
+          <li><strong>Эмоциональная реабилитация:</strong> постепенное знакомство с искусством (театр, музыка, кино), волонтёрство с уязвимыми группами — это даёт возможность включать эмпатию контролируемо, не теряя защитных механизмов.</li>
+          <li><strong>Стресс-тест:</strong> работа кризис-менеджером в реальном бизнесе, участие в соревнованиях по экстремальному ультрамарафону или специализированных лагерях выживания.</li>
+          <li><strong>Финальный экзамен:</strong> разработать и реализовать сложный социальный проект (благотворительный фонд, стартап), удерживая управление в тени и при этом искренне взаимодействуя с командой.</li>
         </ul>
       </div>
     </div>
@@ -1029,7 +1117,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     </div>
   </div>
 </div>
-
 
 <!-- ══════════════ МЕНТАЛ ══════════════ -->
 <div id="s-mental" class="sec">
@@ -2538,7 +2625,7 @@ function renderBooks(){
             <div class="bauth">✍️ ${b.auth}</div>
             <p>${b.desc}</p>
             <div class="btags">${b.tags.map(t=>`<span class="btag">#${t}</span>`).join('')}</div>
-			<label class="book-check">
+            <label class="book-check">
               <input type="checkbox" ${S.booksRead?.[`${bl.level}-${i}`]?'checked':''} onchange="toggleBookRead('${bl.level}-${i}', this.checked)">
               Прочитано
             </label>
