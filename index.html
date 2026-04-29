@@ -566,7 +566,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   <div class="itabs">
     <button class="it active" onclick="sit('sc','monthly')">📅 Месячный</button>
     <button class="it" onclick="sit('sc','daily')">🕐 Дневной</button>
-    <button class="it" onclick="sit('sc','weekly')">📋 Недельный</button>
     <button class="it" onclick="sit('sc','editor')">✏️ Редактор</button>
   </div>
   <div id="sc-monthly" class="itp active">
@@ -593,17 +592,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   </div>
   <div id="sc-daily" class="itp">
     <div class="itabs" style="margin-bottom:14px;">
-      <button class="it active" onclick="sit('dsc','train')">💪 День тренировки</button>
-      <button class="it" onclick="sit('dsc','run-long')">🏃 Вторник — Длинный бег</button>
-      <button class="it" onclick="sit('dsc','run-sprint')">⚡ Четверг — Спринты</button>
-      <button class="it" onclick="sit('dsc','rest')">🧘 День отдыха (Вс)</button>
+      <button class="it active" onclick="sit('dsc','train')">💼 Рабочий День</button>
+      <button class="it" onclick="sit('dsc','rest')">🧘 Выходной День</button>
     </div>
-    <div id="dsc-train" class="itp active"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;color:var(--a2);">💪 Понедельник / Среда / Пятница (тренировка + работа)</h3><div class="hsched" id="dly-train"></div></div></div>
-    <div id="dsc-run-long" class="itp"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;color:var(--a6);">🏃 Вторник — Длинный бег (~2 мили) + работа</h3><div class="hsched" id="dly-runlong"></div></div></div>
-    <div id="dsc-run-sprint" class="itp"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;">⚡ Четверг — Спринты 400м + работа</h3><div class="hsched" id="dly-runsprint"></div></div></div>
-    <div id="dsc-rest" class="itp"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;color:var(--a1);">🧘 Воскресенье — Полный отдых (без работы)</h3><div class="hsched" id="dly-rest"></div></div></div>
+    <div id="dsc-train" class="itp active"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;color:var(--a2);">💪 (тренировка + работа)</h3><div class="hsched" id="dly-train"></div></div></div>
+    <div id="dsc-rest" class="itp"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;color:var(--a1);">🧘 Выходной день (без работы)</h3><div class="hsched" id="dly-rest"></div></div></div>
   </div>
-  <div id="sc-weekly" class="itp"><div class="card"><h3 style="margin-bottom:14px;">📋 Недельный цикл</h3><div id="weekly-ct"></div></div></div>
   <div id="sc-editor" class="itp">
     <div class="card" style="margin-bottom:14px;">
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
@@ -1912,17 +1906,18 @@ function renderDailySched(){
   function build(data,id){const el=document.getElementById(id);if(!el)return;el.innerHTML=data.map(r=>`<div class="hr"><div class="ht">${r[0]}</div><div class="ha"><span class="atag ${tagMap[r[2]]||'t-rest'}">${r[3]}</span>${r[1]}</div></div>`).join('');}
   const td=S.customSchedule&&S.customSchedule.trainDay?S.customSchedule.trainDay:defaultTrainDay;
   const rd=S.customSchedule&&S.customSchedule.restDay?S.customSchedule.restDay:defaultRestDay;
-  build(td,'dly-train');build(defaultRunLongDay,'dly-runlong');build(defaultRunSprintDay,'dly-runsprint');build(rd,'dly-rest');
+  build(td,'dly-train');
+  build(rd,'dly-rest');
   buildEditorForms(td,rd);
 }
 function buildEditorForms(trainData,restData){
   function buildEd(data,containerId){
     const el=document.getElementById(containerId);if(!el)return;
-    el.innerHTML=data.map((r,i)=>`<div class="edit-row" data-i="${i}"><input class="et" value="${r[0]}" placeholder="Время"><input class="ec" value="${r[1]}" placeholder="Активность"><select class="eg">${['train','study','food','mind','rest','chess','sleep','run','work'].map(v=>`<option value="${v}" ${r[2]===v?'selected':''}>${v}</option>`).join('')}</select></div>`).join('');
+    el.innerHTML=data.map(r=>`<div class="edit-row"><input class="et" value="${r[0]}"><input class="ec" value="${r[1]}"><select class="eg">${['train','study','food','mind','rest','chess','sleep','run','work'].map(v=>`<option value="${v}" ${v===r[2]?'selected':''}>${v}</option>`).join('')}</select><button class="btn btn-r btn-xs" onclick="this.closest('.edit-row').remove()">🗑️</button></div>`).join('');
   }
   buildEd(trainData,'ed-train');buildEd(restData,'ed-rest');
 }
-function addSchedRow(){['ed-train','ed-rest'].forEach(id=>{const el=document.getElementById(id);const div=document.createElement('div');div.className='edit-row';div.innerHTML=`<input class="et" value="00:00"><input class="ec" value="Новая активность"><select class="eg">${['train','study','food','mind','rest','chess','sleep','run','work'].map(v=>`<option value="${v}">${v}</option>`).join('')}</select>`;el.appendChild(div);});}
+function addSchedRow(){['ed-train','ed-rest'].forEach(id=>{const el=document.getElementById(id);const div=document.createElement('div');div.className='edit-row';div.innerHTML=`<input class="et" value="00:00"><input class="ec" value="Новая активность"><select class="eg">${['train','study','food','mind','rest','chess','sleep','run','work'].map(v=>`<option value="${v}">${v}</option>`).join('')}</select><button class="btn btn-r btn-xs" onclick="this.closest('.edit-row').remove()">🗑️</button>`;el.appendChild(div);});}
 function getEdData(containerId){const rows=document.querySelectorAll(`#${containerId} .edit-row`);return Array.from(rows).map(r=>{const t=r.querySelector('.et').value;const c=r.querySelector('.ec').value;const g=r.querySelector('.eg').value;const tagLabels={train:'💪 Трен.',study:'📖 Учёба',food:'🍽️ Еда',mind:'🧘 Ментал',rest:'🎯 Отдых',chess:'♟️ EF',sleep:'😴 Сон',run:'🏃 Бег',work:'💼 Работа'};return[t,c,g,tagLabels[g]||'🎯'];});}
 function saveCustomSched(){S.customSchedule={trainDay:getEdData('ed-train'),restDay:getEdData('ed-rest')};logAction('Обновлено расписание');saveLocal();renderDailySched();renderHistory();notify('✅ Расписание сохранено!');}
 function resetCustomSched(){if(!confirm('Сбросить?'))return;S.customSchedule=null;saveLocal();renderDailySched();notify('↩️ Сброшено');}
@@ -1943,7 +1938,6 @@ function chSM(d){S.smMonth+=d;if(S.smMonth>11){S.smMonth=0;S.smYear++;}if(S.smMo
 function renderWeekly(){
   const days=[{d:'Понедельник',t:'push',note:'Push-тренировка ПОСЛЕ работы 18:30'},{d:'Вторник',t:'run-long',note:'Длинный бег ~2 мили ПОСЛЕ работы 18:20'},{d:'Среда',t:'pull',note:'Pull-тренировка ПОСЛЕ работы 18:30'},{d:'Четверг',t:'run-sprint',note:'Спринты 400м ПОСЛЕ работы 18:15'},{d:'Пятница',t:'legs',note:'Ноги+Кор ПОСЛЕ работы 18:30'},{d:'Суббота',t:'full',note:'Full Body HIFT (в любое удобное время)'},{d:'Воскресенье',t:'rest',note:'Полный отдых · Планирование недели'}];
   const clr={push:'#7c3aed',pull:'#00d4ff',legs:'#10b981',full:'#f59e0b','run-long':'#f43f8f','run-sprint':'#fb923c',rest:'rgba(255,255,255,.08)'};
-  document.getElementById('weekly-ct').innerHTML=days.map(d=>`<div style="display:grid;grid-template-columns:110px 90px 1fr;gap:0;border-bottom:1px solid var(--brd);padding:9px 0;align-items:center;"><div style="font-size:.86em;font-weight:700;">${d.d}</div><div><span class="badge" style="background:${clr[d.t]};color:${d.t==='rest'?'var(--t2)':'#fff'};font-size:.69em;">${typeNames[d.t]}</span></div><div style="font-size:.78em;color:var(--t2);">${d.note}</div></div>`).join('');
 }
 
 // ═══════════════════════════════════════════════
