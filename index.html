@@ -497,11 +497,49 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <!-- ══════════════ ГЛАВНАЯ ══════════════ -->
 <div id="s-dash" class="sec active">
   <div class="sec-hdr">
-    <div class="sec-t">📊 Панель управления</div>
-    <div class="sec-s">Система комплексного развития — Ayanokoji System v2</div>
+    <div class="sec-t">🎯 Центр управления днём</div>
+    <div class="sec-s">Не трекер, а операционный план: 5 ключевых шагов, чтобы прокачивать день осознанно.</div>
   </div>
 
-  <div class="sbox">
+  <div class="card" style="margin-bottom:14px;border-color:rgba(0,212,255,.25);background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(124,58,237,.06));">
+    <h3 style="font-size:1.02em;margin-bottom:9px;">1) Главная задача дня</h3>
+    <p style="font-size:.84em;color:var(--t2);line-height:1.6;margin-bottom:10px;">Определи один результат, который продвинет тебя сильнее всего. Формулировка: <b style="color:var(--t1);">что будет завершено к вечеру</b>.</p>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-p btn-sm" onclick="goSec('sched')">🗓️ Сверить с графиком</button>
+      <button class="btn btn-gh btn-sm" onclick="goSec('progress')">📈 Отметить в прогрессе</button>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:14px;">
+    <div class="card">
+      <h3 style="margin-bottom:8px;font-size:.92em;">2) Когнитивное упражнение</h3>
+      <p style="font-size:.82em;color:var(--t2);line-height:1.6;margin-bottom:10px;">20–30 минут глубокого фокуса: чтение, шахматная задача или конспект по базе знаний.</p>
+      <button class="btn btn-v btn-sm" onclick="goSec('mental')">🧠 Запустить ментальный блок</button>
+    </div>
+    <div class="card">
+      <h3 style="margin-bottom:8px;font-size:.92em;">3) Физическая задача</h3>
+      <p style="font-size:.82em;color:var(--t2);line-height:1.6;margin-bottom:10px;">Одна сессия: силовая или бег. Цель — не «идеально», а «выполнено по плану».</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-g btn-sm" onclick="goSec('workout')">💪 Силовая</button>
+        <button class="btn btn-o btn-sm" onclick="goSec('run')">🏃 Бег</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="g2" style="margin-bottom:14px;">
+    <div class="card">
+      <h3 style="margin-bottom:8px;font-size:.92em;">4) Короткая практика на эмоции</h3>
+      <p style="font-size:.82em;color:var(--t2);line-height:1.6;margin-bottom:10px;">3–5 минут: дыхание 4-4-6 или короткий self-check «что я сейчас чувствую и почему?».</p>
+      <button class="btn btn-gh btn-sm" onclick="goSec('mental')">🫁 Перейти к практике</button>
+    </div>
+    <div class="card focus-keep">
+      <h3 style="margin-bottom:8px;font-size:.92em;">5) Шаг на вечерний разбор</h3>
+      <p style="font-size:.82em;color:var(--t2);line-height:1.6;margin-bottom:10px;">Перед сном зафиксируй: 1 победу, 1 ошибку, 1 корректировку на завтра.</p>
+      <button class="btn btn-gh btn-sm" onclick="goSec('progress')">🌙 Открыть вечерний обзор</button>
+    </div>
+  </div>
+
+  <div class="sbox" style="margin-bottom:14px;">
     <div class="sst" id="sst">⏳ Подключение...</div>
     <p style="font-size:.82em;color:var(--t2);margin-bottom:8px;">🔗 Твой ID синхронизации:</p>
     <input class="uid-in" id="uid-d" readonly onclick="cpUid()">
@@ -514,46 +552,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <input class="uid-in edit" id="sync-in" placeholder="Вставь чужой ID">
       <br><button class="btn btn-p btn-sm" style="margin-top:7px;" onclick="syncId()">🔄 Синхронизировать</button>
     </div>
-  </div>
-
-  <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:13px;padding:13px 16px;margin-bottom:18px;display:flex;align-items:center;gap:11px;flex-wrap:wrap;">
-    <span style="font-size:.83em;color:var(--t2);">📅 Дата старта программы:</span>
-    <input type="date" id="start-date" onchange="chStart()" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:5px 10px;border-radius:7px;font-size:.85em;">
-  </div>
-
-  <div class="g4" style="margin-bottom:18px;">
-    <div class="stat"><span class="stat-n" id="st1" style="color:var(--a1);">0</span><div class="stat-l">Тренировок выполнено</div></div>
-    <div class="stat"><span class="stat-n" id="st2" style="color:var(--a3);">0</span><div class="stat-l">Серия подряд (дней)</div></div>
-    <div class="stat"><span class="stat-n" id="st3" style="color:var(--a4);">0</span><div class="stat-l">На этой неделе</div></div>
-    <div class="stat"><span class="stat-n" id="st4" style="color:var(--a5);font-size:1.1em;">—</span><div class="stat-l">Следующая тренировка</div></div>
-    <div class="stat"><span class="stat-n" id="st5" style="color:var(--a6);">0</span><div class="stat-l">Пробежек всего</div></div>
-    <div class="stat"><span class="stat-n" id="st6" style="color:#fb923c;">0</span><div class="stat-l">Км пробежано</div></div>
-  </div>
-  <div class="g3" style="margin-bottom:18px;">
-    <div class="stat"><span class="stat-n" id="st-books" style="color:var(--a3);">0/0</span><div class="stat-l">Книг прочитано</div></div>
-    <div class="stat"><span class="stat-n" id="st-kb" style="color:var(--a1);">0%</span><div class="stat-l">План 12–15 лет</div></div>
-    <div class="stat"><span class="stat-n" id="st-kbsec" style="color:var(--a4);">0/6</span><div class="stat-l">Темы базы знаний</div></div>
-  </div>
-
-  <div class="card" style="margin-bottom:18px;">
-    <h3 style="margin-bottom:14px;font-size:.93em;">📈 Прогресс тренировок</h3>
-    <div class="pw"><div class="ph"><span>🟣 Push</span><span id="pr1">0/8</span></div><div class="pb"><div class="pf" id="pf1" style="width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🔵 Pull</span><span id="pr2">0/8</span></div><div class="pb"><div class="pf" id="pf2" style="width:0%;background:linear-gradient(90deg,#00d4ff,#38bdf8);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟢 Ноги+Кор</span><span id="pr3">0/8</span></div><div class="pb"><div class="pf" id="pf3" style="width:0%;background:linear-gradient(90deg,#10b981,#34d399);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟡 Full HIFT</span><span id="pr4">0/8</span></div><div class="pb"><div class="pf" id="pf4" style="width:0%;background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🩷 Бег (длинный)</span><span id="pr5">0 пробежек</span></div><div class="pb"><div class="pf" id="pf5" style="width:0%;background:linear-gradient(90deg,#f43f8f,#f97316);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟠 Спринты</span><span id="pr6">0 сессий</span></div><div class="pb"><div class="pf" id="pf6" style="width:0%;background:linear-gradient(90deg,#fb923c,#fbbf24);"></div></div></div>
-  </div>
-
-  <div style="text-align:center;">
-    <button class="btn btn-r btn-sm" onclick="resetAll()">🗑️ Сбросить все данные</button>
-  </div>
-  <div class="card focus-keep" style="margin-top:18px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-      <h3 style="font-size:.9em;">🕒 История изменений</h3>
-      <button class="btn btn-gh btn-xs" onclick="clearHistory()">Очистить</button>
-    </div>
-    <div id="history-list" style="margin-top:10px;font-size:.8em;color:var(--t2);"></div>
   </div>
 </div>
 
@@ -2798,27 +2796,27 @@ function closeMod(e){if(e&&e.target!==document.getElementById('modal'))return;do
 // ═══════════════════════════════════════════════
 function updDash(){
   const doneKeys=Object.keys(S.done).filter(k=>S.done[k]&&S.done[k]!==false);
-  document.getElementById('st1').textContent=doneKeys.length;
+  const st1=document.getElementById('st1');if(st1)st1.textContent=doneKeys.length;
 
   // Streak
   let streak=0;const today=new Date();today.setHours(0,0,0,0);
   for(let i=0;i<365;i++){const d=new Date(today);d.setDate(d.getDate()-i);if(S.done[dKey(d)])streak++;else break;}
-  document.getElementById('st2').textContent=streak;
+  const st2=document.getElementById('st2');if(st2)st2.textContent=streak;
 
   // This week
   const mon=new Date(today);mon.setDate(today.getDate()-((today.getDay()+6)%7));
   let wk=0;for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);if(S.done[dKey(d)])wk++;}
-  document.getElementById('st3').textContent=wk;
+  const st3=document.getElementById('st3');if(st3)st3.textContent=wk;
 
   // Next workout
   let nxt='—';for(let i=1;i<=14;i++){const d=new Date(today);d.setDate(today.getDate()+i);const t=getTT(d);if(t&&t!=='rest'){nxt=`${['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][d.getDay()]} (${typeNames[t]})`;break;}}
-  document.getElementById('st4').textContent=nxt;
+  const st4=document.getElementById('st4');if(st4)st4.textContent=nxt;
 
   // Runs
   let totalRuns=0,totalKm=0;
   Object.keys(S.runLogs).forEach(date=>{Object.keys(S.runLogs[date]).forEach(type=>{totalRuns++;totalKm+=S.runLogs[date][type].dist||0;});});
-  document.getElementById('st5').textContent=totalRuns;
-  document.getElementById('st6').textContent=totalKm.toFixed(1);
+  const st5=document.getElementById('st5');if(st5)st5.textContent=totalRuns;
+  const st6=document.getElementById('st6');if(st6)st6.textContent=totalKm.toFixed(1);
 
   // Progress bars
   const wTypes={push:0,pull:0,legs:0,hift:0};
@@ -4049,7 +4047,6 @@ function medBell(){
 </script>
 </body>
 </html>
-
 
 
 
