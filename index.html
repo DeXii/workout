@@ -497,8 +497,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <!-- ══════════════ ГЛАВНАЯ ══════════════ -->
 <div id="s-dash" class="sec active">
   <div class="sec-hdr">
-    <div class="sec-t">📊 Панель управления</div>
-    <div class="sec-s">Система комплексного развития — Ayanokoji System v2</div>
+    <div class="sec-t">🎯 Центр управления днём</div>
+    <div class="sec-s">Один фокус на день: что сделать сегодня, чтобы вырасти к вечеру</div>
   </div>
 
   <div class="sbox">
@@ -521,28 +521,53 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <input type="date" id="start-date" onchange="chStart()" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:5px 10px;border-radius:7px;font-size:.85em;">
   </div>
 
-  <div class="g4" style="margin-bottom:18px;">
-    <div class="stat"><span class="stat-n" id="st1" style="color:var(--a1);">0</span><div class="stat-l">Тренировок выполнено</div></div>
-    <div class="stat"><span class="stat-n" id="st2" style="color:var(--a3);">0</span><div class="stat-l">Серия подряд (дней)</div></div>
-    <div class="stat"><span class="stat-n" id="st3" style="color:var(--a4);">0</span><div class="stat-l">На этой неделе</div></div>
-    <div class="stat"><span class="stat-n" id="st4" style="color:var(--a5);font-size:1.1em;">—</span><div class="stat-l">Следующая тренировка</div></div>
-    <div class="stat"><span class="stat-n" id="st5" style="color:var(--a6);">0</span><div class="stat-l">Пробежек всего</div></div>
-    <div class="stat"><span class="stat-n" id="st6" style="color:#fb923c;">0</span><div class="stat-l">Км пробежано</div></div>
-  </div>
-  <div class="g3" style="margin-bottom:18px;">
-    <div class="stat"><span class="stat-n" id="st-books" style="color:var(--a3);">0/0</span><div class="stat-l">Книг прочитано</div></div>
-    <div class="stat"><span class="stat-n" id="st-kb" style="color:var(--a1);">0%</span><div class="stat-l">План 12–15 лет</div></div>
-    <div class="stat"><span class="stat-n" id="st-kbsec" style="color:var(--a4);">0/6</span><div class="stat-l">Темы базы знаний</div></div>
+  <div class="card focus-keep" style="margin-bottom:18px;">
+    <h3 style="margin-bottom:7px;font-size:.96em;">🧭 Фокус дня</h3>
+    <p style="font-size:.8em;color:var(--t2);margin-bottom:14px;">Выполни 5 ключевых шагов — и день уже считается успешным.</p>
+    <div class="g2">
+      <div class="card card-sm">
+        <h4 style="margin-bottom:6px;font-size:.88em;">1) 🎯 Главная задача</h4>
+        <p style="font-size:.8em;color:var(--t2);line-height:1.55;">Определи <b>один результат дня</b>. Формат: «К 18:00 завершить ___». Зафиксируй его в заметках и не переключайся до выполнения.</p>
+      </div>
+      <div class="card card-sm">
+        <h4 style="margin-bottom:6px;font-size:.88em;">2) 🧠 Когнитивное упражнение</h4>
+        <p style="font-size:.8em;color:var(--t2);line-height:1.55;">25 минут deep work без отвлечений: чтение сложного источника, конспект и 3 вывода в разделе знаний.</p>
+        <button class="btn btn-gh btn-xs" onclick="goSec('kb')">Открыть базу знаний</button>
+      </div>
+      <div class="card card-sm">
+        <h4 style="margin-bottom:6px;font-size:.88em;">3) 💪 Физическая задача</h4>
+        <p style="font-size:.8em;color:var(--t2);line-height:1.55;">Сделай сегодняшнюю тренировку или беговую сессию по расписанию. Отметь факт выполнения сразу после завершения.</p>
+        <div style="display:flex;gap:7px;flex-wrap:wrap;">
+          <button class="btn btn-gh btn-xs" onclick="goSec('workout')">Силовая</button>
+          <button class="btn btn-gh btn-xs" onclick="goSec('run')">Бег</button>
+        </div>
+      </div>
+      <div class="card card-sm">
+        <h4 style="margin-bottom:6px;font-size:.88em;">4) 💛 Эмоциональная практика (3–5 мин)</h4>
+        <p style="font-size:.8em;color:var(--t2);line-height:1.55;">Пауза: 6 медленных циклов дыхания + ответь письменно «Что я сейчас чувствую? Что мне поможет вернуться в фокус?»</p>
+        <button class="btn btn-gh btn-xs" onclick="goSec('mental')">Открыть ментальный блок</button>
+      </div>
+      <div class="card card-sm">
+        <h4 style="margin-bottom:6px;font-size:.88em;">5) 🌙 Вечерний разбор (1 шаг)</h4>
+        <p style="font-size:.8em;color:var(--t2);line-height:1.55;">Запиши <b>одну победу дня</b> и <b>одно улучшение на завтра</b>. Это закрепляет прогресс и задаёт курс на следующий день.</p>
+        <button class="btn btn-gh btn-xs" onclick="goSec('progress')">Открыть прогресс</button>
+      </div>
+    </div>
   </div>
 
-  <div class="card" style="margin-bottom:18px;">
-    <h3 style="margin-bottom:14px;font-size:.93em;">📈 Прогресс тренировок</h3>
-    <div class="pw"><div class="ph"><span>🟣 Push</span><span id="pr1">0/8</span></div><div class="pb"><div class="pf" id="pf1" style="width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🔵 Pull</span><span id="pr2">0/8</span></div><div class="pb"><div class="pf" id="pf2" style="width:0%;background:linear-gradient(90deg,#00d4ff,#38bdf8);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟢 Ноги+Кор</span><span id="pr3">0/8</span></div><div class="pb"><div class="pf" id="pf3" style="width:0%;background:linear-gradient(90deg,#10b981,#34d399);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟡 Full HIFT</span><span id="pr4">0/8</span></div><div class="pb"><div class="pf" id="pf4" style="width:0%;background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🩷 Бег (длинный)</span><span id="pr5">0 пробежек</span></div><div class="pb"><div class="pf" id="pf5" style="width:0%;background:linear-gradient(90deg,#f43f8f,#f97316);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟠 Спринты</span><span id="pr6">0 сессий</span></div><div class="pb"><div class="pf" id="pf6" style="width:0%;background:linear-gradient(90deg,#fb923c,#fbbf24);"></div></div></div>
+  <div class="card" style="margin-bottom:18px;display:none;" aria-hidden="true">
+    <div class="g4" style="margin-bottom:18px;">
+      <div class="stat"><span class="stat-n" id="st1" style="color:var(--a1);">0</span><div class="stat-l">Тренировок выполнено</div></div>
+      <div class="stat"><span class="stat-n" id="st2" style="color:var(--a3);">0</span><div class="stat-l">Серия подряд (дней)</div></div>
+      <div class="stat"><span class="stat-n" id="st3" style="color:var(--a4);">0</span><div class="stat-l">На этой неделе</div></div>
+      <div class="stat"><span class="stat-n" id="st4" style="color:var(--a5);font-size:1.1em;">—</span><div class="stat-l">Следующая тренировка</div></div>
+      <div class="stat"><span class="stat-n" id="st5" style="color:var(--a6);">0</span><div class="stat-l">Пробежек всего</div></div>
+      <div class="stat"><span class="stat-n" id="st6" style="color:#fb923c;">0</span><div class="stat-l">Км пробежано</div></div>
+      <div class="stat"><span class="stat-n" id="st-books" style="color:var(--a3);">0/0</span><div class="stat-l">Книг прочитано</div></div>
+      <div class="stat"><span class="stat-n" id="st-kb" style="color:var(--a1);">0%</span><div class="stat-l">План 12–15 лет</div></div>
+      <div class="stat"><span class="stat-n" id="st-kbsec" style="color:var(--a4);">0/6</span><div class="stat-l">Темы базы знаний</div></div>
+    </div>
+    <span id="pr1"></span><div class="pf" id="pf1"></div><span id="pr2"></span><div class="pf" id="pf2"></div><span id="pr3"></span><div class="pf" id="pf3"></div><span id="pr4"></span><div class="pf" id="pf4"></div><span id="pr5"></span><div class="pf" id="pf5"></div><span id="pr6"></span><div class="pf" id="pf6"></div>
   </div>
 
   <div style="text-align:center;">
