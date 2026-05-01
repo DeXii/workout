@@ -521,28 +521,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <input type="date" id="start-date" onchange="chStart()" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:5px 10px;border-radius:7px;font-size:.85em;">
   </div>
 
-  <div class="g4" style="margin-bottom:18px;">
-    <div class="stat"><span class="stat-n" id="st1" style="color:var(--a1);">0</span><div class="stat-l">Тренировок выполнено</div></div>
-    <div class="stat"><span class="stat-n" id="st2" style="color:var(--a3);">0</span><div class="stat-l">Серия подряд (дней)</div></div>
-    <div class="stat"><span class="stat-n" id="st3" style="color:var(--a4);">0</span><div class="stat-l">На этой неделе</div></div>
-    <div class="stat"><span class="stat-n" id="st4" style="color:var(--a5);font-size:1.1em;">—</span><div class="stat-l">Следующая тренировка</div></div>
-    <div class="stat"><span class="stat-n" id="st5" style="color:var(--a6);">0</span><div class="stat-l">Пробежек всего</div></div>
-    <div class="stat"><span class="stat-n" id="st6" style="color:#fb923c;">0</span><div class="stat-l">Км пробежано</div></div>
-  </div>
-  <div class="g3" style="margin-bottom:18px;">
-    <div class="stat"><span class="stat-n" id="st-books" style="color:var(--a3);">0/0</span><div class="stat-l">Книг прочитано</div></div>
-    <div class="stat"><span class="stat-n" id="st-kb" style="color:var(--a1);">0%</span><div class="stat-l">План 12–15 лет</div></div>
-    <div class="stat"><span class="stat-n" id="st-kbsec" style="color:var(--a4);">0/6</span><div class="stat-l">Темы базы знаний</div></div>
-  </div>
-
   <div class="card" style="margin-bottom:18px;">
-    <h3 style="margin-bottom:14px;font-size:.93em;">📈 Прогресс тренировок</h3>
-    <div class="pw"><div class="ph"><span>🟣 Push</span><span id="pr1">0/8</span></div><div class="pb"><div class="pf" id="pf1" style="width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🔵 Pull</span><span id="pr2">0/8</span></div><div class="pb"><div class="pf" id="pf2" style="width:0%;background:linear-gradient(90deg,#00d4ff,#38bdf8);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟢 Ноги+Кор</span><span id="pr3">0/8</span></div><div class="pb"><div class="pf" id="pf3" style="width:0%;background:linear-gradient(90deg,#10b981,#34d399);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟡 Full HIFT</span><span id="pr4">0/8</span></div><div class="pb"><div class="pf" id="pf4" style="width:0%;background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🩷 Бег (длинный)</span><span id="pr5">0 пробежек</span></div><div class="pb"><div class="pf" id="pf5" style="width:0%;background:linear-gradient(90deg,#f43f8f,#f97316);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟠 Спринты</span><span id="pr6">0 сессий</span></div><div class="pb"><div class="pf" id="pf6" style="width:0%;background:linear-gradient(90deg,#fb923c,#fbbf24);"></div></div></div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;">
+      <h3 style="font-size:.95em;">☀️ Сегодня</h3>
+      <button class="btn btn-gh btn-xs" onclick="rebuildTodayCards()">🔁 Автоподбор</button>
+    </div>
+    <p style="font-size:.8em;color:var(--t2);margin-bottom:12px;">5 обязательных карточек на день из источников: тренировки, бег, питание, прогресс и новые треки.</p>
+    <div id="today-cards" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;"></div>
+    <div style="margin-top:12px;display:flex;justify-content:flex-end;">
+      <button class="btn btn-p btn-sm" onclick="completeDay()">✅ Завершить день</button>
+    </div>
   </div>
 
   <div style="text-align:center;">
@@ -1765,7 +1753,7 @@ let uid=localStorage.getItem('ay_uid')||('u_'+Math.random().toString(36).substr(
 localStorage.setItem('ay_uid',uid);
 
 let S={
-  done:{},workoutLogs:{},runLogs:{},customSchedule:null,
+  done:{},workoutLogs:{},runLogs:{},customSchedule:null,dailyCards:{},
   booksRead:{},
   phaseChecks:{p0:{},p1:{},p2:{},p3:{}},
   history:[],
@@ -1777,17 +1765,17 @@ let S={
 window.S=S;
 
 function loadLocal(){
-  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
+  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.dailyCards=p.dailyCards||{};S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
 }
 function saveLocal(){
-  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
+  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,dailyCards:S.dailyCards}));
        if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
 }
 function loadCloud(cb){
   if(!fbOk){if(cb)cb();return;}
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
+    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.dailyCards=d.dailyCards||{};S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
     if(cb)cb();
   }).catch(()=>{if(cb)cb();});
 }
@@ -2837,6 +2825,7 @@ function updDash(){
   const pf6=document.getElementById('pf6');if(pf6)pf6.style.width=Math.min(100,sprintSess/8*100)+'%';
   const pr6=document.getElementById('pr6');if(pr6)pr6.textContent=sprintSess+' сессий';
 
+  renderTodayCards();
   const sd=document.getElementById('start-date');if(sd)sd.value=dKey(S.startDate);
   const uid_d=document.getElementById('uid-d');if(uid_d)uid_d.value=uid;
   const booksTotal=BOOKS.reduce((a,b)=>a+b.items.length,0);
@@ -2846,6 +2835,59 @@ function updDash(){
   const sks=document.getElementById('st-kbsec');if(sks)sks.textContent=`${secDone}/6`;
   const phasePct=getPhaseOverallProgress();
   const sk=document.getElementById('st-kb');if(sk)sk.textContent=`${phasePct}%`;
+}
+
+const TODAY_CARD_TEMPLATES=[
+  {id:'main',title:'Главная задача дня',source:'workout'},
+  {id:'cognitive',title:'Когнитивное упражнение',source:'progress'},
+  {id:'physical',title:'Физическая задача',source:'run'},
+  {id:'emotional',title:'Короткая эмоциональная практика',source:'mental'},
+  {id:'review',title:'Шаг вечернего разбора',source:'food'}
+];
+function pickTodayText(cardId){
+  const wCount=Object.keys(S.workoutLogs||{}).length;
+  const rCount=Object.keys(S.runLogs||{}).length;
+  const done=Object.keys(S.done||{}).filter(k=>S.done[k]).length;
+  const map={
+    main: wCount<rCount?'Закрыть силовой блок по плану (источник: тренировки).':'Пробежать плановый тип бега и записать результат (источник: бег).',
+    cognitive: done<5?'Сделать 10 минут дневника прогресса: цель, препятствие, корректировка.':'Разобрать 1 решение за день по схеме факт → вывод → действие.',
+    physical: rCount%2===0?'20 минут Zone 2 или интервалы по расписанию.':'Мобилити + 3 подхода core по самочувствию.',
+    emotional: '3 минуты QCT-дыхания + назвать текущее состояние одним словом.',
+    review: 'Вечером отметить 3 победы и 1 улучшение в дневнике питания/прогресса.'
+  };
+  return map[cardId]||'Шаг по плану дня';
+}
+function ensureTodayCards(){
+  const today=dKey(new Date());
+  if(!S.dailyCards[today]){
+    S.dailyCards[today]=TODAY_CARD_TEMPLATES.map(t=>({id:t.id,title:t.title,source:t.source,text:pickTodayText(t.id),status:'planned'}));
+    saveLocal();
+  }
+  return S.dailyCards[today];
+}
+function renderTodayCards(){
+  const wrap=document.getElementById('today-cards');if(!wrap)return;
+  const cards=ensureTodayCards();
+  const statuses=['planned','done','skipped','moved'];
+  wrap.innerHTML=cards.map((c,i)=>`<div class="card" style="padding:10px;"><div style="font-size:.76em;color:var(--t3);margin-bottom:4px;">${c.source}</div><div style="font-size:.86em;font-weight:700;">${c.title}</div><div style="font-size:.78em;color:var(--t2);margin:8px 0 10px;line-height:1.5;">${c.text}</div><select onchange="setTodayCardStatus(${i},this.value)" style="width:100%;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:6px;border-radius:7px;">${statuses.map(s=>`<option value="${s}" ${c.status===s?'selected':''}>${s}</option>`).join('')}</select></div>`).join('');
+}
+function setTodayCardStatus(index,status){const today=dKey(new Date());if(!S.dailyCards[today]?.[index])return;S.dailyCards[today][index].status=status;saveLocal();}
+function rebuildTodayCards(){const today=dKey(new Date());S.dailyCards[today]=TODAY_CARD_TEMPLATES.map(t=>({id:t.id,title:t.title,source:t.source,text:pickTodayText(t.id),status:'planned'}));saveLocal();renderTodayCards();notify('🔁 Карточки дня обновлены');}
+function completeDay(){
+  const today=dKey(new Date());
+  const tomorrowDate=new Date();tomorrowDate.setDate(tomorrowDate.getDate()+1);
+  const tomorrow=dKey(tomorrowDate);
+  const cards=ensureTodayCards();
+  const moved=cards.filter(c=>c.status==='planned').map(c=>({...c,status:'moved'}));
+  cards.forEach(c=>{if(c.status==='planned')c.status='moved';});
+  if(moved.length){
+    const next=S.dailyCards[tomorrow]||TODAY_CARD_TEMPLATES.map(t=>({id:t.id,title:t.title,source:t.source,text:pickTodayText(t.id),status:'planned'}));
+    moved.forEach(mc=>{const ex=next.find(n=>n.id===mc.id);if(ex&&ex.status!=='done')ex.status='planned';});
+    S.dailyCards[tomorrow]=next;
+  }
+  saveLocal();renderTodayCards();
+  sit('mn','journal');goSec('mental');
+  notify('✅ День завершён. Daily review открыт, незавершённые карточки перенесены на завтра.');
 }
 function chStart(){
   const v=document.getElementById('start-date').value;
