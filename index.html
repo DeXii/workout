@@ -622,6 +622,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="sec-t">💪 Тренировки</div>
     <div class="sec-s">Турник + Брусья — GPP/HIFT система с прогрессией</div>
   </div>
+  <div id="workout-track-view" class="card card-sm" style="margin-bottom:14px;"></div>
   <div class="itabs">
     <button class="it active" onclick="sit('wo','push')">🟣 A — Push</button>
     <button class="it" onclick="sit('wo','pull')">🔵 B — Pull</button>
@@ -1176,6 +1177,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="sec-t">🧠 Ментальная тренировка</div>
     <div class="sec-s">HRV · Медитация · Шахматы · Рефлексия — Уровень 2 пирамиды</div>
   </div>
+  <div id="mental-track-view" class="card card-sm" style="margin-bottom:14px;"></div>
   <div class="itabs">
     <button class="it active" onclick="sit('mn','hrv')">🫀 HRV & Дыхание</button>
     <button class="it" onclick="sit('mn','med')">🧘 Медитация</button>
@@ -1794,6 +1796,64 @@ function loadCloud(cb){
 
 function esc(v){
   return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+const SKILL_TRACKS=[
+  {id:'logic',name:'Логика/мышление'},
+  {id:'strategy',name:'Стратегия'},
+  {id:'memory',name:'Память'},
+  {id:'attention',name:'Внимание-наблюдательность'},
+  {id:'emotion',name:'Эмоции'},
+  {id:'communication',name:'Коммуникация'},
+  {id:'physics',name:'Физика'}
+];
+const PRACTICES=[
+  {id:'wo-push',name:'Тренировка Push',section:'workout',difficulty:2,tracks:['physics','attention']},
+  {id:'wo-pull',name:'Тренировка Pull',section:'workout',difficulty:2,tracks:['physics','attention']},
+  {id:'wo-legs',name:'Тренировка Legs+Core',section:'workout',difficulty:2,tracks:['physics']},
+  {id:'wo-hift',name:'Full HIFT',section:'workout',difficulty:3,tracks:['physics','emotion']},
+  {id:'run-long',name:'Длинный бег',section:'run',difficulty:2,tracks:['physics','attention']},
+  {id:'run-sprint',name:'Спринты',section:'run',difficulty:3,tracks:['physics','emotion']},
+  {id:'mental-hrv',name:'HRV/Дыхание',section:'mental',difficulty:1,tracks:['emotion','attention']},
+  {id:'mental-med',name:'Медитация',section:'mental',difficulty:1,tracks:['emotion','attention','memory']},
+  {id:'mental-chess',name:'Шахматы',section:'mental',difficulty:3,tracks:['logic','strategy','memory']},
+  {id:'mental-journal',name:'Дневник',section:'mental',difficulty:1,tracks:['emotion','communication','attention']},
+  {id:'books-reading',name:'Чтение',section:'books',difficulty:2,tracks:['memory','logic','strategy']}
+];
+function flattenSessions(){
+  const sessions=[];
+  Object.keys(S.workoutLogs||{}).forEach(date=>{
+    Object.keys(S.workoutLogs[date]||{}).forEach(type=>{
+      sessions.push({id:`wo-${date}-${type}`,practiceId:`wo-${type}`,date,outcome:S.workoutLogs[date][type]});
+    });
+  });
+  Object.keys(S.runLogs||{}).forEach(date=>{
+    Object.keys(S.runLogs[date]||{}).forEach(type=>{
+      sessions.push({id:`run-${date}-${type}`,practiceId:`run-${type}`,date,outcome:S.runLogs[date][type]});
+    });
+  });
+  return sessions;
+}
+function buildSkillTrackModel(){
+  const sessions=flattenSessions();
+  const outcomes=sessions.map(s=>({sessionId:s.id,date:s.date,practiceId:s.practiceId,data:s.outcome||{}}));
+  const trackMetrics=SKILL_TRACKS.map(track=>{
+    const prs=PRACTICES.filter(p=>p.tracks.includes(track.id)).map(p=>p.id);
+    const rel=sessions.filter(s=>prs.includes(s.practiceId));
+    return {trackId:track.id,sessions:rel.length,lastDate:rel.map(r=>r.date).sort().slice(-1)[0]||null};
+  });
+  return {skillTracks:SKILL_TRACKS,practices:PRACTICES,sessions,outcomes,trackMetrics};
+}
+function renderTrackSection(sectionId,containerId){
+  const el=document.getElementById(containerId);if(!el)return;
+  const model=buildSkillTrackModel();
+  const practices=model.practices.filter(p=>p.section===sectionId);
+  const html=practices.map(p=>{
+    const d='★'.repeat(p.difficulty)+'☆'.repeat(3-p.difficulty);
+    const tracks=p.tracks.map(t=>model.skillTracks.find(st=>st.id===t)?.name||t).join(' · ');
+    const cnt=model.sessions.filter(s=>s.practiceId===p.id).length;
+    return `<div style="padding:8px 0;border-bottom:1px solid var(--brd);"><strong>${p.name}</strong> <span style="color:var(--a4);">${d}</span><br><span style="font-size:.75em;color:var(--t2);">${tracks}</span><br><span style="font-size:.73em;color:var(--a3);">Сессий: ${cnt}</span></div>`;
+  }).join('');
+  el.innerHTML=`<h4 style="font-size:.84em;margin-bottom:6px;color:var(--a1);">SkillTrack-модель раздела</h4>${html||'<span style="color:var(--t3);font-size:.8em;">Нет привязанных практик.</span>'}`;
 }
 function logAction(text){
   const item={ts:Date.now(),text};
@@ -3259,6 +3319,8 @@ function updFbStatus(ok){
 function refreshAll(){
   updDash();renderCal();renderSM();renderDailySched();
   renderWHist();renderRHist();renderBooks();renderPhaseChecks();renderHistory();updateKnowledgeSeen();
+  renderTrackSection('workout','workout-track-view');
+  renderTrackSection('mental','mental-track-view');
 }
 
 function maybeShowDailyReminder(){
