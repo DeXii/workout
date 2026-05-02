@@ -76,6 +76,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 .btn-gh{background:rgba(255,255,255,.07);color:var(--t1);border:1px solid var(--brd);}
 .btn-sm{padding:5px 11px;font-size:.8em;}
 .btn-xs{padding:3px 8px;font-size:.74em;}
+.btn-wide{width:100%;justify-content:center;padding:12px 16px;font-size:.95em;}
 
 /* INNER TABS */
 .itabs{display:flex;gap:5px;margin-bottom:18px;flex-wrap:wrap;}
@@ -270,6 +271,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 .sec-hdr{margin-bottom:24px;}
 .sec-t{font-size:1.7em;font-weight:700;margin-bottom:5px;}
 .sec-s{color:var(--t2);font-size:.87em;}
+.focus-wrap{max-width:640px;margin:0 auto 18px;}
+.focus-card{background:linear-gradient(180deg,rgba(0,212,255,.06),rgba(124,58,237,.04));border:1px solid var(--brd);border-radius:16px;padding:22px;}
+.focus-kicker{font-size:.75em;color:var(--t3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;}
+.focus-title{font-size:1.25em;font-weight:700;margin-bottom:8px;}
+.focus-desc{font-size:.87em;color:var(--t2);line-height:1.55;}
+.focus-meta{margin-top:10px;font-size:.78em;color:var(--a1);}
+.focus-actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
 
 /* CHARTS */
 .chart-wrap{background:var(--bg2);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:18px;}
@@ -408,21 +416,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   <div class="nav-inner">
     <div class="logo">⚡ AYANOKOJI v2</div>
     <div id="navlinks" style="display:flex;gap:4px;flex-wrap:wrap;">
-      <button class="nb active" data-s="dash">📊 Главная</button>
-      <button class="nb" data-s="sched">🗓️ График</button>
-      <button class="nb" data-s="workout">💪 Тренировки</button>
-      <button class="nb" data-s="run">🏃 Бег</button>
-      <button class="nb" data-s="food">🍽️ Питание</button>
-      <button class="nb" data-s="mealplan">🥗 План питания</button>
-      <button class="nb" data-s="shopping">🛒 Закупки</button>
-      <button class="nb" data-s="supps">💊 БАДы</button>
-      <button class="nb" data-s="books">📚 Литература</button>
-      <button class="nb" data-s="mental">🧠 Ментал</button>
-      <button class="nb" data-s="progress">📈 Прогресс</button>
-      <button class="nb" data-s="charts">📊 Графики</button>
-      <button class="nb" data-s="macros">🧮 Макросы</button>
-      <button class="nb" data-s="cal">📅 Трекер</button>
-      <button class="nb" data-s="timer">⏱️ Таймер</button>
+      <button class="nb active" data-s="mind">🧠 Ум</button>
+      <button class="nb" data-s="body">💪 Тело</button>
+      <button class="nb" data-s="control">🎯 Контроль</button>
+      <button class="nb" data-s="trackers">📊 Трекеры</button>
     </div>
     <!-- Hamburger -->
     <div class="hamburger" id="hamburger" onclick="toggleMobNav()">
@@ -435,21 +432,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <div class="mob-nav-overlay" id="mob-nav-overlay" onclick="toggleMobNav()"></div>
 <div class="mob-nav" id="mob-nav">
   <div class="mob-nav-title">⚡ AYANOKOJI v2</div>
-  <button class="nb" data-s="dash" onclick="toggleMobNav()">📊 Главная</button>
-  <button class="nb" data-s="sched" onclick="toggleMobNav()">🗓️ График</button>
-  <button class="nb" data-s="workout" onclick="toggleMobNav()">💪 Тренировки</button>
-  <button class="nb" data-s="run" onclick="toggleMobNav()">🏃 Бег</button>
-  <button class="nb" data-s="food" onclick="toggleMobNav()">🍽️ Питание</button>
-  <button class="nb" data-s="mealplan" onclick="toggleMobNav()">🥗 План питания</button>
-  <button class="nb" data-s="shopping" onclick="toggleMobNav()">🛒 Закупки</button>
-  <button class="nb" data-s="supps" onclick="toggleMobNav()">💊 БАДы</button>
-  <button class="nb" data-s="books" onclick="toggleMobNav()">📚 Литература</button>
-  <button class="nb" data-s="mental" onclick="toggleMobNav()">🧠 Ментал</button>
-  <button class="nb" data-s="progress" onclick="toggleMobNav()">📈 Прогресс</button>
-  <button class="nb" data-s="charts" onclick="toggleMobNav()">📊 Графики</button>
-  <button class="nb" data-s="macros" onclick="toggleMobNav()">🧮 Макросы</button>
-  <button class="nb" data-s="cal" onclick="toggleMobNav()">📅 Трекер</button>
-  <button class="nb" data-s="timer" onclick="toggleMobNav()">⏱️ Таймер</button>
+  <button class="nb" data-s="mind" onclick="toggleMobNav()">🧠 Ум</button>
+  <button class="nb" data-s="body" onclick="toggleMobNav()">💪 Тело</button>
+  <button class="nb" data-s="control" onclick="toggleMobNav()">🎯 Контроль</button>
+  <button class="nb" data-s="trackers" onclick="toggleMobNav()">📊 Трекеры</button>
 </div>
 
 <!-- Bottom nav (mobile) -->
@@ -469,8 +455,20 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <!-- ══════════════ ГЛАВНАЯ ══════════════ -->
 <div id="s-dash" class="sec active">
   <div class="sec-hdr">
-    <div class="sec-t">📊 Панель управления</div>
-    <div class="sec-s">Система комплексного развития — Ayanokoji System v2</div>
+    <div class="sec-t">⚡ Исполнитель задач</div>
+    <div class="sec-s">Одна задача за раз: сделал / пропустил / дальше</div>
+  </div>
+  <div class="focus-wrap">
+    <div class="focus-card">
+      <div class="focus-kicker">Сейчас нужно сделать</div>
+      <div class="focus-title" id="now-task-title">Нет задач</div>
+      <div class="focus-desc" id="now-task-desc">На сегодня всё.</div>
+      <div class="focus-meta" id="now-task-meta"></div>
+      <div class="focus-actions">
+        <button class="btn btn-g btn-wide" onclick="completeNowTask('done')">✅ Выполнил</button>
+        <button class="btn btn-r btn-wide" onclick="completeNowTask('skipped')">❌ Не выполнил</button>
+      </div>
+    </div>
   </div>
 
   <div class="sbox">
@@ -1553,12 +1551,14 @@ function newId(){if(!confirm('Создать новый ID?'))return;uid='u_'+Ma
 // NAV + MOBILE
 // ═══════════════════════════════════════════════
 function goSec(s){
+  const secMap={mind:'books',body:'workout',control:'dash',trackers:'progress'};
+  const real=secMap[s]||s;
   document.querySelectorAll('.sec').forEach(x=>x.classList.remove('active'));
-  document.getElementById('s-'+s)&&document.getElementById('s-'+s).classList.add('active');
+  document.getElementById('s-'+real)&&document.getElementById('s-'+real).classList.add('active');
   document.querySelectorAll('.nb,.bni').forEach(b=>{
     b.classList.toggle('active',(b.dataset.s===s)||(b.getAttribute('onclick')&&b.getAttribute('onclick').includes("'"+s+"'")));
   });
-  onSecLoad(s);
+  onSecLoad(real);
 }
 
 document.getElementById('navlinks').addEventListener('click',e=>{
@@ -2476,6 +2476,45 @@ function updDash(){
 
   const sd=document.getElementById('start-date');if(sd)sd.value=dKey(S.startDate);
   const uid_d=document.getElementById('uid-d');if(uid_d)uid_d.value=uid;
+  renderNowTask();
+}
+
+function getNowTasks(){
+  const today=new Date();
+  const dayType=getTT(today)||'rest';
+  const key=dKey(today);
+  const tasks=[];
+  if(dayType==='push'||dayType==='pull'||dayType==='legs'||dayType==='full')tasks.push({id:key+'_workout',title:'💪 Тренировка',desc:`${typeNames[dayType]}. Базовая сессия по плану.`,dur:'45–55 мин',source:'Тело'});
+  if(dayType==='run-long'||dayType==='run-sprint')tasks.push({id:key+'_run',title:dayType==='run-long'?'🏃 Бег (длинный)':'⚡ Спринты',desc:'Кардио-сессия по недельному циклу.',dur:'20–40 мин',source:'Тело'});
+  tasks.push({id:key+'_breath',title:'🧘 Дыхательная практика',desc:'Резонансное дыхание / ПМР.',dur:'10 мин',source:'Контроль'});
+  tasks.push({id:key+'_read',title:'📚 Чтение',desc:'Литература из базы знаний.',dur:'20–30 мин',source:'Ум'});
+  return tasks.filter(t=>!S.done[t.id]);
+}
+function renderNowTask(){
+  const tasks=getNowTasks();
+  const titleEl=document.getElementById('now-task-title');
+  const descEl=document.getElementById('now-task-desc');
+  const metaEl=document.getElementById('now-task-meta');
+  if(!tasks.length){
+    titleEl.textContent='✅ На сегодня всё';
+    descEl.textContent='Все ключевые действия закрыты. Зафиксируй прогресс в трекерах.';
+    metaEl.textContent='';
+    return;
+  }
+  const t=tasks[0];
+  titleEl.textContent=t.title;
+  descEl.textContent=t.desc;
+  metaEl.textContent=`Источник: ${t.source}${t.dur?` · Длительность: ${t.dur}`:''}`;
+}
+function completeNowTask(status){
+  const tasks=getNowTasks();
+  if(!tasks.length){notify('✅ На сегодня всё');return;}
+  const t=tasks[0];
+  S.done[t.id]=status;
+  saveLocal();
+  renderNowTask();
+  updDash();
+  notify(status==='done'?'✅ Задача выполнена':'📝 Пропуск зафиксирован');
 }
 function chStart(){const v=document.getElementById('start-date').value;if(v){S.startDate=new Date(v+'T00:00:00');saveLocal();renderCal();renderSM();updDash();notify('📅 Дата старта обновлена');}}
 function resetAll(){if(!confirm('Сбросить ВСЕ данные? Это нельзя отменить!'))return;S.done={};S.workoutLogs={};S.runLogs={};S.customSchedule=null;saveLocal();refreshAll();notify('🗑️ Все данные сброшены');}
@@ -3618,7 +3657,4 @@ function medBell(){
 </script>
 </body>
 </html>
-
-
-
 
