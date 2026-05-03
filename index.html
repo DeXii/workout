@@ -307,6 +307,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 .hub-item:hover{border-color:rgba(0,212,255,.28);transform:translateY(-2px);}
 .hub-item h4{font-size:.9em;margin-bottom:6px;}
 .hub-item p{font-size:.78em;color:var(--t2);line-height:1.5;}
+.daily-grid{display:grid;grid-template-columns:1.2fr 1fr;gap:12px;}
+.daily-col{background:var(--bg3);border:1px solid var(--brd);border-radius:12px;padding:12px;}
+.daily-col h4{font-size:.86em;margin-bottom:8px;}
+.daily-task{display:flex;align-items:flex-start;gap:7px;padding:7px;border-radius:8px;background:rgba(255,255,255,.02);margin-bottom:6px;}
+.daily-task:last-child{margin-bottom:0;}
+.daily-task input{margin-top:2px;accent-color:var(--a3);}
+.daily-task small{display:block;color:var(--t3);font-size:.72em;}
+.daily-skip{margin-left:auto;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#fca5a5;border-radius:6px;padding:2px 6px;font-size:.68em;cursor:pointer;}
+.daily-pct{font-weight:700;color:var(--a3);font-size:.9em;}
+.review-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;}
+.review-grid textarea,.review-grid input,.review-grid select{width:100%;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:8px;border-radius:8px;font-size:.8em;}
+.skill-chip{display:inline-block;padding:3px 8px;border-radius:999px;background:rgba(0,212,255,.1);color:var(--a1);font-size:.72em;margin:3px 4px 0 0;}
+@media (max-width:900px){.daily-grid{grid-template-columns:1fr;}}
 
 /* CHARTS */
 .chart-wrap{background:var(--bg2);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:18px;}
@@ -500,15 +513,30 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <div id="exec-content"></div>
     </div>
   </div>
-  <div class="card" style="max-width:760px;margin:0 auto;">
-    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
-      <h3 style="font-size:.9em;">🔗 Быстрые действия</h3>
-      <button class="btn btn-gh btn-xs" onclick="refreshAll()">Обновить</button>
+  <div class="card" style="max-width:960px;margin:14px auto 0;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+      <h3 style="font-size:.9em;">✅ Дневной чек-лист</h3>
+      <span class="daily-pct" id="daily-pct">0%</span>
     </div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
-      <button class="btn btn-gh btn-sm" onclick="goSec('body')">Открыть вкладку Тело</button>
-      <button class="btn btn-gh btn-sm" onclick="goSec('control')">Открыть вкладку Контроль</button>
-      <button class="btn btn-gh btn-sm" onclick="goSec('trackers')">Открыть вкладку Трекеры</button>
+    <div class="daily-grid">
+      <div id="daily-groups"></div>
+      <div class="daily-col">
+        <h4>🌙 Завершение дня</h4>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
+          <button class="btn btn-v btn-sm" onclick="finishDay()">Завершить день</button>
+          <button class="btn btn-gh btn-sm" onclick="renderExecutorDashboard()">Обновить</button>
+        </div>
+        <div class="review-grid">
+          <textarea id="rev-done" rows="2" placeholder="Что сделал"></textarea>
+          <textarea id="rev-missed" rows="2" placeholder="Что не сделал"></textarea>
+          <input id="rev-stress" type="number" min="1" max="10" placeholder="Стресс 1-10">
+          <textarea id="rev-main" rows="2" placeholder="Главный вывод дня"></textarea>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;">
+          <button class="btn btn-g btn-sm" onclick="saveDailyReview()">Сохранить review</button>
+          <select id="rev-history-date" onchange="loadDailyReview(this.value)" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:6px 8px;border-radius:8px;font-size:.8em;"></select>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -519,8 +547,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="sec-s">Когнитивные практики, литература и база знаний</div>
   </div>
   <div class="hub-grid">
+    <div class="hub-item" onclick="goSec('dash')"><h4>🎯 Сегодня</h4><p>Главная задача дня, чек-лист ума/тела/контроля, завершение дня.</p></div>
     <div class="hub-item" onclick="goSec('books')"><h4>📚 Литература</h4><p>Список книг, фильтры по статусу и отметка прочитанного.</p></div>
     <div class="hub-item" onclick="goSec('knowledge')"><h4>🧠 База знаний</h4><p>Материалы и долгосрочный план развития.</p></div>
+    <div class="hub-item" onclick="goSec('skills')"><h4>🧩 Навыки</h4><p>6 направлений развития с упражнениями по категориям.</p></div>
+    <div class="hub-item" onclick="goLabTab('brain')"><h4>🧠 Brain Training</h4><p>Карточки упражнений: логика, анализ, скорость, стратегия.</p></div>
+    <div class="hub-item" onclick="goLabTab('memory')"><h4>🧩 Память и обучение</h4><p>Spaced repetition + self-testing с историей.</p></div>
   </div>
 </div>
 
@@ -536,6 +568,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="hub-item" onclick="goSec('mealplan')"><h4>🥗 План питания</h4><p>План на неделю и клик по рецептам.</p></div>
     <div class="hub-item" onclick="goSec('shopping')"><h4>🛒 Закупки</h4><p>Продукты и списки по дням.</p></div>
     <div class="hub-item" onclick="goSec('supps')"><h4>💊 БАДы</h4><p>Схемы, дозировки и рекомендации.</p></div>
+    <div class="hub-item" onclick="goLabTab('projects')"><h4>🗂️ Долгосрочные проекты</h4><p>Проекты 1-8 лет с этапами, сроками и прогрессом.</p></div>
   </div>
 </div>
 
@@ -547,6 +580,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   <div class="hub-grid">
     <div class="hub-item" onclick="goSec('mental')"><h4>🧘 Ментал</h4><p>Дыхание, дневник, трекинг состояния и контроль практик.</p></div>
     <div class="hub-item" onclick="goSec('sched')"><h4>🗓️ Режим дня</h4><p>Редактор расписания и источник задач для главного экрана.</p></div>
+    <div class="hub-item" onclick="goLabTab('emotions')"><h4>💚 Эмоциональный контроль</h4><p>Мини-дневник эмоций и практики паузы.</p></div>
+    <div class="hub-item" onclick="goLabTab('attention')"><h4>👁️ Внимание</h4><p>Шульте/отличия, тайминг и дневник наблюдений.</p></div>
+    <div class="hub-item" onclick="goLabTab('comm')"><h4>🗣️ Коммуникация</h4><p>Лог разговоров и практика сценариев.</p></div>
+    <div class="hub-item" onclick="goSec('stages')"><h4>🛤️ Этапы развития</h4><p>Этап 0 (1-2), этап 1 (3-4), этап 3 (5-8 лет).</p></div>
   </div>
 </div>
 
@@ -560,6 +597,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="hub-item" onclick="goSec('charts')"><h4>📊 Графики</h4><p>Визуализация объёма, темпа и активности.</p></div>
     <div class="hub-item" onclick="goSec('macros')"><h4>🧮 Макросы</h4><p>Подсчёт КБЖУ и сравнение с целями.</p></div>
     <div class="hub-item" onclick="goSec('dash')"><h4>🎯 Исполнитель задач</h4><p>Точка исполнения: что делать сейчас.</p></div>
+    <div class="hub-item" onclick="goLabTab('analytics')"><h4>📊 Аналитика периодов</h4><p>Done/skip за 7/30/90 и уровни навыков на графиках.</p></div>
   </div>
   <div class="card" style="margin-top:14px;">
     <div class="sbox" style="margin-bottom:0;">
@@ -588,6 +626,58 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     </div>
     <div id="history-list" style="margin-top:10px;font-size:.8em;color:var(--t2);"></div>
   </div>
+</div>
+
+<div id="s-lab" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">🧪 Лаборатория развития</div>
+    <div class="sec-s">MVP-модули для оставшегося backlog: память, когнитивка, эмоции, внимание, коммуникация, проекты</div>
+  </div>
+  <div class="itabs">
+    <button class="it active" onclick="sit('lab','brain');renderLabAll()">🧠 Brain</button>
+    <button class="it" onclick="sit('lab','memory');renderLabAll()">🧩 Memory</button>
+    <button class="it" onclick="sit('lab','emotions');renderLabAll()">💚 Эмоции</button>
+    <button class="it" onclick="sit('lab','attention');renderLabAll()">👁️ Внимание</button>
+    <button class="it" onclick="sit('lab','comm');renderLabAll()">🗣️ Коммуникация</button>
+    <button class="it" onclick="sit('lab','analytics');renderLabAll()">📊 Аналитика</button>
+    <button class="it" onclick="sit('lab','projects');renderLabAll()">🗂️ Проекты</button>
+  </div>
+  <div id="lab-brain" class="itp active"><div class="card" id="lab-brain-ct"></div></div>
+  <div id="lab-memory" class="itp"><div class="card" id="lab-memory-ct"></div></div>
+  <div id="lab-emotions" class="itp"><div class="card" id="lab-emotions-ct"></div></div>
+  <div id="lab-attention" class="itp"><div class="card" id="lab-attention-ct"></div></div>
+  <div id="lab-comm" class="itp"><div class="card" id="lab-comm-ct"></div></div>
+  <div id="lab-analytics" class="itp"><div class="card" id="lab-analytics-ct"></div></div>
+  <div id="lab-projects" class="itp"><div class="card" id="lab-projects-ct"></div></div>
+</div>
+
+<div id="s-skills" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">🧩 Система навыков</div>
+    <div class="sec-s">6 направлений: мышление, память, внимание, эмоции, коммуникация, физика</div>
+  </div>
+  <div class="itabs">
+    <button class="it active" onclick="sit('sk','thinking');renderSkills()">Мышление</button>
+    <button class="it" onclick="sit('sk','memory');renderSkills()">Память</button>
+    <button class="it" onclick="sit('sk','attention');renderSkills()">Внимание</button>
+    <button class="it" onclick="sit('sk','emotions');renderSkills()">Эмоции</button>
+    <button class="it" onclick="sit('sk','communication');renderSkills()">Коммуникация</button>
+    <button class="it" onclick="sit('sk','physical');renderSkills()">Физика</button>
+  </div>
+  <div id="sk-thinking" class="itp active"><div class="card" id="skills-thinking"></div></div>
+  <div id="sk-memory" class="itp"><div class="card" id="skills-memory"></div></div>
+  <div id="sk-attention" class="itp"><div class="card" id="skills-attention"></div></div>
+  <div id="sk-emotions" class="itp"><div class="card" id="skills-emotions"></div></div>
+  <div id="sk-communication" class="itp"><div class="card" id="skills-communication"></div></div>
+  <div id="sk-physical" class="itp"><div class="card" id="skills-physical"></div></div>
+</div>
+
+<div id="s-stages" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">🛤️ Этапы развития</div>
+    <div class="sec-s">Путь на 3 периода с целями и ежедневными привычками</div>
+  </div>
+  <div id="stages-ct" class="g3"></div>
 </div>
 
 <!-- ══════════════ ГРАФИК ══════════════ -->
@@ -1800,6 +1890,21 @@ localStorage.setItem('ay_uid',uid);
 let S={
   done:{},workoutLogs:{},runLogs:{},customSchedule:null,
   taskStatus:{},
+  carryOver:{},
+  dailyReviews:{},
+  skillStats:{},
+  brainLog:[],
+  memoryCards:[],
+  selfTests:[],
+  emotionLog:[],
+  pauseLog:[],
+  attentionLog:[],
+  observationLog:[],
+  communicationLog:[],
+  scenarioLog:[],
+  projects:[],
+  lightDays:{},
+  currentStage:'s0',
   booksRead:{},
   phaseChecks:{p0:{},p1:{},p2:{},p3:{}},
   history:[],
@@ -1811,17 +1916,17 @@ let S={
 window.S=S;
 
 function loadLocal(){
-  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.taskStatus=p.taskStatus||{};S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
+  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.taskStatus=p.taskStatus||{};S.carryOver=p.carryOver||{};S.dailyReviews=p.dailyReviews||{};S.skillStats=p.skillStats||{};S.brainLog=p.brainLog||[];S.memoryCards=p.memoryCards||[];S.selfTests=p.selfTests||[];S.emotionLog=p.emotionLog||[];S.pauseLog=p.pauseLog||[];S.attentionLog=p.attentionLog||[];S.observationLog=p.observationLog||[];S.communicationLog=p.communicationLog||[];S.scenarioLog=p.scenarioLog||[];S.projects=p.projects||[];S.lightDays=p.lightDays||{};S.currentStage=(p.currentStage==='s2'?'s3':(p.currentStage||'s0'));S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
 }
 function saveLocal(){
-  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
-       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
+  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,carryOver:S.carryOver,dailyReviews:S.dailyReviews,skillStats:S.skillStats,brainLog:S.brainLog,memoryCards:S.memoryCards,selfTests:S.selfTests,emotionLog:S.emotionLog,pauseLog:S.pauseLog,attentionLog:S.attentionLog,observationLog:S.observationLog,communicationLog:S.communicationLog,scenarioLog:S.scenarioLog,projects:S.projects,lightDays:S.lightDays,currentStage:S.currentStage,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
+       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,carryOver:S.carryOver,dailyReviews:S.dailyReviews,skillStats:S.skillStats,brainLog:S.brainLog,memoryCards:S.memoryCards,selfTests:S.selfTests,emotionLog:S.emotionLog,pauseLog:S.pauseLog,attentionLog:S.attentionLog,observationLog:S.observationLog,communicationLog:S.communicationLog,scenarioLog:S.scenarioLog,projects:S.projects,lightDays:S.lightDays,currentStage:S.currentStage,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
 }
 function loadCloud(cb){
   if(!fbOk){if(cb)cb();return;}
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.taskStatus=d.taskStatus||{};S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
+    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.taskStatus=d.taskStatus||{};S.carryOver=d.carryOver||{};S.dailyReviews=d.dailyReviews||{};S.skillStats=d.skillStats||{};S.brainLog=d.brainLog||[];S.memoryCards=d.memoryCards||[];S.selfTests=d.selfTests||[];S.emotionLog=d.emotionLog||[];S.pauseLog=d.pauseLog||[];S.attentionLog=d.attentionLog||[];S.observationLog=d.observationLog||[];S.communicationLog=d.communicationLog||[];S.scenarioLog=d.scenarioLog||[];S.projects=d.projects||[];S.lightDays=d.lightDays||{};S.currentStage=(d.currentStage==='s2'?'s3':(d.currentStage||'s0'));S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
     if(cb)cb();
   }).catch(()=>{if(cb)cb();});
 }
@@ -1870,13 +1975,21 @@ function onSecLoad(s){
   if(s==='sched'){renderSM();renderDailySched();}
   if(s==='mind')renderExecutorDashboard();
   if(s==='body')renderExecutorDashboard();
-  if(s==='control')renderExecutorDashboard();
+  if(s==='control'){renderExecutorDashboard();renderStages();}
   if(s==='trackers')updDash();
+  if(s==='skills')renderSkills();
+  if(s==='stages')renderStages();
+  if(s==='lab')renderLabAll();
   if(s==='progress'){setTodayDates();renderWHist();renderRHist();}
   if(s==='knowledge'){updateKnowledgeSeen();saveLocal();updDash();}
   if(s==='charts')renderCharts();
   if(s==='mealplan')renderMealPlan();
   if(s==='shopping')renderShopping();
+}
+
+function goLabTab(name){
+  goSec('lab');
+  setTimeout(()=>{sit('lab',name);renderLabAll();},0);
 }
 
 function toggleMobNav(){
@@ -1910,7 +2023,7 @@ document.getElementById('main-wrap').addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-touchStartX;
   const dy=e.changedTouches[0].clientY-touchStartY;
   if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){
-    const secs=['dash','mind','body','control','trackers','sched','workout','run','food','mealplan','shopping','supps','books','knowledge','mental','progress','charts','macros'];
+    const secs=['dash','mind','body','control','trackers','skills','stages','lab','sched','workout','run','food','mealplan','shopping','supps','books','knowledge','mental','progress','charts','macros'];
     const cur=Array.from(document.querySelectorAll('.sec')).findIndex(s=>s.classList.contains('active'));
     let next=cur+(dx<0?1:-1);
     if(next>=0&&next<secs.length)goSec(secs[next]);
@@ -2846,18 +2959,35 @@ function getScheduleRowsForDate(date){
   return defaultTrainDay;
 }
 
-function getTodayTasks(){
-  const date=new Date();
+function getTasksForDate(date){
   const key=dKey(date);
   const rows=getScheduleRowsForDate(date);
   const tasks=window.ASCore?.taskEngine?.mapScheduleToTasks(rows,key)||[];
-  return{dateKey:key,tasks,statuses:S.taskStatus?.[key]||{}};
+  const stageTasks=(STAGE_TASKS[S.currentStage]||[]).map((t,i)=>({
+    id:`stage-${S.currentStage}-${key}-${i}`,
+    dateKey:key,time:t.time,sortMinutes:window.ASCore?.taskEngine?.toMinutes?.(t.time)||0,
+    title:t.title,description:t.description,durationText:t.duration||'',tag:t.tag,source:t.source
+  }));
+  const carry=(S.carryOver?.[key]||[]).map((t,i)=>({
+    id:`carry-${key}-${i}-${(t.title||'task').toLowerCase().replace(/[^a-z0-9а-яё]+/gi,'-').slice(0,18)}`,
+    dateKey:key,time:t.time||'00:00',sortMinutes:window.ASCore?.taskEngine?.toMinutes?.(t.time||'00:00')||0,
+    title:t.title||'Перенесенная задача',description:t.description||'',durationText:'',tag:t.tag||'study',source:t.source||'control'
+  }));
+  const bySig={};
+  [...tasks,...stageTasks,...carry].forEach(t=>{bySig[`${t.title}|${t.time}|${t.source}`]=t;});
+  return{dateKey:key,tasks:Object.values(bySig).sort((a,b)=>a.sortMinutes-b.sortMinutes),statuses:S.taskStatus?.[key]||{}};
+}
+
+function getTodayTasks(){
+  return getTasksForDate(new Date());
 }
 
 function setTaskStatus(task,status){
   const dateKey=task.dateKey||dKey(new Date());
   if(!S.taskStatus[dateKey])S.taskStatus[dateKey]={};
+  const prev=S.taskStatus[dateKey][task.id]?.status;
   S.taskStatus[dateKey][task.id]={status,ts:Date.now(),source:task.source||'control'};
+  if(status==='done'&&prev!=='done')trackSkillFromTask(task,dateKey);
   if(status==='done'&&(task.tag==='train'||task.tag==='run'))S.done[dateKey]=true;
   logAction(`${status==='done'?'Выполнено':'Пропущено'}: ${task.title} (${dateKey})`);
   saveLocal();
@@ -2871,9 +3001,134 @@ function markCurrentTask(status){
   setTaskStatus(window.__execCurrentTask,status);
 }
 
+function setTaskDoneById(taskId,val){
+  const data=getTodayTasks();
+  const task=data.tasks.find(t=>t.id===taskId);
+  if(!task)return;
+  if(val)setTaskStatus(task,'done');
+  else{
+    if(!S.taskStatus[data.dateKey])S.taskStatus[data.dateKey]={};
+    delete S.taskStatus[data.dateKey][taskId];
+    saveLocal();
+    renderExecutorDashboard();
+  }
+}
+
+function skipTaskById(taskId){
+  const data=getTodayTasks();
+  const task=data.tasks.find(t=>t.id===taskId);
+  if(!task)return;
+  setTaskStatus(task,'skipped');
+}
+
+function getDailyCompletion(tasks,statuses){
+  if(!tasks.length)return 100;
+  const done=tasks.filter(t=>statuses[t.id]?.status==='done').length;
+  return Math.round((done/tasks.length)*100);
+}
+
+function renderDailyGroups(data){
+  const ct=document.getElementById('daily-groups');
+  if(!ct)return;
+  const groups=[['mind','Ум'],['body','Тело'],['control','Контроль']];
+  const html=groups.map(([key,title])=>{
+    const items=data.tasks.filter(t=>t.source===key).slice(0,2);
+    if(items.length===0)return `<div class="daily-col"><h4>${title}</h4><div style="font-size:.78em;color:var(--t3);">Задач нет</div></div>`;
+    const rows=items.map(t=>{
+      const st=data.statuses[t.id]?.status;
+      return `<div class="daily-task">
+        <input type="checkbox" ${st==='done'?'checked':''} onchange="setTaskDoneById('${t.id}',this.checked)">
+        <div>
+          <div style="font-size:.8em;">${esc(t.title)}</div>
+          <small>${t.time} · ${esc(t.description).slice(0,72)}</small>
+        </div>
+        ${st==='skipped'?'<span class="exec-pill" style="color:#fca5a5;">skip</span>':`<button class="daily-skip" onclick="skipTaskById('${t.id}')">skip</button>`}
+      </div>`;
+    }).join('');
+    return `<div class="daily-col"><h4>${title}</h4>${rows}</div>`;
+  }).join('');
+  ct.innerHTML=html;
+}
+
+function fillReviewHistorySelect(activeKey){
+  const sel=document.getElementById('rev-history-date');
+  if(!sel)return;
+  const keys=Object.keys(S.dailyReviews||{}).sort().reverse();
+  sel.innerHTML=`<option value="">История дней</option>`+keys.map(k=>`<option value="${k}" ${k===activeKey?'selected':''}>${k}</option>`).join('');
+}
+
+function loadDailyReview(key){
+  if(!key)return;
+  const r=S.dailyReviews?.[key]||{};
+  const d=document.getElementById('rev-done');if(d)d.value=r.done||'';
+  const m=document.getElementById('rev-missed');if(m)m.value=r.missed||'';
+  const s=document.getElementById('rev-stress');if(s)s.value=r.stress||'';
+  const o=document.getElementById('rev-main');if(o)o.value=r.main||'';
+}
+
+function saveDailyReview(key){
+  const dateKey=key||dKey(new Date());
+  S.dailyReviews[dateKey]={
+    done:document.getElementById('rev-done')?.value?.trim()||'',
+    missed:document.getElementById('rev-missed')?.value?.trim()||'',
+    stress:parseInt(document.getElementById('rev-stress')?.value||'0',10)||0,
+    main:document.getElementById('rev-main')?.value?.trim()||'',
+    ts:Date.now()
+  };
+  logAction(`Сохранен Daily Review ${dateKey}`);
+  saveLocal();
+  fillReviewHistorySelect(dateKey);
+  notify('✅ Review сохранен');
+}
+
+function finishDay(){
+  const data=getTodayTasks();
+  saveDailyReview(data.dateKey);
+  const pending=data.tasks.filter(t=>!data.statuses[t.id]||data.statuses[t.id].status!=='done');
+  const next=new Date();next.setDate(next.getDate()+1);
+  const nextKey=dKey(next);
+  if(!S.carryOver[nextKey])S.carryOver[nextKey]=[];
+  const exists=new Set(S.carryOver[nextKey].map(t=>`${t.title}|${t.time}`));
+  pending.slice(0,6).forEach(t=>{
+    const sig=`${t.title}|${t.time}`;
+    if(exists.has(sig))return;
+    S.carryOver[nextKey].push({title:t.title,description:t.description,time:t.time,tag:t.tag,source:t.source});
+  });
+  S.done[data.dateKey]=true;
+  logAction(`День завершен: ${data.dateKey}, перенесено ${Math.min(6,pending.length)} задач`);
+  saveLocal();
+  renderExecutorDashboard();
+  notify('🌙 День завершен');
+}
+
+function ensureAutoCarryOver(){
+  const today=new Date();
+  const todayKey=dKey(today);
+  const marker='ay_carryover_'+todayKey;
+  if(localStorage.getItem(marker)==='1')return;
+  const prev=new Date(today);prev.setDate(prev.getDate()-1);
+  const prevData=getTasksForDate(prev);
+  const missed=prevData.tasks.filter(t=>prevData.statuses[t.id]?.status!=='done').slice(0,6);
+  if(missed.length>0){
+    if(!S.carryOver[todayKey])S.carryOver[todayKey]=[];
+    const exists=new Set(S.carryOver[todayKey].map(t=>`${t.title}|${t.time}`));
+    missed.forEach(t=>{
+      const sig=`${t.title}|${t.time}`;
+      if(exists.has(sig))return;
+      S.carryOver[todayKey].push({title:t.title,description:t.description,time:t.time,tag:t.tag,source:t.source});
+    });
+    saveLocal();
+  }
+  localStorage.setItem(marker,'1');
+}
+
 function renderExecutorDashboard(){
   const wrap=document.getElementById('exec-content');
   if(!wrap)return;
+  ensureAutoCarryOver();
+  const todayKey=dKey(new Date());
+  fillReviewHistorySelect(todayKey);
+  if(S.dailyReviews?.[todayKey])loadDailyReview(todayKey);
   const now=new Date();
   const nowMin=now.getHours()*60+now.getMinutes();
   const data=getTodayTasks();
@@ -2901,6 +3156,563 @@ function renderExecutorDashboard(){
     <div style="margin-top:14px;font-size:.78em;color:var(--t3);">Следующие задачи:</div>
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;">${pendingList||'<span class="exec-pill">Текущая задача последняя</span>'}</div>
   `;
+  renderDailyGroups(data);
+  const pct=document.getElementById('daily-pct');
+  if(pct)pct.textContent=`${getDailyCompletion(data.tasks,data.statuses)}%`;
+}
+
+const SKILLS_MAP={
+  thinking:['Логические цепочки 10 мин','Анализ кейса 15 мин','Стратегическая заметка 5 мин'],
+  memory:['Spaced repetition 10 карточек','Запоминание 20 слов','Воспроизведение без подсказки'],
+  attention:['Таблица Шульте 5-7 мин','Поиск отличий 10 мин','Фокус-блок Pomodoro 25 мин'],
+  emotions:['Эмоциональный чек 2 мин','Дыхание 3-5 мин','Пауза реакции 90 секунд'],
+  communication:['Разбор разговора 5 мин','Сценарий переговоров 10 мин','Тренировка вопросов'],
+  physical:['Короткий комплекс 12 мин','Мобилити 8 мин','Прогулка 20 мин']
+};
+
+function ensureSkillStats(){
+  const keys=Object.keys(SKILLS_MAP);
+  keys.forEach(k=>{
+    if(!S.skillStats[k])S.skillStats[k]={level:1,history:[]};
+    if(!Array.isArray(S.skillStats[k].history))S.skillStats[k].history=[];
+    if(typeof S.skillStats[k].level!=='number')S.skillStats[k].level=1;
+  });
+}
+
+function mapTaskToSkills(task){
+  const tag=task?.tag||'';
+  const src=task?.source||'';
+  if(tag==='train'||tag==='run'||src==='body')return['physical'];
+  if(tag==='study'||tag==='chess')return['thinking','memory'];
+  if(tag==='mind'||src==='control')return['emotions','attention'];
+  if(src==='mind')return['thinking'];
+  return['attention'];
+}
+
+function trackSkillFromTask(task,dateKey){
+  ensureSkillStats();
+  mapTaskToSkills(task).forEach(k=>{
+    const row=S.skillStats[k];
+    row.history.push({date:dateKey,task:task.title,ts:Date.now(),points:1});
+    row.history=row.history.slice(-200);
+    row.level=calcSkillLevel(k);
+  });
+}
+
+function getWeeklySkillMetric(key){
+  const row=S.skillStats[key]||{history:[]};
+  const now=new Date();
+  const start=new Date(now);start.setDate(now.getDate()-6);start.setHours(0,0,0,0);
+  return row.history.filter(h=>new Date(h.date)>=start).length;
+}
+
+function calcSkillLevel(key){
+  ensureSkillStats();
+  const now=Date.now();
+  const history=S.skillStats[key]?.history||[];
+  if(history.length===0)return 1;
+  let score=0;
+  history.forEach(h=>{
+    const ts=new Date(h.date).getTime()||h.ts||now;
+    const days=Math.max(0,(now-ts)/86400000);
+    const decay=Math.exp(-days/28);
+    score+=(h.points||1)*decay;
+  });
+  const lvl=1+Math.floor(score/3.2);
+  return Math.max(1,Math.min(10,lvl));
+}
+
+function renderSkills(){
+  ensureSkillStats();
+  Object.keys(SKILLS_MAP).forEach(k=>{
+    const el=document.getElementById('skills-'+k);
+    if(!el)return;
+    const rows=SKILLS_MAP[k].map((name,i)=>`<div class="tip"><div class="tipico">🎯</div><div><strong style="font-size:.82em;">${i+1}. ${esc(name)}</strong><div class="skill-chip">базовое упражнение</div></div></div>`).join('');
+    const st=S.skillStats[k]||{level:1,history:[]};
+    const weekly=getWeeklySkillMetric(k);
+    const recent=st.history.slice(-5).reverse().map(h=>`<div style="font-size:.74em;color:var(--t3);margin-bottom:3px;">${h.date}: ${esc(h.task)}</div>`).join('')||'<div style="font-size:.74em;color:var(--t3);">Пока нет активности</div>';
+    el.innerHTML=`
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <span class="skill-chip">Уровень: ${st.level}/10</span>
+        <span class="skill-chip">Занятий за неделю: ${weekly}</span>
+        <span class="skill-chip">Всего активностей: ${st.history.length}</span>
+      </div>
+      <h3 style="font-size:.9em;margin-bottom:10px;">Упражнения категории</h3>${rows}
+      <div style="margin-top:10px;"><h4 style="font-size:.82em;margin-bottom:6px;">История активности</h4>${recent}</div>
+    `;
+  });
+}
+
+const STAGE_TASKS={
+  s0:[
+    {source:'mind',tag:'study',time:'08:00',title:'Базовое обучение',description:'20 минут системного чтения и конспекта',duration:'20 мин'},
+    {source:'body',tag:'train',time:'19:00',title:'Фундамент тела',description:'Короткая тренировка по базовому циклу',duration:'25-35 мин'},
+    {source:'control',tag:'mind',time:'22:00',title:'Базовый контроль',description:'Дыхание + короткий self-check',duration:'10 мин'}
+  ],
+  s1:[
+    {source:'mind',tag:'study',time:'07:40',title:'Глубокая когнитивная сессия',description:'Анализ/логика с фиксацией выводов',duration:'30 мин'},
+    {source:'body',tag:'run',time:'18:50',title:'Нагрузка с прогрессией',description:'Бег или силовой блок по плану',duration:'35-50 мин'},
+    {source:'control',tag:'mind',time:'21:50',title:'Управление состоянием',description:'Антистресс + рефлексия дня',duration:'15 мин'}
+  ],
+  s3:[
+    {source:'mind',tag:'study',time:'07:30',title:'Стратегический блок',description:'Работа над долгосрочными решениями',duration:'40 мин'},
+    {source:'body',tag:'train',time:'18:40',title:'Высокий стандарт физики',description:'Тренировка/бег с метриками качества',duration:'45-60 мин'},
+    {source:'control',tag:'mind',time:'22:10',title:'Мета-контроль',description:'Декомпозиция дня и коррекция курса',duration:'20 мин'}
+  ]
+};
+
+const STAGES_DATA=[
+  {id:'s0',title:'Этап 0 · 1-2 года',desc:'Фаза базовой устойчивости и закрепления системы.',goals:['Режим без срывов','Стабильное тело/ум/контроль','Привычка ежедневного review'],habits:['Ежедневный чек-лист','Минимум 3 действия в день','Фиксация пропусков и переносов']},
+  {id:'s1',title:'Этап 1 · 3-4 года',desc:'Фаза усиления: рост нагрузки и когнитивной глубины.',goals:['Повысить качество решений','Увеличить плотность полезных действий','Развивать навыки системно'],habits:['Неделя с целевыми метриками','Углубленные блоки ума','Регулярная саморегуляция']},
+  {id:'s3',title:'Этап 3 · 5-8 лет',desc:'Фаза мастерства и долгого цикла прогресса.',goals:['Стратегическое мышление','Устойчивое высокое выполнение','Интеграция в долгосрочные проекты'],habits:['Квартальные циклы','Мета-анализ траектории','Адаптивная корректировка программы']}
+];
+
+function renderStages(){
+  const ct=document.getElementById('stages-ct');
+  if(!ct)return;
+  ct.innerHTML=STAGES_DATA.map(s=>`
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px;">
+        <h3 style="font-size:.92em;">${s.title}</h3>
+        <button class="btn btn-xs ${S.currentStage===s.id?'btn-g':'btn-gh'}" onclick="setCurrentStage('${s.id}')">${S.currentStage===s.id?'Текущий':'Выбрать'}</button>
+      </div>
+      <p style="font-size:.8em;color:var(--t2);margin-bottom:8px;">${s.desc}</p>
+      <div style="font-size:.78em;margin-bottom:6px;color:var(--a1);">Цели:</div>
+      ${s.goals.map(g=>`<div style="font-size:.78em;color:var(--t2);margin-bottom:3px;">• ${g}</div>`).join('')}
+      <div style="font-size:.78em;margin:8px 0 6px;color:var(--a3);">Привычки:</div>
+      ${s.habits.map(h=>`<span class="skill-chip">${h}</span>`).join('')}
+    </div>
+  `).join('');
+}
+
+function setCurrentStage(id){
+  S.currentStage=id;
+  saveLocal();
+  renderStages();
+  renderExecutorDashboard();
+  notify('✅ Этап обновлен');
+}
+
+const BRAIN_CARDS=[
+  {id:'logic-1',type:'logic',name:'Логическая задача',desc:'Разбор причинно-следственной цепочки',dur:'10 мин'},
+  {id:'analysis-1',type:'analysis',name:'Анализ кейса',desc:'Оцени решение и риски',dur:'15 мин'},
+  {id:'speed-1',type:'speed',name:'Скорость мышления',desc:'Серия коротких ответов на время',dur:'7 мин'},
+  {id:'strategy-1',type:'strategy',name:'Стратегическая сессия',desc:'Построй план на 3 шага вперед',dur:'12 мин'}
+];
+
+function renderLabBrain(){
+  const ct=document.getElementById('lab-brain-ct');if(!ct)return;
+  const type=(document.getElementById('brain-filter')?.value)||'all';
+  const cards=BRAIN_CARDS.filter(c=>type==='all'||c.type===type);
+  const html=cards.map(c=>`<div class="tip"><div class="tipico">🧠</div><div><strong style="font-size:.82em;">${c.name}</strong><div style="font-size:.76em;color:var(--t2);">${c.desc} · ${c.dur}</div><button class="btn btn-p btn-xs" style="margin-top:5px;" onclick="startBrain('${c.id}')">начать</button> <button class="btn btn-g btn-xs" onclick="finishBrain('${c.id}',true)">done</button> <button class="btn btn-r btn-xs" onclick="finishBrain('${c.id}',false)">skip</button></div></div>`).join('');
+  const hist=(S.brainLog||[]).slice(-10).reverse().map((h,i)=>`<div style="font-size:.75em;color:var(--t3);display:flex;justify-content:space-between;gap:6px;"><span>${h.date} · ${h.name} · ${h.ok?'done':'skip'}</span><span><button class="btn btn-gh btn-xs" onclick="deleteBrainLog(${i})">удалить</button></span></div>`).join('')||'<div style="font-size:.75em;color:var(--t3);">Нет сессий</div>';
+  ct.innerHTML=`
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+      <select id="brain-filter" onchange="renderLabBrain()" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:6px 8px;border-radius:8px;font-size:.8em;">
+        <option value="all">Все типы</option><option value="logic">Логика</option><option value="analysis">Анализ</option><option value="speed">Скорость</option><option value="strategy">Стратегия</option>
+      </select>
+    </div>
+    ${html}
+    <hr class="divider"><h4 style="font-size:.82em;">История</h4>${hist}
+  `;
+}
+function startBrain(id){const c=BRAIN_CARDS.find(x=>x.id===id);if(!c)return;notify(`▶ ${c.name}`);}
+function finishBrain(id,ok){
+  const c=BRAIN_CARDS.find(x=>x.id===id);if(!c)return;
+  const item={id,date:dKey(new Date()),name:c.name,type:c.type,ok:!!ok,ts:Date.now()};
+  S.brainLog=[...(S.brainLog||[]),item].slice(-300);
+  trackSkillFromTask({title:c.name,tag:'study',source:'mind'},item.date);
+  saveLocal();renderLabBrain();renderSkills();notify('✅ Сессия сохранена');
+}
+function deleteBrainLog(visibleIdx){
+  const len=(S.brainLog||[]).length;
+  const realIdx=len-1-visibleIdx;
+  if(realIdx<0)return;
+  S.brainLog.splice(realIdx,1);
+  saveLocal();renderLabBrain();
+}
+
+function renderLabMemory(){
+  const ct=document.getElementById('lab-memory-ct');if(!ct)return;
+  const cards=(S.memoryCards||[]).sort((a,b)=>(a.nextAt||'').localeCompare(b.nextAt||''));
+  const due=cards.filter(c=>(c.nextAt||dKey(new Date()))<=dKey(new Date()));
+  const rows=due.slice(0,12).map(c=>`<div class="tip"><div class="tipico">🧩</div><div><strong style="font-size:.82em;">${esc(c.front)}</strong><div style="font-size:.75em;color:var(--t2);">${esc(c.back)}</div><button class="btn btn-g btn-xs" onclick="memoryRecall('${c.id}',true)">вспомнил</button> <button class="btn btn-r btn-xs" onclick="memoryRecall('${c.id}',false)">не вспомнил</button> <button class="btn btn-gh btn-xs" onclick="editMemoryCard('${c.id}')">ред.</button> <button class="btn btn-gh btn-xs" onclick="deleteMemoryCard('${c.id}')">удал.</button></div></div>`).join('')||'<div style="font-size:.76em;color:var(--t3);">Сегодня нет карточек к повторению</div>';
+  const tests=(S.selfTests||[]).slice(-8).reverse().map(t=>`<div style="font-size:.75em;color:var(--t3);">${t.date}: ${t.score}% (${t.correct}/${t.total})</div>`).join('')||'<div style="font-size:.75em;color:var(--t3);">Нет попыток</div>';
+  ct.innerHTML=`
+    <div class="run-form" style="margin-top:0;">
+      <div><label>Слово/понятие</label><input id="mem-front" placeholder="например: neuroplasticity"></div>
+      <div><label>Определение</label><input id="mem-back" placeholder="краткое объяснение"></div>
+      <div style="align-self:end;"><button class="btn btn-p btn-sm" onclick="addMemoryCard()">Добавить карточку</button></div>
+    </div>
+    <h4 style="font-size:.84em;margin-bottom:6px;">Повторить сегодня</h4>${rows}
+    <hr class="divider"><h4 style="font-size:.84em;margin-bottom:6px;">Self-testing</h4>
+    <button class="btn btn-v btn-sm" onclick="runSelfTest()">Начать тест</button>
+    <div id="mem-selftest-panel" style="margin-top:8px;"></div>
+    <div style="margin-top:8px;">${tests}</div>
+  `;
+  renderSelfTestPanel();
+}
+function addMemoryCard(){
+  const f=document.getElementById('mem-front')?.value?.trim();const b=document.getElementById('mem-back')?.value?.trim();
+  if(!f||!b){notify('⚠️ Заполни обе части');return;}
+  S.memoryCards.push({id:'mc_'+Date.now(),front:f,back:b,nextAt:dKey(new Date()),history:[]});
+  saveLocal();renderLabMemory();notify('✅ Карточка добавлена');
+}
+function editMemoryCard(id){
+  const c=S.memoryCards.find(x=>x.id===id);if(!c)return;
+  document.getElementById('m-t').textContent='Редактирование карточки памяти';
+  document.getElementById('m-b').innerHTML=`
+    <label style="font-size:.8em;color:var(--t2);">Термин</label>
+    <input id="mem-edit-front" value="${esc(c.front)}" style="width:100%;margin:6px 0 10px;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:8px;border-radius:8px;">
+    <label style="font-size:.8em;color:var(--t2);">Определение</label>
+    <input id="mem-edit-back" value="${esc(c.back)}" style="width:100%;margin-top:6px;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:8px;border-radius:8px;">
+  `;
+  document.getElementById('m-bt').innerHTML=`
+    <button class="btn btn-g btn-sm" onclick="saveMemoryCardEdit('${id}')">Сохранить</button>
+    <button class="btn btn-gh btn-sm" onclick="closeMod()">Отмена</button>
+  `;
+  document.getElementById('modal').classList.add('open');
+}
+function saveMemoryCardEdit(id){
+  const c=S.memoryCards.find(x=>x.id===id);if(!c)return;
+  const f=document.getElementById('mem-edit-front')?.value?.trim();
+  const b=document.getElementById('mem-edit-back')?.value?.trim();
+  if(!f||!b){notify('Заполни оба поля');return;}
+  c.front=f;c.back=b;
+  saveLocal();closeMod();renderLabMemory();notify('✅ Карточка обновлена');
+}
+function deleteMemoryCard(id){
+  S.memoryCards=(S.memoryCards||[]).filter(c=>c.id!==id);
+  saveLocal();renderLabMemory();
+}
+function memoryRecall(id,ok){
+  const c=S.memoryCards.find(x=>x.id===id);if(!c)return;
+  const today=new Date();
+  const next=new Date(today);
+  next.setDate(today.getDate()+(ok?(c.history.length<1?1:(c.history.length<2?2:7)):1));
+  c.nextAt=dKey(next);
+  c.history.push({date:dKey(today),ok:!!ok});
+  if(ok)trackSkillFromTask({title:'Spaced repetition',tag:'study',source:'mind'},dKey(today));
+  saveLocal();renderLabMemory();renderSkills();
+}
+function checkAnswer(user,expected){
+  const u=(user||'').trim().toLowerCase();
+  const e=(expected||'').trim().toLowerCase();
+  if(!u||!e)return false;
+  return e.includes(u)||u.includes(e.slice(0,Math.min(16,e.length)));
+}
+function runSelfTest(){
+  const due=(S.memoryCards||[]).filter(c=>(c.nextAt||dKey(new Date()))<=dKey(new Date())).slice(0,5);
+  if(due.length===0){notify('Нет карточек для теста');return;}
+  window.__selfTest={queue:due,idx:0,correct:0,total:due.length};
+  renderSelfTestPanel();
+}
+function renderSelfTestPanel(){
+  const panel=document.getElementById('mem-selftest-panel');if(!panel)return;
+  const st=window.__selfTest;
+  if(!st){panel.innerHTML='';return;}
+  if(st.idx>=st.total){
+    const score=Math.round((st.correct/st.total)*100);
+    S.selfTests.push({date:dKey(new Date()),correct:st.correct,total:st.total,score,ts:Date.now()});
+    trackSkillFromTask({title:'Self-test',tag:'study',source:'mind'},dKey(new Date()));
+    saveLocal();window.__selfTest=null;renderLabMemory();renderSkills();notify(`Тест: ${score}%`);return;
+  }
+  const c=st.queue[st.idx];
+  panel.innerHTML=`
+    <div class="card-sm" style="background:var(--bg3);border:1px solid var(--brd);border-radius:10px;">
+      <div style="font-size:.78em;color:var(--t3);margin-bottom:6px;">Вопрос ${st.idx+1}/${st.total}</div>
+      <div style="font-size:.86em;margin-bottom:8px;">${esc(c.front)}</div>
+      <input id="selftest-answer" placeholder="Твой ответ" style="width:100%;background:var(--bg2);border:1px solid var(--brd);color:var(--t1);padding:8px;border-radius:8px;">
+      <div style="display:flex;gap:7px;flex-wrap:wrap;margin-top:8px;">
+        <button class="btn btn-g btn-xs" onclick="submitSelfTestAnswer()">Ответить</button>
+        <button class="btn btn-gh btn-xs" onclick="skipSelfTestAnswer()">Пропустить</button>
+      </div>
+    </div>
+  `;
+}
+function submitSelfTestAnswer(){
+  const st=window.__selfTest;if(!st)return;
+  const c=st.queue[st.idx];const ans=document.getElementById('selftest-answer')?.value||'';
+  if(checkAnswer(ans,c.back))st.correct++;
+  st.idx++;renderSelfTestPanel();
+}
+function skipSelfTestAnswer(){
+  const st=window.__selfTest;if(!st)return;
+  st.idx++;renderSelfTestPanel();
+}
+
+function renderLabEmotions(){
+  const ct=document.getElementById('lab-emotions-ct');if(!ct)return;
+  const emo=(S.emotionLog||[]).slice(-8).reverse().map((e,i)=>`<div style="font-size:.75em;color:var(--t2);display:flex;justify-content:space-between;gap:6px;"><span>${e.date} · ${esc(e.situation)} → ${esc(e.reaction)} (${e.level}/10)</span><button class="btn btn-gh btn-xs" onclick="deleteEmotion(${i})">удалить</button></div>`).join('')||'<div style="font-size:.75em;color:var(--t3);">Нет записей</div>';
+  const pauses=(S.pauseLog||[]).slice(-6).reverse().map(p=>`<div style="font-size:.75em;color:var(--t2);">${p.date} · ${p.min} мин · ${p.helped?'помогло':'не помогло'}</div>`).join('')||'<div style="font-size:.75em;color:var(--t3);">Нет пауз</div>';
+  ct.innerHTML=`
+    <div class="run-form" style="margin-top:0;">
+      <div><label>Ситуация</label><input id="emo-sit" placeholder="коротко"></div>
+      <div><label>Реакция</label><input id="emo-react" placeholder="что сделал"></div>
+      <div><label>Эмоция 1-10</label><input id="emo-level" type="number" min="1" max="10"></div>
+      <div style="align-self:end;"><button class="btn btn-p btn-sm" onclick="addEmotion()">Сохранить (30 сек)</button></div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin:10px 0;">
+      <button class="btn btn-v btn-sm" onclick="startPause(1)">Сделать паузу 1 мин</button>
+      <button class="btn btn-v btn-sm" onclick="startPause(3)">Сделать паузу 3 мин</button>
+      <button class="btn btn-g btn-sm" onclick="pauseResult(true)">Помогло</button>
+      <button class="btn btn-r btn-sm" onclick="pauseResult(false)">Не помогло</button>
+    </div>
+    <h4 style="font-size:.82em;">Эмо-дневник</h4>${emo}<hr class="divider"><h4 style="font-size:.82em;">Практики паузы</h4>${pauses}
+  `;
+}
+function addEmotion(){
+  const situation=document.getElementById('emo-sit')?.value?.trim();const reaction=document.getElementById('emo-react')?.value?.trim();const level=parseInt(document.getElementById('emo-level')?.value||'0',10);
+  if(!situation||!reaction||!level){notify('⚠️ Заполни форму');return;}
+  S.emotionLog.push({date:dKey(new Date()),situation,reaction,level,ts:Date.now()});
+  trackSkillFromTask({title:'Эмоциональный лог',tag:'mind',source:'control'},dKey(new Date()));
+  saveLocal();renderLabEmotions();renderSkills();notify('✅ Эмо-запись добавлена');
+}
+function deleteEmotion(visibleIdx){
+  const len=(S.emotionLog||[]).length;const real=len-1-visibleIdx;if(real<0)return;
+  S.emotionLog.splice(real,1);saveLocal();renderLabEmotions();
+}
+function startPause(min){window.__pauseStart={min,ts:Date.now()};notify(`Пауза ${min} мин запущена`);}
+function pauseResult(helped){
+  const p=window.__pauseStart||{min:1,ts:Date.now()};
+  S.pauseLog.push({date:dKey(new Date()),min:p.min,helped:!!helped,ts:Date.now()});
+  trackSkillFromTask({title:'Пауза/дыхание',tag:'mind',source:'control'},dKey(new Date()));
+  saveLocal();renderLabEmotions();renderSkills();
+}
+
+function renderLabAttention(){
+  const ct=document.getElementById('lab-attention-ct');if(!ct)return;
+  const att=(S.attentionLog||[]).slice(-8).reverse().map((a,i)=>`<div style="font-size:.75em;color:var(--t2);display:flex;justify-content:space-between;gap:6px;"><span>${a.date} · ${a.type} · ${a.sec} сек</span><button class="btn btn-gh btn-xs" onclick="deleteAttention(${i})">удалить</button></div>`).join('')||'<div style="font-size:.75em;color:var(--t3);">Нет упражнений</div>';
+  const obs=(S.observationLog||[]).slice(-8).reverse().map((o,i)=>`<div style="font-size:.75em;color:var(--t2);display:flex;justify-content:space-between;gap:6px;"><span>${o.date}: ${esc(o.note)} → ${esc(o.conclusion)}</span><button class="btn btn-gh btn-xs" onclick="deleteObservation(${i})">удалить</button></div>`).join('')||'<div style="font-size:.75em;color:var(--t3);">Нет наблюдений</div>';
+  ct.innerHTML=`
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+      <button class="btn btn-p btn-sm" onclick="startAttention('Таблицы Шульте')">Старт: Шульте</button>
+      <button class="btn btn-p btn-sm" onclick="startAttention('Поиск отличий')">Старт: Отличия</button>
+      <button class="btn btn-g btn-sm" onclick="stopAttention()">Финиш и сохранить</button>
+    </div>
+    <h4 style="font-size:.82em;">Время выполнения</h4>${att}
+    <hr class="divider">
+    <div class="run-form" style="margin-top:0;">
+      <div><label>Что заметил</label><input id="obs-note" placeholder="быстрый ввод"></div>
+      <div><label>Вывод</label><input id="obs-conclusion" placeholder="кратко"></div>
+      <div style="align-self:end;"><button class="btn btn-v btn-sm" onclick="addObservation()">Сохранить наблюдение</button></div>
+    </div>
+    <h4 style="font-size:.82em;">Дневник наблюдений</h4>${obs}
+  `;
+}
+function startAttention(type){window.__attStart={type,ts:Date.now()};notify(`▶ ${type}`);}
+function stopAttention(){
+  const s=window.__attStart;if(!s){notify('Сначала старт');return;}
+  const sec=Math.max(5,Math.round((Date.now()-s.ts)/1000));
+  S.attentionLog.push({date:dKey(new Date()),type:s.type,sec,ts:Date.now()});
+  trackSkillFromTask({title:s.type,tag:'study',source:'mind'},dKey(new Date()));
+  saveLocal();renderLabAttention();renderSkills();
+}
+function addObservation(){
+  const note=document.getElementById('obs-note')?.value?.trim();const conclusion=document.getElementById('obs-conclusion')?.value?.trim();
+  if(!note||!conclusion){notify('Заполни оба поля');return;}
+  S.observationLog.push({date:dKey(new Date()),note,conclusion,ts:Date.now()});
+  saveLocal();renderLabAttention();
+}
+function deleteAttention(visibleIdx){
+  const len=(S.attentionLog||[]).length;const real=len-1-visibleIdx;if(real<0)return;
+  S.attentionLog.splice(real,1);saveLocal();renderLabAttention();
+}
+function deleteObservation(visibleIdx){
+  const len=(S.observationLog||[]).length;const real=len-1-visibleIdx;if(real<0)return;
+  S.observationLog.splice(real,1);saveLocal();renderLabAttention();
+}
+
+function renderLabComm(){
+  const ct=document.getElementById('lab-comm-ct');if(!ct)return;
+  const comm=(S.communicationLog||[]).slice(-8).reverse().map((c,i)=>`<div style="font-size:.75em;color:var(--t2);display:flex;justify-content:space-between;gap:6px;"><span>${c.date} · ${esc(c.situation)} · ${c.ok?'удалось':'не удалось'}</span><button class="btn btn-gh btn-xs" onclick="deleteComm(${i})">удалить</button></div>`).join('')||'<div style="font-size:.75em;color:var(--t3);">Нет логов</div>';
+  const scen=(S.scenarioLog||[]).slice(-8).reverse().map((s,i)=>`<div style="font-size:.75em;color:var(--t2);display:flex;justify-content:space-between;gap:6px;"><span>${s.date} · ${s.scenario} · ${esc(s.review)}</span><button class="btn btn-gh btn-xs" onclick="deleteScenario(${i})">удалить</button></div>`).join('')||'<div style="font-size:.75em;color:var(--t3);">Нет сценариев</div>';
+  ct.innerHTML=`
+    <div class="run-form" style="margin-top:0;">
+      <div><label>Ситуация</label><input id="com-sit"></div>
+      <div><label>Цель разговора</label><input id="com-goal"></div>
+      <div><label>Результат</label><input id="com-res"></div>
+      <div><label>Удалось?</label><select id="com-ok"><option value="1">Да</option><option value="0">Нет</option></select></div>
+      <div style="align-self:end;"><button class="btn btn-p btn-sm" onclick="addCommLog()">Сохранить лог</button></div>
+    </div>
+    <hr class="divider">
+    <div class="run-form" style="margin-top:0;">
+      <div><label>Сценарий</label><select id="scn-type"><option>Переговоры</option><option>Убеждение</option><option>Сложный диалог</option></select></div>
+      <div><label>Self-review</label><input id="scn-review"></div>
+      <div style="align-self:end;"><button class="btn btn-v btn-sm" onclick="addScenario()">Сохранить сценарий</button></div>
+    </div>
+    <h4 style="font-size:.82em;">Лог разговоров</h4>${comm}<hr class="divider"><h4 style="font-size:.82em;">Практика сценариев</h4>${scen}
+  `;
+}
+function addCommLog(){
+  const situation=document.getElementById('com-sit')?.value?.trim();const goal=document.getElementById('com-goal')?.value?.trim();const result=document.getElementById('com-res')?.value?.trim();const ok=document.getElementById('com-ok')?.value==='1';
+  if(!situation||!goal||!result){notify('Заполни поля');return;}
+  S.communicationLog.push({date:dKey(new Date()),situation,goal,result,ok,ts:Date.now()});
+  trackSkillFromTask({title:'Коммуникация',tag:'study',source:'mind'},dKey(new Date()));
+  saveLocal();renderLabComm();renderSkills();
+}
+function addScenario(){
+  const scenario=document.getElementById('scn-type')?.value||'Сценарий';const review=document.getElementById('scn-review')?.value?.trim();
+  if(!review){notify('Добавь self-review');return;}
+  S.scenarioLog.push({date:dKey(new Date()),scenario,review,ts:Date.now()});
+  saveLocal();renderLabComm();
+}
+function deleteComm(visibleIdx){
+  const len=(S.communicationLog||[]).length;const real=len-1-visibleIdx;if(real<0)return;
+  S.communicationLog.splice(real,1);saveLocal();renderLabComm();
+}
+function deleteScenario(visibleIdx){
+  const len=(S.scenarioLog||[]).length;const real=len-1-visibleIdx;if(real<0)return;
+  S.scenarioLog.splice(real,1);saveLocal();renderLabComm();
+}
+
+let labCharts={task:null,skill:null};
+function destroyLabChart(name){if(labCharts[name]){labCharts[name].destroy();labCharts[name]=null;}}
+function getTaskCountsByWindow(days){
+  const now=new Date();const labels=[];const done=[];const skipped=[];
+  for(let i=days-1;i>=0;i--){
+    const d=new Date(now);d.setDate(now.getDate()-i);
+    const key=dKey(d);labels.push(`${String(d.getDate()).padStart(2,'0')}.${String(d.getMonth()+1).padStart(2,'0')}`);
+    const st=Object.values(S.taskStatus?.[key]||{});
+    done.push(st.filter(x=>x.status==='done').length);
+    skipped.push(st.filter(x=>x.status==='skipped').length);
+  }
+  return{labels,done,skipped};
+}
+function getSkillTotals(){
+  ensureSkillStats();
+  const keys=Object.keys(SKILLS_MAP);
+  return{
+    labels:keys.map(k=>({thinking:'Мышл',memory:'Пам',attention:'Вним',emotions:'Эмоц',communication:'Комм',physical:'Физ'}[k]||k)),
+    values:keys.map(k=>S.skillStats[k]?.level||1)
+  };
+}
+
+function renderLabAnalytics(){
+  const ct=document.getElementById('lab-analytics-ct');if(!ct)return;
+  const periods=[7,30,90];
+  const selected=parseInt(document.getElementById('lab-period')?.value||'30',10);
+  const now=new Date();
+  const stat=periods.map(d=>{
+    const start=new Date(now);start.setDate(now.getDate()-d+1);
+    const done=Object.keys(S.taskStatus||{}).flatMap(k=>Object.values(S.taskStatus[k]||{}).map(v=>({k,v}))).filter(x=>x.v.status==='done'&&new Date(x.k)>=start).length;
+    const skip=Object.keys(S.taskStatus||{}).flatMap(k=>Object.values(S.taskStatus[k]||{}).map(v=>({k,v}))).filter(x=>x.v.status==='skipped'&&new Date(x.k)>=start).length;
+    return{d,done,skip};
+  });
+  const rows=stat.map(s=>`<div class="stat"><span class="stat-n" style="font-size:1.3em;color:var(--a1);">${s.done}</span><div class="stat-l">Done за ${s.d} дн · skip ${s.skip}</div></div>`).join('');
+  const light=S.lightDays||{};
+  ct.innerHTML=`
+    <div class="g3">${rows}</div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:10px 0;">
+      <span style="font-size:.8em;color:var(--t2);">Период:</span>
+      <select id="lab-period" onchange="renderLabAnalytics()" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:6px 8px;border-radius:8px;font-size:.8em;">
+        <option value="7" ${selected===7?'selected':''}>7 дней</option>
+        <option value="30" ${selected===30?'selected':''}>30 дней</option>
+        <option value="90" ${selected===90?'selected':''}>90 дней</option>
+      </select>
+    </div>
+    <div class="chart-wrap"><h3>Динамика задач (done/skip)</h3><div class="chart-container"><canvas id="lab-chart-task"></canvas></div></div>
+    <div class="chart-wrap"><h3>Уровни навыков</h3><div class="chart-container"><canvas id="lab-chart-skill"></canvas></div></div>
+    <div class="card" style="margin-top:10px;">
+      <h4 style="font-size:.85em;margin-bottom:8px;">Минимальный режим</h4>
+      <button class="btn btn-o btn-sm" onclick="enableLightDay()">Легкий день</button>
+      <div id="light-day-ct" style="margin-top:8px;font-size:.8em;color:var(--t2);"></div>
+    </div>
+    <div style="margin-top:8px;font-size:.76em;color:var(--t3);">Легких дней: ${Object.keys(light).length}</div>
+  `;
+  renderLightDayInfo();
+  renderLabCharts(selected);
+}
+function renderLabCharts(days){
+  const taskCtx=document.getElementById('lab-chart-task');
+  const skillCtx=document.getElementById('lab-chart-skill');
+  if(!taskCtx||!skillCtx||typeof Chart==='undefined')return;
+  destroyLabChart('task');destroyLabChart('skill');
+  const t=getTaskCountsByWindow(days);
+  labCharts.task=new Chart(taskCtx,{type:'line',data:{labels:t.labels,datasets:[{label:'Done',data:t.done,borderColor:'#10b981',backgroundColor:'rgba(16,185,129,.2)',tension:.25},{label:'Skip',data:t.skipped,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.2)',tension:.25}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#a0a0b0'}}},scales:{x:{ticks:{color:'#606070'},grid:{color:'rgba(255,255,255,.05)'}},y:{ticks:{color:'#606070'},grid:{color:'rgba(255,255,255,.06)'}}}}});
+  const s=getSkillTotals();
+  labCharts.skill=new Chart(skillCtx,{type:'bar',data:{labels:s.labels,datasets:[{label:'Уровень',data:s.values,backgroundColor:'rgba(0,212,255,.6)'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#a0a0b0'}}},scales:{x:{ticks:{color:'#606070'},grid:{color:'rgba(255,255,255,.05)'}},y:{min:0,max:10,ticks:{color:'#606070'},grid:{color:'rgba(255,255,255,.06)'}}}}});
+}
+function enableLightDay(){
+  const k=dKey(new Date());
+  S.lightDays[k]={task:'10 мин прогулки',practice:'2 мин дыхания',ts:Date.now()};
+  S.done[k]=true;
+  saveLocal();renderLabAnalytics();notify('✅ Легкий день активирован');
+}
+function renderLightDayInfo(){
+  const el=document.getElementById('light-day-ct');if(!el)return;
+  const v=S.lightDays?.[dKey(new Date())];
+  el.innerHTML=v?`Сегодня: ${v.task} + ${v.practice} (день не сорван)`:'Сегодня не активирован';
+}
+
+function renderLabProjects(){
+  const ct=document.getElementById('lab-projects-ct');if(!ct)return;
+  const list=(S.projects||[]).slice(-20).reverse().map((p,i)=>`<div class="tip"><div class="tipico">🗂️</div><div><strong style="font-size:.82em;">${esc(p.name)}</strong><div style="font-size:.75em;color:var(--t2);">Срок: ${p.deadline} · Прогресс: ${p.progress||0}%</div><div style="font-size:.75em;color:var(--t3);">Этапы: ${(p.stages||[]).join(' → ')||'—'}</div><div style="margin-top:4px;"><button class="btn btn-gh btn-xs" onclick="editProject('${p.id}')">ред.</button> <button class="btn btn-gh btn-xs" onclick="setProjectProgress('${p.id}')">прогресс</button> <button class="btn btn-r btn-xs" onclick="deleteProject('${p.id}')">удал.</button></div></div></div>`).join('')||'<div style="font-size:.75em;color:var(--t3);">Проектов пока нет</div>';
+  ct.innerHTML=`
+    <div class="run-form" style="margin-top:0;">
+      <div><label>Проект (1-8 лет)</label><input id="pr-name"></div>
+      <div><label>Цель</label><input id="pr-goal"></div>
+      <div><label>Срок</label><input id="pr-deadline" placeholder="например 2030-12"></div>
+      <div><label>Этапы (через ;)</label><input id="pr-stages" placeholder="этап1;этап2;этап3"></div>
+      <div style="align-self:end;"><button class="btn btn-p btn-sm" onclick="addProject()">Добавить проект</button></div>
+    </div>
+    ${list}
+  `;
+}
+function addProject(){
+  const name=document.getElementById('pr-name')?.value?.trim();const goal=document.getElementById('pr-goal')?.value?.trim();const deadline=document.getElementById('pr-deadline')?.value?.trim();const stagesRaw=document.getElementById('pr-stages')?.value||'';
+  if(!name||!goal||!deadline){notify('Заполни проект');return;}
+  S.projects.push({id:'pr_'+Date.now(),name,goal,deadline,stages:stagesRaw.split(';').map(s=>s.trim()).filter(Boolean),progress:0,ts:Date.now()});
+  saveLocal();renderLabProjects();notify('✅ Проект добавлен');
+}
+function editProject(id){
+  const p=S.projects.find(x=>x.id===id);if(!p)return;
+  document.getElementById('m-t').textContent='Редактирование проекта';
+  document.getElementById('m-b').innerHTML=`
+    <label style="font-size:.8em;color:var(--t2);">Название</label>
+    <input id="pr-edit-name" value="${esc(p.name)}" style="width:100%;margin:6px 0 10px;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:8px;border-radius:8px;">
+    <label style="font-size:.8em;color:var(--t2);">Цель</label>
+    <input id="pr-edit-goal" value="${esc(p.goal||'')}" style="width:100%;margin:6px 0 10px;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:8px;border-radius:8px;">
+    <label style="font-size:.8em;color:var(--t2);">Срок</label>
+    <input id="pr-edit-deadline" value="${esc(p.deadline||'')}" style="width:100%;margin-top:6px;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:8px;border-radius:8px;">
+  `;
+  document.getElementById('m-bt').innerHTML=`<button class="btn btn-g btn-sm" onclick="saveProjectEdit('${id}')">Сохранить</button><button class="btn btn-gh btn-sm" onclick="closeMod()">Отмена</button>`;
+  document.getElementById('modal').classList.add('open');
+}
+function saveProjectEdit(id){
+  const p=S.projects.find(x=>x.id===id);if(!p)return;
+  const name=document.getElementById('pr-edit-name')?.value?.trim();
+  const goal=document.getElementById('pr-edit-goal')?.value?.trim();
+  const deadline=document.getElementById('pr-edit-deadline')?.value?.trim();
+  if(!name||!goal||!deadline){notify('Заполни поля');return;}
+  p.name=name;p.goal=goal;p.deadline=deadline;
+  saveLocal();closeMod();renderLabProjects();
+}
+function setProjectProgress(id){
+  const p=S.projects.find(x=>x.id===id);if(!p)return;
+  document.getElementById('m-t').textContent='Прогресс проекта';
+  document.getElementById('m-b').innerHTML=`<input id="pr-edit-progress" type="number" min="0" max="100" value="${p.progress||0}" style="width:100%;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:8px;border-radius:8px;">`;
+  document.getElementById('m-bt').innerHTML=`<button class="btn btn-g btn-sm" onclick="saveProjectProgress('${id}')">Сохранить</button><button class="btn btn-gh btn-sm" onclick="closeMod()">Отмена</button>`;
+  document.getElementById('modal').classList.add('open');
+}
+function saveProjectProgress(id){
+  const p=S.projects.find(x=>x.id===id);if(!p)return;
+  const n=Math.max(0,Math.min(100,parseInt(document.getElementById('pr-edit-progress')?.value||'0',10)||0));
+  p.progress=n;saveLocal();closeMod();renderLabProjects();
+}
+function deleteProject(id){
+  S.projects=(S.projects||[]).filter(p=>p.id!==id);
+  saveLocal();renderLabProjects();
+}
+
+function renderLabAll(){
+  renderLabBrain();
+  renderLabMemory();
+  renderLabEmotions();
+  renderLabAttention();
+  renderLabComm();
+  renderLabAnalytics();
+  renderLabProjects();
 }
 
 function updDash(){
@@ -2966,7 +3778,8 @@ function resetAll(){
   const updater=window.ASCore?.state?.updateState;
   const clearFn=()=>{
     S.done={};S.workoutLogs={};S.runLogs={};S.booksRead={};S.phaseChecks={p0:{},p1:{},p2:{},p3:{}};
-    S.history=[];S.seenKnowledge={};S.customSchedule=null;
+    S.history=[];S.seenKnowledge={};S.customSchedule=null;S.taskStatus={};S.carryOver={};S.dailyReviews={};S.skillStats={};S.currentStage='s0';
+    S.brainLog=[];S.memoryCards=[];S.selfTests=[];S.emotionLog=[];S.pauseLog=[];S.attentionLog=[];S.observationLog=[];S.communicationLog=[];S.scenarioLog=[];S.projects=[];S.lightDays={};
   };
   if(updater){updater(clearFn);}else{clearFn();saveLocal();}
   refreshAll();notify('🗑️ Все данные сброшены');
@@ -3365,7 +4178,7 @@ function updFbStatus(ok){
 // ═══════════════════════════════════════════════
 function refreshAll(){
   renderExecutorDashboard();updDash();renderCal();renderSM();renderDailySched();
-  renderWHist();renderRHist();renderBooks();renderPhaseChecks();renderHistory();updateKnowledgeSeen();
+  renderWHist();renderRHist();renderBooks();renderPhaseChecks();renderHistory();updateKnowledgeSeen();renderSkills();renderStages();renderLabAll();
 }
 
 function maybeShowDailyReminder(){
