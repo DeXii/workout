@@ -577,7 +577,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="hub-item" onclick="goSec('mealplan')"><h4>🥗 План питания</h4><p>План на неделю и клик по рецептам.</p></div>
     <div class="hub-item" onclick="goSec('shopping')"><h4>🛒 Закупки</h4><p>Продукты и списки по дням.</p></div>
     <div class="hub-item" onclick="goSec('supps')"><h4>💊 БАДы</h4><p>Схемы, дозировки и рекомендации.</p></div>
-    <div class="hub-item" onclick="goLabTab('projects')"><h4>🗂️ Долгосрочные проекты</h4><p>Проекты 1-8 лет с этапами, сроками и прогрессом.</p></div>
+    <div class="hub-item" onclick="goSec('projects')"><h4>🗂️ Долгосрочные проекты</h4><p>Проекты 1-8 лет с этапами, сроками и прогрессом.</p></div>
   </div>
 </div>
 
@@ -606,7 +606,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="hub-item" onclick="goSec('charts')"><h4>📊 Графики</h4><p>Визуализация объёма, темпа и активности.</p></div>
     <div class="hub-item" onclick="goSec('macros')"><h4>🧮 Макросы</h4><p>Подсчёт КБЖУ и сравнение с целями.</p></div>
     <div class="hub-item" onclick="goSec('dash')"><h4>🎯 Исполнитель задач</h4><p>Точка исполнения: что делать сейчас.</p></div>
-    <div class="hub-item" onclick="goLabTab('analytics')"><h4>📊 Аналитика периодов</h4><p>Done/skip за 7/30/90 и уровни навыков на графиках.</p></div>
+    <div class="hub-item" onclick="goSec('analytics')"><h4>📊 Аналитика периодов</h4><p>Done/skip за 7/30/90 и уровни навыков на графиках.</p></div>
   </div>
   <div class="card" style="margin-top:14px;">
     <div class="sbox" style="margin-bottom:0;">
@@ -637,29 +637,6 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   </div>
 </div>
 
-<div id="s-lab" class="sec">
-  <div class="sec-hdr">
-    <div class="sec-t">🧪 Лаборатория развития</div>
-    <div class="sec-s">MVP-модули для оставшегося backlog: память, когнитивка, эмоции, внимание, коммуникация, проекты</div>
-  </div>
-  <div class="itabs">
-    <button class="it active" onclick="sit('lab','brain');renderLabAll()">🧠 Brain</button>
-    <button class="it" onclick="sit('lab','memory');renderLabAll()">🧩 Memory</button>
-    <button class="it" onclick="sit('lab','emotions');renderLabAll()">💚 Эмоции</button>
-    <button class="it" onclick="sit('lab','attention');renderLabAll()">👁️ Внимание</button>
-    <button class="it" onclick="sit('lab','comm');renderLabAll()">🗣️ Коммуникация</button>
-    <button class="it" onclick="sit('lab','analytics');renderLabAll()">📊 Аналитика</button>
-    <button class="it" onclick="sit('lab','projects');renderLabAll()">🗂️ Проекты</button>
-  </div>
-  <div id="lab-brain" class="itp active"><div class="card" id="lab-brain-ct"></div></div>
-  <div id="lab-memory" class="itp"><div class="card" id="lab-memory-ct"></div></div>
-  <div id="lab-emotions" class="itp"><div class="card" id="lab-emotions-ct"></div></div>
-  <div id="lab-attention" class="itp"><div class="card" id="lab-attention-ct"></div></div>
-  <div id="lab-comm" class="itp"><div class="card" id="lab-comm-ct"></div></div>
-  <div id="lab-analytics" class="itp"><div class="card" id="lab-analytics-ct"></div></div>
-  <div id="lab-projects" class="itp"><div class="card" id="lab-projects-ct"></div></div>
-</div>
-
 <div id="s-skills" class="sec">
   <div class="sec-hdr">
     <div class="sec-t">🧩 Система навыков</div>
@@ -673,12 +650,28 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <button class="it" onclick="sit('sk','communication');renderSkills()">Коммуникация</button>
     <button class="it" onclick="sit('sk','physical');renderSkills()">Физика</button>
   </div>
-  <div id="sk-thinking" class="itp active"><div class="card" id="skills-thinking"></div></div>
-  <div id="sk-memory" class="itp"><div class="card" id="skills-memory"></div></div>
-  <div id="sk-attention" class="itp"><div class="card" id="skills-attention"></div></div>
-  <div id="sk-emotions" class="itp"><div class="card" id="skills-emotions"></div></div>
-  <div id="sk-communication" class="itp"><div class="card" id="skills-communication"></div></div>
+  <div id="sk-thinking" class="itp active"><div class="card" id="skills-thinking"></div><div class="card" id="lab-brain-ct" style="margin-top:10px;"></div></div>
+  <div id="sk-memory" class="itp"><div class="card" id="skills-memory"></div><div class="card" id="lab-memory-ct" style="margin-top:10px;"></div></div>
+  <div id="sk-attention" class="itp"><div class="card" id="skills-attention"></div><div class="card" id="lab-attention-ct" style="margin-top:10px;"></div></div>
+  <div id="sk-emotions" class="itp"><div class="card" id="skills-emotions"></div><div class="card" id="lab-emotions-ct" style="margin-top:10px;"></div></div>
+  <div id="sk-communication" class="itp"><div class="card" id="skills-communication"></div><div class="card" id="lab-comm-ct" style="margin-top:10px;"></div></div>
   <div id="sk-physical" class="itp"><div class="card" id="skills-physical"></div></div>
+</div>
+
+<div id="s-analytics" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">📊 Аналитика периодов</div>
+    <div class="sec-s">Done/skip, уровни навыков и динамика по 7/30/90 дням</div>
+  </div>
+  <div class="card" id="lab-analytics-ct"></div>
+</div>
+
+<div id="s-projects" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">🗂️ Долгосрочные проекты</div>
+    <div class="sec-s">Проекты 1-8 лет: цель, этапы, сроки, прогресс</div>
+  </div>
+  <div class="card" id="lab-projects-ct"></div>
 </div>
 
 <div id="s-stages" class="sec">
@@ -693,7 +686,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <div id="s-sched" class="sec">
   <div class="sec-hdr">
     <div class="sec-t">🗓️ График</div>
-    <div class="sec-s">Месячный план · Дневное расписание с учётом работы 8:30–18:00</div>
+    <div class="sec-s">Месячный план · Дневное расписание с учётом графика 2/2 и смены 11:00-23:00</div>
   </div>
   <div class="itabs">
     <button class="it active" onclick="sit('sc','monthly')">📅 Месячный</button>
@@ -727,8 +720,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <button class="it active" onclick="sit('dsc','train')">💼 Рабочий День</button>
       <button class="it" onclick="sit('dsc','rest')">🧘 Выходной День</button>
     </div>
-    <div id="dsc-train" class="itp active"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;color:var(--a2);">💪 (тренировка + работа)</h3><div class="hsched" id="dly-train"></div></div></div>
-    <div id="dsc-rest" class="itp"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;color:var(--a1);">🧘 Выходной день (без работы)</h3><div class="hsched" id="dly-rest"></div></div></div>
+    <div id="dsc-train" class="itp active"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;color:var(--a2);">💼 Рабочий день (смена 11:00-23:00)</h3><div class="hsched" id="dly-train"></div></div></div>
+    <div id="dsc-rest" class="itp"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;color:var(--a1);">🧘 Выходной день (восстановление + развитие)</h3><div class="hsched" id="dly-rest"></div></div></div>
   </div>
   <div id="sc-editor" class="itp">
     <div class="card" style="margin-bottom:14px;">
@@ -1988,10 +1981,11 @@ function onSecLoad(s){
   if(s==='body')renderExecutorDashboard();
   if(s==='control'){renderExecutorDashboard();renderStages();}
   if(s==='trackers')updDash();
-  if(s==='skills')renderSkills();
+  if(s==='skills'){renderSkills();renderLabAll();}
   if(s==='taskbank')renderTaskBank();
   if(s==='stages')renderStages();
-  if(s==='lab')renderLabAll();
+  if(s==='analytics')renderLabAnalytics();
+  if(s==='projects')renderLabProjects();
   if(s==='progress'){setTodayDates();renderWHist();renderRHist();}
   if(s==='knowledge'){updateKnowledgeSeen();saveLocal();updDash();}
   if(s==='charts')renderCharts();
@@ -2000,8 +1994,12 @@ function onSecLoad(s){
 }
 
 function goLabTab(name){
-  goSec('lab');
-  setTimeout(()=>{sit('lab',name);renderLabAll();},0);
+  const map={brain:'thinking',memory:'memory',emotions:'emotions',attention:'attention',comm:'communication'};
+  if(name==='analytics'){goSec('analytics');return;}
+  if(name==='projects'){goSec('projects');return;}
+  goSec('skills');
+  const sk=map[name]||'thinking';
+  setTimeout(()=>{sit('sk',sk);renderSkills();renderLabAll();},0);
 }
 
 function toggleMobNav(){
@@ -2035,7 +2033,7 @@ document.getElementById('main-wrap').addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-touchStartX;
   const dy=e.changedTouches[0].clientY-touchStartY;
   if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){
-    const secs=['dash','mind','body','control','trackers','skills','stages','lab','sched','workout','run','food','mealplan','shopping','supps','books','knowledge','mental','progress','charts','macros'];
+    const secs=['dash','mind','body','control','trackers','skills','taskbank','stages','analytics','projects','sched','workout','run','food','mealplan','shopping','supps','books','knowledge','mental','progress','charts','macros'];
     const cur=Array.from(document.querySelectorAll('.sec')).findIndex(s=>s.classList.contains('active'));
     let next=cur+(dx<0?1:-1);
     if(next>=0&&next<secs.length)goSec(secs[next]);
@@ -2060,10 +2058,10 @@ function getTT(date){
 function dKey(d){return`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
 
 const tagMap={train:'t-train',study:'t-study',food:'t-food',mind:'t-mind',rest:'t-rest',chess:'t-chess',sleep:'t-sleep',run:'t-run',work:'t-work'};
-const defaultTrainDay=[['07:00','Подъём + HRV замер (2 мин) — сразу после пробуждения, лёжа','mind','🫀 HRV'],['07:05','Резонансное дыхание 10 мин (5 сек вдох / 5 сек выдох)','mind','🧘 Дыхание'],['07:18','Стакан воды 500 мл + холодный душ 3-5 минут + умывание','rest','💧 Ритуал'],['07:25','Полноценный завтрак (белок + сложные углеводы)','food','🍳 Завтрак'],['07:55','Шахматы / чтение / учёба — утренний блок (25 мин)','study','📖 Учёба'],['08:20','Сборы, дорога на работу','rest','🚶 Дорога'],['08:30','🏢 РАБОТА НАЧИНАЕТСЯ','work','💼 Работа'],['11:00','Перекус на работе (творог / яблоко / орехи)','food','🍎 Перекус'],['13:00','Обед на работе (контейнер или столовая — белок + углеводы)','food','🥗 Обед'],['13:30','Шахматы на телефоне / лёгкая прогулка','chess','♟️ EF'],['14:00','Работа — продолжение','work','💼 Работа'],['16:30','Перекус на работе (за 2–3 ч до тренировки)','food','🍌 Перекус'],['18:00','🏁 РАБОТА ЗАКАНЧИВАЕТСЯ','work','💼 Работа'],['18:45','Переезд на спортплощадку / переодевание','rest','🚶 Дорога'],['18:55','Разминка 7 мин + активация целевых мышц','train','🔥 Разминка'],['19:02','ТРЕНИРОВКА (Push / Pull / Legs) — 45–55 мин','train','💪 Трен.'],['19:55','Заминка и растяжка 10 мин','train','🧘 Заминка'],['20:05','Душ + протеин / восстановительный перекус','food','🥛 Питание'],['20:30','Ужин (белок + овощи + немного углеводов)','food','🍽️ Ужин'],['21:15','Чтение по списку литературы (30 мин)','study','📚 Чтение'],['22:15','Метапознавательный дневник (10 мин)','mind','📓 Рефл.'],['22:30','ПМР / резонансное дыхание (10 мин)','mind','🧘 ПМР'],['22:45','Без экранов, подготовка ко сну','rest','🌙 Подг.'],['23:00','СОН — 8 часов','sleep','😴 Сон']];
-const defaultRunLongDay=[['07:00','Подъём + HRV замер','mind','🫀 HRV'],['07:05','Резонансное дыхание 12 мин','mind','🧘 Дыхание'],['07:20','Стакан воды 500 мл + холодный душ','rest','💧 Ритуал'],['07:28','Завтрак с акцентом на углеводы + белок','food','🍳 Завтрак'],['08:00','Шахматы / чтение (20 мин)','chess','♟️ EF'],['08:20','Дорога на работу','rest','🚶 Дорога'],['08:30','🏢 РАБОТА','work','💼 Работа'],['11:00','Перекус (с углеводами)','food','🍎 Перекус'],['13:00','Обед на работе (углеводы + белок)','food','🥗 Обед'],['13:30','Шахматы / чтение в обед','study','📚 Чтение'],['14:00','Работа','work','💼 Работа'],['16:30','Лёгкий перекус: банан, 2 финика','food','🍌 Перекус'],['18:00','🏁 РАБОТА ЗАКАНЧИВАЕТСЯ','work','💼 Работа'],['18:40','Переодевание. Динамическая разминка 10 мин','train','🔥 Разминка'],['18:50','ДЛИННЫЙ БЕГ ~3.2 км в зоне 2 (ЧСС 65–75%)','run','🏃 Бег'],['19:15','Финиш. Ходьба 5 мин. Растяжка ног 10 мин','train','🧘 Заминка'],['19:30','Душ + протеин 25–30г + углеводы','food','🥛 Питание'],['20:00','Ужин (полноценный)','food','🍽️ Ужин'],['20:45','Углублённое чтение / разбор шахматных партий','study','📚 Чтение'],['22:00','Дневник рефлексии (10 мин)','mind','📓 Рефл.'],['22:15','ПМР + дыхание','mind','🧘 ПМР'],['23:00','СОН 8 часов','sleep','😴 Сон']];
-const defaultRunSprintDay=[['07:00','Подъём + HRV замер','mind','🫀 HRV'],['07:05','Резонансное дыхание 10 мин','mind','🧘 Дыхание'],['07:18','Стакан воды 500 мл + холодный душ','rest','💧 Ритуал'],['07:25','Завтрак (белок + углеводы)','food','🍳 Завтрак'],['07:55','Чтение / шахматы (25 мин)','study','📖 Учёба'],['08:20','Дорога','rest','🚶 Дорога'],['08:30','🏢 РАБОТА','work','💼 Работа'],['11:00','Перекус на работе','food','🍎 Перекус'],['13:00','Обед (полноценный)','food','🥗 Обед'],['13:30','Медитация / шахматы','chess','♟️ EF'],['14:00','Работа','work','💼 Работа'],['16:30','Лёгкий перекус перед спринтами: яблоко или 2 финика','food','🍎 Перекус'],['18:00','🏁 РАБОТА ЗАКАНЧИВАЕТСЯ','work','💼 Работа'],['18:40','РАСШИРЕННАЯ разминка 15 мин','train','🔥 Разминка'],['18:55','⚡ СПРИНТЫ 400м × 4–6','run','⚡ Спринты'],['19:35','Заминка + Box Breathing','train','🧘 Заминка'],['19:50','Душ + протеин 25–30г + углеводы','food','🥛 Питание'],['20:20','Ужин','food','🍽️ Ужин'],['21:05','Чтение по литературе (60 мин)','study','📚 Чтение'],['22:05','Дневник рефлексии','mind','📓 Рефл.'],['22:20','ПМР','mind','🧘 ПМР'],['23:00','СОН 8 часов','sleep','😴 Сон']];
-const defaultRestDay=[['08:30','Подъём позже — сон приоритет в выходной','sleep','😴 Сон'],['08:35','HRV замер + резонансное дыхание 15 мин','mind','🫀 HRV+'],['08:55','Стакан воды + холодный душ + прогулка 10 мин','rest','🌅 Утро'],['09:10','Большой воскресный завтрак','food','🍳 Завтрак'],['10:00','Длинная сессия чтения (45–60 мин)','study','📚 Чтение'],['11:00','Шахматы — расширенная сессия (45 мин)','chess','♟️ EF+'],['12:00','Лёгкая аэробная прогулка 30–45 мин','run','🚶 Прогулка'],['13:00','Обед (полноценный)','food','🥗 Обед'],['14:00','Планирование следующей недели (20–30 мин)','study','🎯 Планир.'],['14:30','Свободное время / хобби','rest','🎭 Своб.'],['17:00','Перекус','food','🍎 Перекус'],['17:15','Расширенная медитация (20 мин)','mind','🧘 Медит.'],['17:40','Учёба / образовательный контент','study','📖 Учёба'],['19:30','Свободное время','rest','🎯 Своб.'],['20:30','Ужин','food','🍽️ Ужин'],['21:30','Разбор шахматных партий + рефлексия недели','chess','♟️ Анализ'],['22:00','Метапознавательный дневник расширенный (15 мин)','mind','📓 Рефл.'],['22:20','ПМР + резонансное дыхание','mind','🧘 ПМР'],['23:00','СОН — приоритет в воскресенье','sleep','😴 Сон']];
+const defaultTrainDay=[['07:20','Подъём + вода 500 мл + HRV 2 мин','mind','🫀 HRV'],['07:30','Резонансное дыхание 6-8 мин','mind','🧘 Дыхание'],['07:40','Мобилити + суставная разминка','train','🔥 Разминка'],['07:55','Основная тренировка (силовой блок)','train','💪 Трен.'],['08:35','Заминка + душ','train','🧘 Заминка'],['08:50','Завтрак (белок+углеводы)','food','🍳 Завтрак'],['09:15','Память: 10 карточек + 1 self-test','study','🧩 Memory'],['09:35','План смены + приоритеты дня (5-7 мин)','mind','🎯 План'],['10:10','Дорога/подготовка к смене','rest','🚶 Дорога'],['11:00','🏢 РАБОТА НАЧИНАЕТСЯ','work','💼 Работа'],['13:30','Перекус + 3 мин паузы дыхания','food','🍎 Перекус'],['16:30','Обед + 10 мин прогулки','food','🥗 Обед'],['19:30','Мини-блок внимания (Шульте/реакция 5-7 мин)','study','👁️ Внимание'],['21:20','Коммуникационный лог: 1 диалог за день','study','🗣️ Комм'],['23:00','🏁 РАБОТА ЗАКАНЧИВАЕТСЯ','work','💼 Работа'],['23:20','Лёгкий ужин + вода','food','🍽️ Ужин'],['23:40','Эмо-чек + дневной review (5-10 мин)','mind','📓 Review'],['00:00','ПМР/дыхание 5 мин + сон','sleep','😴 Сон']];
+const defaultRunLongDay=[['07:20','Подъём + вода + HRV','mind','🫀 HRV'],['07:30','Динамическая разминка 8 мин','train','🔥 Разминка'],['07:40','Длинный бег зона 2 (30-40 мин)','run','🏃 Бег'],['08:25','Заминка + растяжка ног','train','🧘 Заминка'],['08:40','Душ + протеин','food','🥛 Питание'],['09:00','Завтрак','food','🍳 Завтрак'],['09:20','Когнитивный блок: чтение/анализ 20 мин','study','📖 Учёба'],['10:10','Дорога/подготовка к смене','rest','🚶 Дорога'],['11:00','🏢 РАБОТА','work','💼 Работа'],['13:30','Перекус + пауза 2-3 мин','food','🍎 Перекус'],['16:30','Обед','food','🥗 Обед'],['19:30','Spaced repetition 10 карточек','study','🧩 Memory'],['21:20','Эмо- и коммуникационный мини-лог','mind','💚 Контроль'],['23:00','🏁 Конец смены','work','💼 Работа'],['23:20','Ужин','food','🍽️ Ужин'],['23:40','Дневной вывод + сон','sleep','😴 Сон']];
+const defaultRunSprintDay=[['07:20','Подъём + вода + HRV','mind','🫀 HRV'],['07:30','Расширенная разминка 12-15 мин','train','🔥 Разминка'],['07:45','Спринты/интервалы 20-30 мин','run','⚡ Спринты'],['08:20','Заминка + дыхание 3 мин','train','🧘 Заминка'],['08:35','Душ + восстановительный перекус','food','🥛 Питание'],['08:55','Завтрак','food','🍳 Завтрак'],['09:20','Быстрый блок внимания 7 мин','study','👁️ Внимание'],['10:10','Дорога/подготовка к смене','rest','🚶 Дорога'],['11:00','🏢 РАБОТА','work','💼 Работа'],['13:30','Перекус','food','🍎 Перекус'],['16:30','Обед','food','🥗 Обед'],['19:30','Короткий brain-card блок 10 мин','study','🧠 Brain'],['21:20','План на завтра + отметка задач','mind','🎯 План'],['23:00','🏁 Конец смены','work','💼 Работа'],['23:20','Ужин','food','🍽️ Ужин'],['23:40','ПМР/дыхание и сон','sleep','😴 Сон']];
+const defaultRestDay=[['08:30','Подъём без будильника + вода + HRV','mind','🫀 HRV+'],['08:45','Дыхание/медитация 10 мин','mind','🧘 Медит.'],['09:00','Мобилити/прогулка 20-30 мин','run','🚶 Прогулка'],['09:40','Завтрак','food','🍳 Завтрак'],['10:10','Глубокий блок мышления (30 мин)','study','🧠 Мышл'],['11:00','Память: карточки + self-test','study','🧩 Memory'],['12:00','Домашние/личные дела','rest','🏠 Быт'],['13:30','Обед','food','🥗 Обед'],['14:30','Внимание: Шульте/реакция 10 мин','study','👁️ Внимание'],['15:00','Проект 1-8 лет: шаг по плану','study','🗂️ Проект'],['17:00','Перекус','food','🍎 Перекус'],['17:20','Коммуникационный сценарий 10 мин','study','🗣️ Комм'],['18:00','Лёгкая тренировка/кардио 25-35 мин','train','💪 Активн.'],['19:00','Ужин','food','🍽️ Ужин'],['20:00','Эмо-дневник + пауза 3 мин','mind','💚 Эмоции'],['21:00','Аналитика недели: done/skip/выводы','mind','📊 Анализ'],['22:00','План следующего дня','mind','🎯 План'],['23:00','Сон','sleep','😴 Сон']];
 
 function renderDailySched(){
   function build(data,id){const el=document.getElementById(id);if(!el)return;el.innerHTML=data.map(r=>`<div class="hr"><div class="ht">${r[0]}</div><div class="ha"><span class="atag ${tagMap[r[2]]||'t-rest'}">${r[3]}</span>${r[1]}</div></div>`).join('');}
@@ -2099,7 +2097,7 @@ function renderSM(){
 }
 function chSM(d){S.smMonth+=d;if(S.smMonth>11){S.smMonth=0;S.smYear++;}if(S.smMonth<0){S.smMonth=11;S.smYear--;}renderSM();}
 function renderWeekly(){
-  const days=[{d:'Понедельник',t:'push',note:'Push-тренировка ПОСЛЕ работы 18:30'},{d:'Вторник',t:'run-long',note:'Длинный бег ~2 мили ПОСЛЕ работы 18:20'},{d:'Среда',t:'pull',note:'Pull-тренировка ПОСЛЕ работы 18:30'},{d:'Четверг',t:'run-sprint',note:'Спринты 400м ПОСЛЕ работы 18:15'},{d:'Пятница',t:'legs',note:'Ноги+Кор ПОСЛЕ работы 18:30'},{d:'Суббота',t:'full',note:'Full Body HIFT (в любое удобное время)'},{d:'Воскресенье',t:'rest',note:'Полный отдых · Планирование недели'}];
+  const days=[{d:'Понедельник',t:'push',note:'Смена: силовой блок до работы (утро)'},{d:'Вторник',t:'run-long',note:'Смена: длинный бег до 11:00'},{d:'Среда',t:'pull',note:'Смена: силовой блок до работы (утро)'},{d:'Четверг',t:'run-sprint',note:'Смена: интервалы/спринты утром'},{d:'Пятница',t:'legs',note:'Смена: ноги+кор до работы'},{d:'Суббота',t:'full',note:'Выходной: Full Body + когнитивные блоки'},{d:'Воскресенье',t:'rest',note:'Выходной: восстановление + планирование'}];
   const clr={push:'#7c3aed',pull:'#00d4ff',legs:'#10b981',full:'#f59e0b','run-long':'#f43f8f','run-sprint':'#fb923c',rest:'rgba(255,255,255,.08)'};
 }
 
