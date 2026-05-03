@@ -548,12 +548,21 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   </div>
   <div class="hub-grid">
     <div class="hub-item" onclick="goSec('dash')"><h4>🎯 Сегодня</h4><p>Главная задача дня, чек-лист ума/тела/контроля, завершение дня.</p></div>
+    <div class="hub-item" onclick="goSec('taskbank')"><h4>🗂️ База заданий</h4><p>10 стартовых карточек + свои карточки для развития.</p></div>
     <div class="hub-item" onclick="goSec('books')"><h4>📚 Литература</h4><p>Список книг, фильтры по статусу и отметка прочитанного.</p></div>
     <div class="hub-item" onclick="goSec('knowledge')"><h4>🧠 База знаний</h4><p>Материалы и долгосрочный план развития.</p></div>
     <div class="hub-item" onclick="goSec('skills')"><h4>🧩 Навыки</h4><p>6 направлений развития с упражнениями по категориям.</p></div>
     <div class="hub-item" onclick="goLabTab('brain')"><h4>🧠 Brain Training</h4><p>Карточки упражнений: логика, анализ, скорость, стратегия.</p></div>
     <div class="hub-item" onclick="goLabTab('memory')"><h4>🧩 Память и обучение</h4><p>Spaced repetition + self-testing с историей.</p></div>
   </div>
+</div>
+
+<div id="s-taskbank" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">🗂️ База заданий</div>
+    <div class="sec-s">Стартовые карточки + добавление своих задач и упражнений</div>
+  </div>
+  <div class="card" id="taskbank-ct"></div>
 </div>
 
 <div id="s-body" class="sec">
@@ -1904,6 +1913,7 @@ let S={
   scenarioLog:[],
   projects:[],
   lightDays:{},
+  taskCards:[],
   currentStage:'s0',
   booksRead:{},
   phaseChecks:{p0:{},p1:{},p2:{},p3:{}},
@@ -1916,17 +1926,17 @@ let S={
 window.S=S;
 
 function loadLocal(){
-  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.taskStatus=p.taskStatus||{};S.carryOver=p.carryOver||{};S.dailyReviews=p.dailyReviews||{};S.skillStats=p.skillStats||{};S.brainLog=p.brainLog||[];S.memoryCards=p.memoryCards||[];S.selfTests=p.selfTests||[];S.emotionLog=p.emotionLog||[];S.pauseLog=p.pauseLog||[];S.attentionLog=p.attentionLog||[];S.observationLog=p.observationLog||[];S.communicationLog=p.communicationLog||[];S.scenarioLog=p.scenarioLog||[];S.projects=p.projects||[];S.lightDays=p.lightDays||{};S.currentStage=(p.currentStage==='s2'?'s3':(p.currentStage||'s0'));S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
+  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.taskStatus=p.taskStatus||{};S.carryOver=p.carryOver||{};S.dailyReviews=p.dailyReviews||{};S.skillStats=p.skillStats||{};S.brainLog=p.brainLog||[];S.memoryCards=p.memoryCards||[];S.selfTests=p.selfTests||[];S.emotionLog=p.emotionLog||[];S.pauseLog=p.pauseLog||[];S.attentionLog=p.attentionLog||[];S.observationLog=p.observationLog||[];S.communicationLog=p.communicationLog||[];S.scenarioLog=p.scenarioLog||[];S.projects=p.projects||[];S.lightDays=p.lightDays||{};S.taskCards=p.taskCards||[];S.currentStage=(p.currentStage==='s2'?'s3':(p.currentStage||'s0'));S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
 }
 function saveLocal(){
-  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,carryOver:S.carryOver,dailyReviews:S.dailyReviews,skillStats:S.skillStats,brainLog:S.brainLog,memoryCards:S.memoryCards,selfTests:S.selfTests,emotionLog:S.emotionLog,pauseLog:S.pauseLog,attentionLog:S.attentionLog,observationLog:S.observationLog,communicationLog:S.communicationLog,scenarioLog:S.scenarioLog,projects:S.projects,lightDays:S.lightDays,currentStage:S.currentStage,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
-       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,carryOver:S.carryOver,dailyReviews:S.dailyReviews,skillStats:S.skillStats,brainLog:S.brainLog,memoryCards:S.memoryCards,selfTests:S.selfTests,emotionLog:S.emotionLog,pauseLog:S.pauseLog,attentionLog:S.attentionLog,observationLog:S.observationLog,communicationLog:S.communicationLog,scenarioLog:S.scenarioLog,projects:S.projects,lightDays:S.lightDays,currentStage:S.currentStage,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
+  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,carryOver:S.carryOver,dailyReviews:S.dailyReviews,skillStats:S.skillStats,brainLog:S.brainLog,memoryCards:S.memoryCards,selfTests:S.selfTests,emotionLog:S.emotionLog,pauseLog:S.pauseLog,attentionLog:S.attentionLog,observationLog:S.observationLog,communicationLog:S.communicationLog,scenarioLog:S.scenarioLog,projects:S.projects,lightDays:S.lightDays,taskCards:S.taskCards,currentStage:S.currentStage,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
+       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,carryOver:S.carryOver,dailyReviews:S.dailyReviews,skillStats:S.skillStats,brainLog:S.brainLog,memoryCards:S.memoryCards,selfTests:S.selfTests,emotionLog:S.emotionLog,pauseLog:S.pauseLog,attentionLog:S.attentionLog,observationLog:S.observationLog,communicationLog:S.communicationLog,scenarioLog:S.scenarioLog,projects:S.projects,lightDays:S.lightDays,taskCards:S.taskCards,currentStage:S.currentStage,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
 }
 function loadCloud(cb){
   if(!fbOk){if(cb)cb();return;}
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.taskStatus=d.taskStatus||{};S.carryOver=d.carryOver||{};S.dailyReviews=d.dailyReviews||{};S.skillStats=d.skillStats||{};S.brainLog=d.brainLog||[];S.memoryCards=d.memoryCards||[];S.selfTests=d.selfTests||[];S.emotionLog=d.emotionLog||[];S.pauseLog=d.pauseLog||[];S.attentionLog=d.attentionLog||[];S.observationLog=d.observationLog||[];S.communicationLog=d.communicationLog||[];S.scenarioLog=d.scenarioLog||[];S.projects=d.projects||[];S.lightDays=d.lightDays||{};S.currentStage=(d.currentStage==='s2'?'s3':(d.currentStage||'s0'));S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
+    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.taskStatus=d.taskStatus||{};S.carryOver=d.carryOver||{};S.dailyReviews=d.dailyReviews||{};S.skillStats=d.skillStats||{};S.brainLog=d.brainLog||[];S.memoryCards=d.memoryCards||[];S.selfTests=d.selfTests||[];S.emotionLog=d.emotionLog||[];S.pauseLog=d.pauseLog||[];S.attentionLog=d.attentionLog||[];S.observationLog=d.observationLog||[];S.communicationLog=d.communicationLog||[];S.scenarioLog=d.scenarioLog||[];S.projects=d.projects||[];S.lightDays=d.lightDays||{};S.taskCards=d.taskCards||[];S.currentStage=(d.currentStage==='s2'?'s3':(d.currentStage||'s0'));S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
     if(cb)cb();
   }).catch(()=>{if(cb)cb();});
 }
@@ -1978,6 +1988,7 @@ function onSecLoad(s){
   if(s==='control'){renderExecutorDashboard();renderStages();}
   if(s==='trackers')updDash();
   if(s==='skills')renderSkills();
+  if(s==='taskbank')renderTaskBank();
   if(s==='stages')renderStages();
   if(s==='lab')renderLabAll();
   if(s==='progress'){setTodayDates();renderWHist();renderRHist();}
@@ -3170,6 +3181,52 @@ const SKILLS_MAP={
   physical:['Короткий комплекс 12 мин','Мобилити 8 мин','Прогулка 20 мин']
 };
 
+const SKILL_PLAYBOOK={
+  thinking:{
+    games:['Шахматный блиц 5+0','Судоку на время','Логические цепочки'],
+    links:['https://lichess.org/','https://sudoku.com/','https://brilliant.org/'],
+    exercises:['Разбор 1 кейса (15 мин)','5 “почему?” к одной проблеме','Составить 3 альтернативных решения']
+  },
+  memory:{
+    games:['Memory match cards','Dual N-Back','Повтори последовательность'],
+    links:['https://humanbenchmark.com/tests/memory','https://brainscale.net/','https://apps.ankiweb.net/'],
+    exercises:['10 карточек spaced repetition','Пересказ текста через 20 минут','Запоминание 20 слов']
+  },
+  attention:{
+    games:['Таблицы Шульте','Поиск отличий','Reaction time'],
+    links:['https://www.igame.com/schulte/','https://www.spot-the-difference.com/','https://humanbenchmark.com/tests/reactiontime'],
+    exercises:['Pomodoro 25/5 без отвлечений','1 блок deep work без телефона','Сканирование окружения 3 минуты']
+  },
+  emotions:{
+    games:['Breath pacer 5-5','Name the emotion','Pause challenge'],
+    links:['https://xhalr.com/','https://www.calm.com/','https://www.headspace.com/'],
+    exercises:['Эмо-дневник 1 запись','Пауза 90 секунд перед ответом','Box breathing 3 минуты']
+  },
+  communication:{
+    games:['Role-play переговоров','Скрипт “сложный диалог”','Питч за 60 секунд'],
+    links:['https://www.toastmasters.org/','https://www.coursera.org/learn/negotiation-skills','https://www.mindtools.com/'],
+    exercises:['Лог 1 разговора в день','Подготовить 3 вопроса к диалогу','Короткий self-review после беседы']
+  },
+  physical:{
+    games:['10-мин AMRAP','Шагомер челлендж','Планка на время'],
+    links:['https://www.nike.com/nrc-app','https://www.strava.com/','https://www.myfitnesspal.com/'],
+    exercises:['Мобилити 8 минут','Прогулка 20 минут','Короткий силовой комплекс']
+  }
+};
+
+const TASKBANK_SEED=[
+  {id:'tb1',cat:'thinking',title:'Логика: 3 гипотезы',desc:'Разбери проблему и предложи 3 гипотезы',dur:'15 мин'},
+  {id:'tb2',cat:'thinking',title:'Анализ решения',desc:'Оцени плюсы/минусы принятого решения',dur:'10 мин'},
+  {id:'tb3',cat:'memory',title:'Карточки терминов',desc:'Повтори 10 карточек из базы',dur:'12 мин'},
+  {id:'tb4',cat:'memory',title:'Пересказ без подсказки',desc:'Перескажи материал после паузы',dur:'10 мин'},
+  {id:'tb5',cat:'attention',title:'Шульте',desc:'1-2 таблицы Шульте на время',dur:'8 мин'},
+  {id:'tb6',cat:'attention',title:'Фокус-блок',desc:'25 минут без отвлечений',dur:'25 мин'},
+  {id:'tb7',cat:'emotions',title:'Эмо-чек',desc:'Опиши ситуацию, реакцию и оценку',dur:'5 мин'},
+  {id:'tb8',cat:'emotions',title:'Пауза и дыхание',desc:'Сделай паузу 3 мин и отметь эффект',dur:'3 мин'},
+  {id:'tb9',cat:'communication',title:'Лог разговора',desc:'Запиши цель и результат общения',dur:'7 мин'},
+  {id:'tb10',cat:'physical',title:'Короткий физ-блок',desc:'Мобилити + базовый комплекс',dur:'15 мин'}
+];
+
 function ensureSkillStats(){
   const keys=Object.keys(SKILLS_MAP);
   keys.forEach(k=>{
@@ -3231,6 +3288,7 @@ function renderSkills(){
     const st=S.skillStats[k]||{level:1,history:[]};
     const weekly=getWeeklySkillMetric(k);
     const recent=st.history.slice(-5).reverse().map(h=>`<div style="font-size:.74em;color:var(--t3);margin-bottom:3px;">${h.date}: ${esc(h.task)}</div>`).join('')||'<div style="font-size:.74em;color:var(--t3);">Пока нет активности</div>';
+    const pb=SKILL_PLAYBOOK[k]||{games:[],links:[],exercises:[]};
     el.innerHTML=`
       <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
         <span class="skill-chip">Уровень: ${st.level}/10</span>
@@ -3238,9 +3296,101 @@ function renderSkills(){
         <span class="skill-chip">Всего активностей: ${st.history.length}</span>
       </div>
       <h3 style="font-size:.9em;margin-bottom:10px;">Упражнения категории</h3>${rows}
+      <hr class="divider">
+      <div class="g3">
+        <div class="card-sm" style="background:var(--bg3);border:1px solid var(--brd);border-radius:10px;">
+          <h4 style="font-size:.82em;margin-bottom:6px;">🎮 3 игры</h4>
+          ${pb.games.map(v=>`<div style="font-size:.76em;color:var(--t2);margin-bottom:4px;">• ${esc(v)}</div>`).join('')}
+        </div>
+        <div class="card-sm" style="background:var(--bg3);border:1px solid var(--brd);border-radius:10px;">
+          <h4 style="font-size:.82em;margin-bottom:6px;">🔗 3 ссылки</h4>
+          ${pb.links.map(v=>`<div style="font-size:.76em;margin-bottom:4px;"><a href="${v}" target="_blank" rel="noopener noreferrer" style="color:var(--a1);">${esc(v)}</a></div>`).join('')}
+        </div>
+        <div class="card-sm" style="background:var(--bg3);border:1px solid var(--brd);border-radius:10px;">
+          <h4 style="font-size:.82em;margin-bottom:6px;">🧩 3 упражнения</h4>
+          ${pb.exercises.map(v=>`<div style="font-size:.76em;color:var(--t2);margin-bottom:4px;">• ${esc(v)}</div>`).join('')}
+        </div>
+      </div>
       <div style="margin-top:10px;"><h4 style="font-size:.82em;margin-bottom:6px;">История активности</h4>${recent}</div>
     `;
   });
+}
+
+function ensureTaskBankSeed(){
+  if(!Array.isArray(S.taskCards))S.taskCards=[];
+  if(S.taskCards.length===0){
+    S.taskCards=TASKBANK_SEED.map(x=>({...x}));
+    saveLocal();
+  }
+}
+
+function renderTaskBank(){
+  ensureTaskBankSeed();
+  const ct=document.getElementById('taskbank-ct');if(!ct)return;
+  const filter=(document.getElementById('tb-filter')?.value)||'all';
+  const cards=(S.taskCards||[]).filter(c=>filter==='all'||c.cat===filter);
+  ct.innerHTML=`
+    <div class="run-form" style="margin-top:0;">
+      <div><label>Категория</label><select id="tb-cat"><option value="thinking">Мышление</option><option value="memory">Память</option><option value="attention">Внимание</option><option value="emotions">Эмоции</option><option value="communication">Коммуникация</option><option value="physical">Физика</option></select></div>
+      <div><label>Название</label><input id="tb-title" placeholder="Новая карточка"></div>
+      <div><label>Описание</label><input id="tb-desc" placeholder="Что делать"></div>
+      <div><label>Длительность</label><input id="tb-dur" placeholder="10 мин"></div>
+      <div style="align-self:end;"><button class="btn btn-p btn-sm" onclick="addTaskCard()">Добавить</button></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin:10px 0;">
+      <h4 style="font-size:.85em;">Карточки (${cards.length})</h4>
+      <select id="tb-filter" onchange="renderTaskBank()" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:6px 8px;border-radius:8px;font-size:.8em;">
+        <option value="all" ${filter==='all'?'selected':''}>Все</option>
+        <option value="thinking" ${filter==='thinking'?'selected':''}>Мышление</option>
+        <option value="memory" ${filter==='memory'?'selected':''}>Память</option>
+        <option value="attention" ${filter==='attention'?'selected':''}>Внимание</option>
+        <option value="emotions" ${filter==='emotions'?'selected':''}>Эмоции</option>
+        <option value="communication" ${filter==='communication'?'selected':''}>Коммуникация</option>
+        <option value="physical" ${filter==='physical'?'selected':''}>Физика</option>
+      </select>
+    </div>
+    ${cards.map(c=>`<div class="tip"><div class="tipico">📌</div><div><strong style="font-size:.82em;">${esc(c.title)}</strong><div style="font-size:.75em;color:var(--t2);">${esc(c.desc)} · ${esc(c.dur||'—')}</div><div style="margin-top:4px;"><button class="btn btn-gh btn-xs" onclick="useTaskCard('${c.id}')">в день</button> <button class="btn btn-gh btn-xs" onclick="editTaskCard('${c.id}')">ред.</button> <button class="btn btn-r btn-xs" onclick="deleteTaskCard('${c.id}')">удал.</button></div></div></div>`).join('') || '<div style="font-size:.78em;color:var(--t3);">Нет карточек</div>'}
+  `;
+}
+function addTaskCard(){
+  const cat=document.getElementById('tb-cat')?.value||'thinking';
+  const title=document.getElementById('tb-title')?.value?.trim();
+  const desc=document.getElementById('tb-desc')?.value?.trim();
+  const dur=document.getElementById('tb-dur')?.value?.trim()||'10 мин';
+  if(!title||!desc){notify('Заполни название и описание');return;}
+  S.taskCards.push({id:'tb_'+Date.now(),cat,title,desc,dur});
+  saveLocal();renderTaskBank();notify('✅ Карточка добавлена');
+}
+function editTaskCard(id){
+  const c=S.taskCards.find(x=>x.id===id);if(!c)return;
+  document.getElementById('m-t').textContent='Редактирование карточки задания';
+  document.getElementById('m-b').innerHTML=`
+    <input id="tb-edit-title" value="${esc(c.title)}" style="width:100%;margin:0 0 8px;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:8px;border-radius:8px;">
+    <input id="tb-edit-desc" value="${esc(c.desc)}" style="width:100%;margin:0 0 8px;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:8px;border-radius:8px;">
+    <input id="tb-edit-dur" value="${esc(c.dur||'')}" style="width:100%;background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:8px;border-radius:8px;">
+  `;
+  document.getElementById('m-bt').innerHTML=`<button class="btn btn-g btn-sm" onclick="saveTaskCardEdit('${id}')">Сохранить</button><button class="btn btn-gh btn-sm" onclick="closeMod()">Отмена</button>`;
+  document.getElementById('modal').classList.add('open');
+}
+function saveTaskCardEdit(id){
+  const c=S.taskCards.find(x=>x.id===id);if(!c)return;
+  const t=document.getElementById('tb-edit-title')?.value?.trim();
+  const d=document.getElementById('tb-edit-desc')?.value?.trim();
+  const dur=document.getElementById('tb-edit-dur')?.value?.trim();
+  if(!t||!d){notify('Заполни поля');return;}
+  c.title=t;c.desc=d;c.dur=dur||c.dur;
+  saveLocal();closeMod();renderTaskBank();
+}
+function deleteTaskCard(id){
+  S.taskCards=(S.taskCards||[]).filter(c=>c.id!==id);
+  saveLocal();renderTaskBank();
+}
+function useTaskCard(id){
+  const c=S.taskCards.find(x=>x.id===id);if(!c)return;
+  const key=dKey(new Date());
+  if(!S.carryOver[key])S.carryOver[key]=[];
+  S.carryOver[key].push({title:c.title,description:c.desc,time:'21:00',tag:c.cat==='physical'?'train':'study',source:c.cat==='physical'?'body':(c.cat==='emotions'?'control':'mind')});
+  saveLocal();renderExecutorDashboard();notify('📌 Добавлено в задачи дня');
 }
 
 const STAGE_TASKS={
@@ -3779,7 +3929,7 @@ function resetAll(){
   const clearFn=()=>{
     S.done={};S.workoutLogs={};S.runLogs={};S.booksRead={};S.phaseChecks={p0:{},p1:{},p2:{},p3:{}};
     S.history=[];S.seenKnowledge={};S.customSchedule=null;S.taskStatus={};S.carryOver={};S.dailyReviews={};S.skillStats={};S.currentStage='s0';
-    S.brainLog=[];S.memoryCards=[];S.selfTests=[];S.emotionLog=[];S.pauseLog=[];S.attentionLog=[];S.observationLog=[];S.communicationLog=[];S.scenarioLog=[];S.projects=[];S.lightDays={};
+    S.brainLog=[];S.memoryCards=[];S.selfTests=[];S.emotionLog=[];S.pauseLog=[];S.attentionLog=[];S.observationLog=[];S.communicationLog=[];S.scenarioLog=[];S.projects=[];S.lightDays={};S.taskCards=[];
   };
   if(updater){updater(clearFn);}else{clearFn();saveLocal();}
   refreshAll();notify('🗑️ Все данные сброшены');
@@ -4178,7 +4328,7 @@ function updFbStatus(ok){
 // ═══════════════════════════════════════════════
 function refreshAll(){
   renderExecutorDashboard();updDash();renderCal();renderSM();renderDailySched();
-  renderWHist();renderRHist();renderBooks();renderPhaseChecks();renderHistory();updateKnowledgeSeen();renderSkills();renderStages();renderLabAll();
+  renderWHist();renderRHist();renderBooks();renderPhaseChecks();renderHistory();updateKnowledgeSeen();renderSkills();renderTaskBank();renderStages();renderLabAll();
 }
 
 function maybeShowDailyReminder(){
