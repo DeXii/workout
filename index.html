@@ -11,6 +11,7 @@
 <script src="./js/core/macros.js"></script>
 <script src="./js/core/validation.js"></script>
 <script src="./js/core/state.js"></script>
+<script src="./js/core/task-engine.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -34,6 +35,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 .nb{background:transparent;border:1px solid transparent;color:var(--t2);padding:5px 10px;border-radius:7px;cursor:pointer;font-size:.78em;transition:all .2s;white-space:nowrap;}
 .nb:hover{background:rgba(255,255,255,.06);color:var(--t1);}
 .nb.active{background:rgba(0,212,255,.1);border-color:rgba(0,212,255,.28);color:var(--a1);}
+.nb-main{font-weight:700;}
 
 /* HAMBURGER */
 .hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:6px;background:rgba(255,255,255,.06);border:1px solid var(--brd);border-radius:7px;margin-left:auto;}
@@ -291,6 +293,20 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 .sec-hdr{margin-bottom:24px;}
 .sec-t{font-size:1.7em;font-weight:700;margin-bottom:5px;}
 .sec-s{color:var(--t2);font-size:.87em;}
+.exec-wrap{display:flex;justify-content:center;padding:36px 0;}
+.exec-card{width:min(760px,100%);background:var(--bg2);border:1px solid var(--brd);border-radius:16px;padding:24px;}
+.exec-kicker{color:var(--t3);font-size:.78em;text-transform:uppercase;letter-spacing:.08em;margin-bottom:9px;}
+.exec-task-title{font-size:1.25em;font-weight:700;margin-bottom:8px;}
+.exec-task-desc{font-size:.9em;color:var(--t2);line-height:1.6;margin-bottom:14px;}
+.exec-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+.exec-pill{display:inline-block;padding:4px 9px;border-radius:999px;font-size:.74em;border:1px solid var(--brd);background:var(--bg3);color:var(--t2);}
+.exec-actions{display:flex;gap:10px;flex-wrap:wrap;}
+.exec-empty{text-align:center;padding:35px 12px;color:var(--t2);}
+.hub-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+.hub-item{background:var(--bg2);border:1px solid var(--brd);border-radius:12px;padding:14px;cursor:pointer;transition:all .2s;}
+.hub-item:hover{border-color:rgba(0,212,255,.28);transform:translateY(-2px);}
+.hub-item h4{font-size:.9em;margin-bottom:6px;}
+.hub-item p{font-size:.78em;color:var(--t2);line-height:1.5;}
 
 /* CHARTS */
 .chart-wrap{background:var(--bg2);border:1px solid var(--brd);border-radius:14px;padding:20px;margin-bottom:18px;}
@@ -427,24 +443,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 
 <nav class="nav">
   <div class="nav-inner">
-    <div class="logo">⚡ AYANOKOJI v2</div>
+    <div class="logo" style="cursor:pointer;" onclick="goSec('dash')">⚡ AYANOKOJI v2</div>
     <input class="search-input" id="global-search" placeholder="Поиск по сайту..." oninput="runGlobalSearch(this.value)">
     <button class="btn btn-gh btn-sm" onclick="toggleFocusMode()">🎯 Фокус</button>
     <div id="navlinks" style="display:flex;gap:4px;flex-wrap:wrap;">
-      <button class="nb active" data-s="dash">📊 Главная</button>
-      <button class="nb" data-s="sched">🗓️ График</button>
-      <button class="nb" data-s="workout">💪 Тренировки</button>
-      <button class="nb" data-s="run">🏃 Бег</button>
-      <button class="nb" data-s="food">🍽️ Питание</button>
-      <button class="nb" data-s="mealplan">🥗 План питания</button>
-      <button class="nb" data-s="shopping">🛒 Закупки</button>
-      <button class="nb" data-s="supps">💊 БАДы</button>
-      <button class="nb" data-s="books">📚 Литература</button>
-      <button class="nb" data-s="knowledge">🧠 База знаний</button>
-      <button class="nb" data-s="mental">🧠 Ментал</button>
-      <button class="nb" data-s="progress">📈 Прогресс</button>
-      <button class="nb" data-s="charts">📊 Графики</button>
-      <button class="nb" data-s="macros">🧮 Макросы</button>
+      <button class="nb nb-main" data-s="mind">Ум</button>
+      <button class="nb nb-main" data-s="body">Тело</button>
+      <button class="nb nb-main" data-s="control">Контроль</button>
+      <button class="nb nb-main" data-s="trackers">Трекеры</button>
     </div>
     <!-- Hamburger -->
     <div class="hamburger" id="hamburger" onclick="toggleMobNav()">
@@ -457,31 +463,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <div class="mob-nav-overlay" id="mob-nav-overlay" onclick="toggleMobNav()"></div>
 <div class="mob-nav" id="mob-nav">
   <div class="mob-nav-title">⚡ AYANOKOJI v2</div>
-  <button class="nb" data-s="dash" onclick="toggleMobNav()">📊 Главная</button>
-  <button class="nb" data-s="sched" onclick="toggleMobNav()">🗓️ График</button>
-  <button class="nb" data-s="workout" onclick="toggleMobNav()">💪 Тренировки</button>
-  <button class="nb" data-s="run" onclick="toggleMobNav()">🏃 Бег</button>
-  <button class="nb" data-s="food" onclick="toggleMobNav()">🍽️ Питание</button>
-  <button class="nb" data-s="mealplan" onclick="toggleMobNav()">🥗 План питания</button>
-  <button class="nb" data-s="shopping" onclick="toggleMobNav()">🛒 Закупки</button>
-  <button class="nb" data-s="supps" onclick="toggleMobNav()">💊 БАДы</button>
-  <button class="nb" data-s="books" onclick="toggleMobNav()">📚 Литература</button>
-  <button class="nb" data-s="knowledge" onclick="toggleMobNav()">🧠 База знаний</button>
-  <button class="nb" data-s="mental" onclick="toggleMobNav()">🧠 Ментал</button>
-  <button class="nb" data-s="progress" onclick="toggleMobNav()">📈 Прогресс</button>
-  <button class="nb" data-s="charts" onclick="toggleMobNav()">📊 Графики</button>
-  <button class="nb" data-s="macros" onclick="toggleMobNav()">🧮 Макросы</button>
+  <button class="nb nb-main" data-s="mind" onclick="toggleMobNav()">Ум</button>
+  <button class="nb nb-main" data-s="body" onclick="toggleMobNav()">Тело</button>
+  <button class="nb nb-main" data-s="control" onclick="toggleMobNav()">Контроль</button>
+  <button class="nb nb-main" data-s="trackers" onclick="toggleMobNav()">Трекеры</button>
 </div>
 
 <!-- Bottom nav (mobile) -->
 <div class="bottom-nav">
   <div class="bottom-nav-items">
-    <div class="bni active" onclick="goSec('dash')"><div class="bni-ico">📊</div>Главная</div>
-    <div class="bni" onclick="goSec('workout')"><div class="bni-ico">💪</div>Трен.</div>
-    <div class="bni" onclick="goSec('food')"><div class="bni-ico">🍽️</div>Питание</div>
-    <div class="bni" onclick="goSec('progress')"><div class="bni-ico">📈</div>Прогресс</div>
-    <div class="bni" onclick="goSec('charts')"><div class="bni-ico">📊</div>Графики</div>
-    <div class="bni" onclick="goSec('macros')"><div class="bni-ico">🧮</div>Макросы</div>
+    <div class="bni" onclick="goSec('mind')"><div class="bni-ico">🧠</div>Ум</div>
+    <div class="bni" onclick="goSec('body')"><div class="bni-ico">💪</div>Тело</div>
+    <div class="bni" onclick="goSec('control')"><div class="bni-ico">🎯</div>Контроль</div>
+    <div class="bni" onclick="goSec('trackers')"><div class="bni-ico">📈</div>Трекеры</div>
   </div>
 </div>
 
@@ -497,58 +491,97 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <!-- ══════════════ ГЛАВНАЯ ══════════════ -->
 <div id="s-dash" class="sec active">
   <div class="sec-hdr">
-    <div class="sec-t">📊 Панель управления</div>
-    <div class="sec-s">Система комплексного развития — Ayanokoji System v2</div>
+    <div class="sec-t">🎯 Исполнитель задач</div>
+    <div class="sec-s">Главная точка действия: что сделать сейчас и сразу отметить результат</div>
   </div>
-
-  <div class="sbox">
-    <div class="sst" id="sst">⏳ Подключение...</div>
-    <p style="font-size:.82em;color:var(--t2);margin-bottom:8px;">🔗 Твой ID синхронизации:</p>
-    <input class="uid-in" id="uid-d" readonly onclick="cpUid()">
-    <div style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:9px;">
-      <button class="btn btn-gh btn-sm" onclick="cpUid()">📋 Копировать</button>
-      <button class="btn btn-gh btn-sm" onclick="newId()">🆕 Новый ID</button>
-    </div>
-    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--brd);">
-      <p style="font-size:.82em;color:var(--t2);margin-bottom:7px;">📲 Синхронизировать с другого устройства:</p>
-      <input class="uid-in edit" id="sync-in" placeholder="Вставь чужой ID">
-      <br><button class="btn btn-p btn-sm" style="margin-top:7px;" onclick="syncId()">🔄 Синхронизировать</button>
+  <div class="exec-wrap">
+    <div class="exec-card focus-keep">
+      <div class="exec-kicker">Сейчас нужно сделать</div>
+      <div id="exec-content"></div>
     </div>
   </div>
+  <div class="card" style="max-width:760px;margin:0 auto;">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
+      <h3 style="font-size:.9em;">🔗 Быстрые действия</h3>
+      <button class="btn btn-gh btn-xs" onclick="refreshAll()">Обновить</button>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;">
+      <button class="btn btn-gh btn-sm" onclick="goSec('body')">Открыть вкладку Тело</button>
+      <button class="btn btn-gh btn-sm" onclick="goSec('control')">Открыть вкладку Контроль</button>
+      <button class="btn btn-gh btn-sm" onclick="goSec('trackers')">Открыть вкладку Трекеры</button>
+    </div>
+  </div>
+</div>
 
-  <div style="background:var(--bg2);border:1px solid var(--brd);border-radius:13px;padding:13px 16px;margin-bottom:18px;display:flex;align-items:center;gap:11px;flex-wrap:wrap;">
-    <span style="font-size:.83em;color:var(--t2);">📅 Дата старта программы:</span>
-    <input type="date" id="start-date" onchange="chStart()" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:5px 10px;border-radius:7px;font-size:.85em;">
+<div id="s-mind" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">🧠 Ум</div>
+    <div class="sec-s">Когнитивные практики, литература и база знаний</div>
   </div>
+  <div class="hub-grid">
+    <div class="hub-item" onclick="goSec('books')"><h4>📚 Литература</h4><p>Список книг, фильтры по статусу и отметка прочитанного.</p></div>
+    <div class="hub-item" onclick="goSec('knowledge')"><h4>🧠 База знаний</h4><p>Материалы и долгосрочный план развития.</p></div>
+  </div>
+</div>
 
-  <div class="g4" style="margin-bottom:18px;">
-    <div class="stat"><span class="stat-n" id="st1" style="color:var(--a1);">0</span><div class="stat-l">Тренировок выполнено</div></div>
-    <div class="stat"><span class="stat-n" id="st2" style="color:var(--a3);">0</span><div class="stat-l">Серия подряд (дней)</div></div>
-    <div class="stat"><span class="stat-n" id="st3" style="color:var(--a4);">0</span><div class="stat-l">На этой неделе</div></div>
-    <div class="stat"><span class="stat-n" id="st4" style="color:var(--a5);font-size:1.1em;">—</span><div class="stat-l">Следующая тренировка</div></div>
-    <div class="stat"><span class="stat-n" id="st5" style="color:var(--a6);">0</span><div class="stat-l">Пробежек всего</div></div>
-    <div class="stat"><span class="stat-n" id="st6" style="color:#fb923c;">0</span><div class="stat-l">Км пробежано</div></div>
+<div id="s-body" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">💪 Тело</div>
+    <div class="sec-s">Тренировки, бег, питание и поддержка восстановления</div>
   </div>
-  <div class="g3" style="margin-bottom:18px;">
-    <div class="stat"><span class="stat-n" id="st-books" style="color:var(--a3);">0/0</span><div class="stat-l">Книг прочитано</div></div>
-    <div class="stat"><span class="stat-n" id="st-kb" style="color:var(--a1);">0%</span><div class="stat-l">План 12–15 лет</div></div>
-    <div class="stat"><span class="stat-n" id="st-kbsec" style="color:var(--a4);">0/6</span><div class="stat-l">Темы базы знаний</div></div>
+  <div class="hub-grid">
+    <div class="hub-item" onclick="goSec('workout')"><h4>💪 Тренировки</h4><p>Силовые блоки, прогрессии и логирование подходов.</p></div>
+    <div class="hub-item" onclick="goSec('run')"><h4>🏃 Бег</h4><p>Длинные пробежки, спринты и история результатов.</p></div>
+    <div class="hub-item" onclick="goSec('food')"><h4>🍽️ Питание</h4><p>Рацион с макросами и рецептами.</p></div>
+    <div class="hub-item" onclick="goSec('mealplan')"><h4>🥗 План питания</h4><p>План на неделю и клик по рецептам.</p></div>
+    <div class="hub-item" onclick="goSec('shopping')"><h4>🛒 Закупки</h4><p>Продукты и списки по дням.</p></div>
+    <div class="hub-item" onclick="goSec('supps')"><h4>💊 БАДы</h4><p>Схемы, дозировки и рекомендации.</p></div>
   </div>
+</div>
 
-  <div class="card" style="margin-bottom:18px;">
-    <h3 style="margin-bottom:14px;font-size:.93em;">📈 Прогресс тренировок</h3>
-    <div class="pw"><div class="ph"><span>🟣 Push</span><span id="pr1">0/8</span></div><div class="pb"><div class="pf" id="pf1" style="width:0%;background:linear-gradient(90deg,#7c3aed,#a855f7);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🔵 Pull</span><span id="pr2">0/8</span></div><div class="pb"><div class="pf" id="pf2" style="width:0%;background:linear-gradient(90deg,#00d4ff,#38bdf8);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟢 Ноги+Кор</span><span id="pr3">0/8</span></div><div class="pb"><div class="pf" id="pf3" style="width:0%;background:linear-gradient(90deg,#10b981,#34d399);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟡 Full HIFT</span><span id="pr4">0/8</span></div><div class="pb"><div class="pf" id="pf4" style="width:0%;background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🩷 Бег (длинный)</span><span id="pr5">0 пробежек</span></div><div class="pb"><div class="pf" id="pf5" style="width:0%;background:linear-gradient(90deg,#f43f8f,#f97316);"></div></div></div>
-    <div class="pw"><div class="ph"><span>🟠 Спринты</span><span id="pr6">0 сессий</span></div><div class="pb"><div class="pf" id="pf6" style="width:0%;background:linear-gradient(90deg,#fb923c,#fbbf24);"></div></div></div>
+<div id="s-control" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">🎯 Контроль</div>
+    <div class="sec-s">Ментал, дыхание, саморегуляция и фокус</div>
   </div>
+  <div class="hub-grid">
+    <div class="hub-item" onclick="goSec('mental')"><h4>🧘 Ментал</h4><p>Дыхание, дневник, трекинг состояния и контроль практик.</p></div>
+    <div class="hub-item" onclick="goSec('sched')"><h4>🗓️ Режим дня</h4><p>Редактор расписания и источник задач для главного экрана.</p></div>
+  </div>
+</div>
 
-  <div style="text-align:center;">
-    <button class="btn btn-r btn-sm" onclick="resetAll()">🗑️ Сбросить все данные</button>
+<div id="s-trackers" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">📈 Трекеры</div>
+    <div class="sec-s">Прогресс, графики, макросы, история и синхронизация</div>
   </div>
-  <div class="card focus-keep" style="margin-top:18px;">
+  <div class="hub-grid">
+    <div class="hub-item" onclick="goSec('progress')"><h4>📈 Прогресс</h4><p>Календарь выполнения и журналы тренировок/бега.</p></div>
+    <div class="hub-item" onclick="goSec('charts')"><h4>📊 Графики</h4><p>Визуализация объёма, темпа и активности.</p></div>
+    <div class="hub-item" onclick="goSec('macros')"><h4>🧮 Макросы</h4><p>Подсчёт КБЖУ и сравнение с целями.</p></div>
+    <div class="hub-item" onclick="goSec('dash')"><h4>🎯 Исполнитель задач</h4><p>Точка исполнения: что делать сейчас.</p></div>
+  </div>
+  <div class="card" style="margin-top:14px;">
+    <div class="sbox" style="margin-bottom:0;">
+      <div class="sst" id="sst">⏳ Подключение...</div>
+      <p style="font-size:.82em;color:var(--t2);margin-bottom:8px;">🔗 ID синхронизации:</p>
+      <input class="uid-in" id="uid-d" readonly onclick="cpUid()">
+      <div style="display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:9px;">
+        <button class="btn btn-gh btn-sm" onclick="cpUid()">📋 Копировать</button>
+        <button class="btn btn-gh btn-sm" onclick="newId()">🆕 Новый ID</button>
+      </div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--brd);">
+        <p style="font-size:.82em;color:var(--t2);margin-bottom:7px;">📲 Синхронизировать с другого устройства:</p>
+        <input class="uid-in edit" id="sync-in" placeholder="Вставь чужой ID">
+        <br><button class="btn btn-p btn-sm" style="margin-top:7px;" onclick="syncId()">🔄 Синхронизировать</button>
+      </div>
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--brd);display:flex;justify-content:center;gap:8px;align-items:center;flex-wrap:wrap;">
+        <span style="font-size:.83em;color:var(--t2);">📅 Дата старта:</span>
+        <input type="date" id="start-date" onchange="chStart()" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:5px 10px;border-radius:7px;font-size:.85em;">
+      </div>
+    </div>
+  </div>
+  <div class="card focus-keep" style="margin-top:14px;">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;">
       <h3 style="font-size:.9em;">🕒 История изменений</h3>
       <button class="btn btn-gh btn-xs" onclick="clearHistory()">Очистить</button>
@@ -1766,6 +1799,7 @@ localStorage.setItem('ay_uid',uid);
 
 let S={
   done:{},workoutLogs:{},runLogs:{},customSchedule:null,
+  taskStatus:{},
   booksRead:{},
   phaseChecks:{p0:{},p1:{},p2:{},p3:{}},
   history:[],
@@ -1777,17 +1811,17 @@ let S={
 window.S=S;
 
 function loadLocal(){
-  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
+  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.taskStatus=p.taskStatus||{};S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
 }
 function saveLocal(){
-  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
-       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
+  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
+       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
 }
 function loadCloud(cb){
   if(!fbOk){if(cb)cb();return;}
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
+    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.taskStatus=d.taskStatus||{};S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
     if(cb)cb();
   }).catch(()=>{if(cb)cb();});
 }
@@ -1832,8 +1866,12 @@ document.querySelectorAll('.mob-nav .nb').forEach(b=>{
 });
 
 function onSecLoad(s){
-  if(s==='dash')updDash();
+  if(s==='dash')renderExecutorDashboard();
   if(s==='sched'){renderSM();renderDailySched();}
+  if(s==='mind')renderExecutorDashboard();
+  if(s==='body')renderExecutorDashboard();
+  if(s==='control')renderExecutorDashboard();
+  if(s==='trackers')updDash();
   if(s==='progress'){setTodayDates();renderWHist();renderRHist();}
   if(s==='knowledge'){updateKnowledgeSeen();saveLocal();updDash();}
   if(s==='charts')renderCharts();
@@ -1872,7 +1910,7 @@ document.getElementById('main-wrap').addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-touchStartX;
   const dy=e.changedTouches[0].clientY-touchStartY;
   if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){
-    const secs=['dash','sched','workout','run','food','mealplan','shopping','supps','books','knowledge','mental','progress','charts','macros'];
+    const secs=['dash','mind','body','control','trackers','sched','workout','run','food','mealplan','shopping','supps','books','knowledge','mental','progress','charts','macros'];
     const cur=Array.from(document.querySelectorAll('.sec')).findIndex(s=>s.classList.contains('active'));
     let next=cur+(dx<0?1:-1);
     if(next>=0&&next<secs.length)goSec(secs[next]);
@@ -2796,29 +2834,98 @@ function closeMod(e){if(e&&e.target!==document.getElementById('modal'))return;do
 // ═══════════════════════════════════════════════
 // DASHBOARD
 // ═══════════════════════════════════════════════
+function getScheduleRowsForDate(date){
+  const type=getTT(date)||'rest';
+  if(S.customSchedule){
+    if(type==='rest'&&S.customSchedule.restDay)return S.customSchedule.restDay;
+    if(S.customSchedule.trainDay)return S.customSchedule.trainDay;
+  }
+  if(type==='run-long')return defaultRunLongDay;
+  if(type==='run-sprint')return defaultRunSprintDay;
+  if(type==='rest')return defaultRestDay;
+  return defaultTrainDay;
+}
+
+function getTodayTasks(){
+  const date=new Date();
+  const key=dKey(date);
+  const rows=getScheduleRowsForDate(date);
+  const tasks=window.ASCore?.taskEngine?.mapScheduleToTasks(rows,key)||[];
+  return{dateKey:key,tasks,statuses:S.taskStatus?.[key]||{}};
+}
+
+function setTaskStatus(task,status){
+  const dateKey=task.dateKey||dKey(new Date());
+  if(!S.taskStatus[dateKey])S.taskStatus[dateKey]={};
+  S.taskStatus[dateKey][task.id]={status,ts:Date.now(),source:task.source||'control'};
+  if(status==='done'&&(task.tag==='train'||task.tag==='run'))S.done[dateKey]=true;
+  logAction(`${status==='done'?'Выполнено':'Пропущено'}: ${task.title} (${dateKey})`);
+  saveLocal();
+  renderExecutorDashboard();
+  updDash();
+  renderHistory();
+}
+
+function markCurrentTask(status){
+  if(!window.__execCurrentTask)return;
+  setTaskStatus(window.__execCurrentTask,status);
+}
+
+function renderExecutorDashboard(){
+  const wrap=document.getElementById('exec-content');
+  if(!wrap)return;
+  const now=new Date();
+  const nowMin=now.getHours()*60+now.getMinutes();
+  const data=getTodayTasks();
+  const current=window.ASCore?.taskEngine?.pickCurrentTask(data.tasks,data.statuses,nowMin)||null;
+  if(!current){
+    window.__execCurrentTask=null;
+    wrap.innerHTML=`<div class="exec-empty"><div style="font-size:1.2em;margin-bottom:6px;">✅ На сегодня все</div><div>Новых задач по расписанию не осталось.</div></div>`;
+    return;
+  }
+  const pending=data.tasks.filter(t=>!data.statuses[t.id]).slice(0,3);
+  const pendingList=pending.map(t=>`<div class="exec-pill">${t.time} · ${esc(t.title)}</div>`).join('');
+  const sourceLbl=window.ASCore?.taskEngine?.sourceLabel(current.source)||'Контроль';
+  window.__execCurrentTask=current;
+  wrap.innerHTML=`
+    <div class="exec-task-title">${esc(current.title)}</div>
+    <div class="exec-task-desc">${esc(current.description)}</div>
+    <div class="exec-meta">
+      <span class="exec-pill">Источник: ${sourceLbl}</span>
+      <span class="exec-pill">Время: ${current.time}</span>
+    </div>
+    <div class="exec-actions">
+      <button class="btn btn-g" onclick="markCurrentTask('done')">Выполнил</button>
+      <button class="btn btn-r" onclick="markCurrentTask('skipped')">Не выполнил</button>
+    </div>
+    <div style="margin-top:14px;font-size:.78em;color:var(--t3);">Следующие задачи:</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:7px;">${pendingList||'<span class="exec-pill">Текущая задача последняя</span>'}</div>
+  `;
+}
+
 function updDash(){
   const doneKeys=Object.keys(S.done).filter(k=>S.done[k]&&S.done[k]!==false);
-  document.getElementById('st1').textContent=doneKeys.length;
+  const st1=document.getElementById('st1');if(st1)st1.textContent=doneKeys.length;
 
   // Streak
   let streak=0;const today=new Date();today.setHours(0,0,0,0);
   for(let i=0;i<365;i++){const d=new Date(today);d.setDate(d.getDate()-i);if(S.done[dKey(d)])streak++;else break;}
-  document.getElementById('st2').textContent=streak;
+  const st2=document.getElementById('st2');if(st2)st2.textContent=streak;
 
   // This week
   const mon=new Date(today);mon.setDate(today.getDate()-((today.getDay()+6)%7));
   let wk=0;for(let i=0;i<7;i++){const d=new Date(mon);d.setDate(mon.getDate()+i);if(S.done[dKey(d)])wk++;}
-  document.getElementById('st3').textContent=wk;
+  const st3=document.getElementById('st3');if(st3)st3.textContent=wk;
 
   // Next workout
   let nxt='—';for(let i=1;i<=14;i++){const d=new Date(today);d.setDate(today.getDate()+i);const t=getTT(d);if(t&&t!=='rest'){nxt=`${['Вс','Пн','Вт','Ср','Чт','Пт','Сб'][d.getDay()]} (${typeNames[t]})`;break;}}
-  document.getElementById('st4').textContent=nxt;
+  const st4=document.getElementById('st4');if(st4)st4.textContent=nxt;
 
   // Runs
   let totalRuns=0,totalKm=0;
   Object.keys(S.runLogs).forEach(date=>{Object.keys(S.runLogs[date]).forEach(type=>{totalRuns++;totalKm+=S.runLogs[date][type].dist||0;});});
-  document.getElementById('st5').textContent=totalRuns;
-  document.getElementById('st6').textContent=totalKm.toFixed(1);
+  const st5=document.getElementById('st5');if(st5)st5.textContent=totalRuns;
+  const st6=document.getElementById('st6');if(st6)st6.textContent=totalKm.toFixed(1);
 
   // Progress bars
   const wTypes={push:0,pull:0,legs:0,hift:0};
@@ -3257,7 +3364,7 @@ function updFbStatus(ok){
 // REFRESH ALL
 // ═══════════════════════════════════════════════
 function refreshAll(){
-  updDash();renderCal();renderSM();renderDailySched();
+  renderExecutorDashboard();updDash();renderCal();renderSM();renderDailySched();
   renderWHist();renderRHist();renderBooks();renderPhaseChecks();renderHistory();updateKnowledgeSeen();
 }
 
