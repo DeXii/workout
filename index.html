@@ -499,6 +499,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <button class="btn btn-gh btn-sm" onclick="toggleFocusMode()">🎯 Фокус</button>
     <button id="theme-toggle" class="btn btn-gh btn-sm" onclick="toggleTheme()" title="Переключить тему" style="font-size:1.2em;padding:6px 10px;">🌙</button>
     <div id="navlinks" style="display:flex;gap:4px;flex-wrap:wrap;">
+      <button class="nb nb-main" data-s="priorities">Приоритеты</button>
       <button class="nb nb-main" data-s="mind">Ум</button>
       <button class="nb nb-main" data-s="body">Тело</button>
       <button class="nb nb-main" data-s="control">Контроль</button>
@@ -523,6 +524,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <div class="mob-nav-overlay" id="mob-nav-overlay" onclick="toggleMobNav()"></div>
 <div class="mob-nav" id="mob-nav">
   <div class="mob-nav-title">⚡ AYANOKOJI v3</div>
+  <button class="nb nb-main" data-s="priorities" onclick="toggleMobNav()">Приоритеты</button>
   <button class="nb nb-main" data-s="mind" onclick="toggleMobNav()">Ум</button>
   <button class="nb nb-main" data-s="body" onclick="toggleMobNav()">Тело</button>
   <button class="nb nb-main" data-s="control" onclick="toggleMobNav()">Контроль</button>
@@ -532,9 +534,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <!-- Bottom nav (mobile) -->
 <div class="bottom-nav">
   <div class="bottom-nav-items">
+    <div class="bni" onclick="goSec('priorities')"><div class="bni-ico">🎯</div>Приоритеты</div>
     <div class="bni" onclick="goSec('mind')"><div class="bni-ico">🧠</div>Ум</div>
     <div class="bni" onclick="goSec('body')"><div class="bni-ico">💪</div>Тело</div>
-    <div class="bni" onclick="goSec('control')"><div class="bni-ico">🎯</div>Контроль</div>
+    <div class="bni" onclick="goSec('control')"><div class="bni-ico">⚙️</div>Контроль</div>
     <div class="bni" onclick="goSec('trackers')"><div class="bni-ico">📈</div>Трекеры</div>
   </div>
 </div>
@@ -546,6 +549,366 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <button class="btn btn-gh btn-xs" onclick="clearGlobalSearch()">Очистить</button>
   </div>
   <div id="global-search-results"></div>
+</div>
+
+<!-- ══════════════ ПРИОРИТЕТЫ ══════════════ -->
+<div id="s-priorities" class="sec">
+  <div class="sec-hdr">
+    <div class="sec-t">🎯 Приоритеты системы Аянокоджи</div>
+    <div class="sec-s">Иерархия задач по важности — от критических до второстепенных</div>
+  </div>
+
+  <!-- ОЧЕНЬ ВАЖНЫЕ (Критические) -->
+  <div class="card" style="border-left:4px solid #ef4444;margin-bottom:16px;">
+    <h3 style="font-size:1em;margin-bottom:12px;color:#ef4444;">🔴 ОЧЕНЬ ВАЖНЫЕ (Критические)</h3>
+    <p style="font-size:.8em;color:var(--t2);margin-bottom:14px;">Без этого система не работает. Ежедневные основы.</p>
+
+    <div style="display:grid;gap:10px;">
+      <div class="priority-item" style="background:rgba(239,68,68,.08);padding:12px;border-radius:8px;border-left:3px solid #ef4444;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#ef4444;">1.</span>
+          <span style="font-size:.88em;font-weight:700;">График дня (Режим)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Подъём 4:30, отбой 22:00. Основа дисциплины и восстановления.
+          <div style="margin-top:4px;"><strong>Где:</strong> Контроль → График → Дневное расписание</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(239,68,68,.08);padding:12px;border-radius:8px;border-left:3px solid #ef4444;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#ef4444;">2.</span>
+          <span style="font-size:.88em;font-weight:700;">Сон (7-8 часов)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Качественный сон — основа восстановления и когнитивных функций.
+          <div style="margin-top:4px;"><strong>Где:</strong> Трекеры → Прогресс → (добавить трекер сна в будущем)</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(239,68,68,.08);padding:12px;border-radius:8px;border-left:3px solid #ef4444;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#ef4444;">3.</span>
+          <span style="font-size:.88em;font-weight:700;">Тренировки (4 раза в неделю)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Push, Pull, Legs, HIFT — физическая база для всего остального.
+          <div style="margin-top:4px;"><strong>Где:</strong> Тело → Тренировки</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(239,68,68,.08);padding:12px;border-radius:8px;border-left:3px solid #ef4444;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#ef4444;">4.</span>
+          <span style="font-size:.88em;font-weight:700;">Питание (КБЖУ)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          2400-2600 ккал, 148г белка. Топливо для тела и мозга.
+          <div style="margin-top:4px;"><strong>Где:</strong> Тело → Питание / План питания / Макросы</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(239,68,68,.08);padding:12px;border-radius:8px;border-left:3px solid #ef4444;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#ef4444;">5.</span>
+          <span style="font-size:.88em;font-weight:700;">HRV и Дыхание (10 мин/день)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Резонансное дыхание — физиологическая основа хладнокровия.
+          <div style="margin-top:4px;"><strong>Где:</strong> Ум → Ментальная тренировка → HRV</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ВАЖНЫЕ -->
+  <div class="card" style="border-left:4px solid #f59e0b;margin-bottom:16px;">
+    <h3 style="font-size:1em;margin-bottom:12px;color:#f59e0b;">🟠 ВАЖНЫЕ</h3>
+    <p style="font-size:.8em;color:var(--t2);margin-bottom:14px;">Регулярные практики для прогресса и развития.</p>
+
+    <div style="display:grid;gap:10px;">
+      <div class="priority-item" style="background:rgba(245,158,11,.08);padding:12px;border-radius:8px;border-left:3px solid #f59e0b;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#f59e0b;">6.</span>
+          <span style="font-size:.88em;font-weight:700;">Медитация (15-20 мин/день)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Тренировка внимания и эмоционального контроля.
+          <div style="margin-top:4px;"><strong>Где:</strong> Ум → Ментальная тренировка → Медитация</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(245,158,11,.08);padding:12px;border-radius:8px;border-left:3px solid #f59e0b;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#f59e0b;">7.</span>
+          <span style="font-size:.88em;font-weight:700;">Дневник (ежедневно)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Рефлексия, анализ эмоций, отслеживание прогресса.
+          <div style="margin-top:4px;"><strong>Где:</strong> Ум → Ментальная тренировка → Дневник</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(245,158,11,.08);padding:12px;border-radius:8px;border-left:3px solid #f59e0b;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#f59e0b;">8.</span>
+          <span style="font-size:.88em;font-weight:700;">Чтение (30-60 мин/день)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Научная литература, психология, стратегия.
+          <div style="margin-top:4px;"><strong>Где:</strong> Ум → Литература</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(245,158,11,.08);padding:12px;border-radius:8px;border-left:3px solid #f59e0b;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#f59e0b;">9.</span>
+          <span style="font-size:.88em;font-weight:700;">Бег (2-3 раза в неделю)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Кардио для выносливости и ментальной устойчивости.
+          <div style="margin-top:4px;"><strong>Где:</strong> Тело → Бег</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(245,158,11,.08);padding:12px;border-radius:8px;border-left:3px solid #f59e0b;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#f59e0b;">10.</span>
+          <span style="font-size:.88em;font-weight:700;">Запись тренировок</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Отслеживание прогрессии и личных рекордов.
+          <div style="margin-top:4px;"><strong>Где:</strong> Трекеры → Прогресс → Записать тренировку</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(245,158,11,.08);padding:12px;border-radius:8px;border-left:3px solid #f59e0b;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#f59e0b;">11.</span>
+          <span style="font-size:.88em;font-weight:700;">QCT (Квадрант контроля мыслей)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Отслеживание и контроль негативных мыслей.
+          <div style="margin-top:4px;"><strong>Где:</strong> Ум → Ментальная тренировка → QCT</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- СРЕДНИЕ -->
+  <div class="card" style="border-left:4px solid #10b981;margin-bottom:16px;">
+    <h3 style="font-size:1em;margin-bottom:12px;color:#10b981;">🟢 СРЕДНИЕ</h3>
+    <p style="font-size:.8em;color:var(--t2);margin-bottom:14px;">Развитие навыков и долгосрочное планирование.</p>
+
+    <div style="display:grid;gap:10px;">
+      <div class="priority-item" style="background:rgba(16,185,129,.08);padding:12px;border-radius:8px;border-left:3px solid #10b981;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#10b981;">12.</span>
+          <span style="font-size:.88em;font-weight:700;">Шахматы (3-4 раза в неделю)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Стратегическое мышление и планирование.
+          <div style="margin-top:4px;"><strong>Где:</strong> Ум → Ментальная тренировка → Шахматы</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(16,185,129,.08);padding:12px;border-radius:8px;border-left:3px solid #10b981;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#10b981;">13.</span>
+          <span style="font-size:.88em;font-weight:700;">Навыки (Мышление, Память, Внимание)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Целенаправленная тренировка когнитивных функций.
+          <div style="margin-top:4px;"><strong>Где:</strong> Ум → Навыки</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(16,185,129,.08);padding:12px;border-radius:8px;border-left:3px solid #10b981;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#10b981;">14.</span>
+          <span style="font-size:.88em;font-weight:700;">Когнитивные искажения</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Изучение и устранение ошибок мышления.
+          <div style="margin-top:4px;"><strong>Где:</strong> Ум → Ментальная тренировка → Искажения</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(16,185,129,.08);padding:12px;border-radius:8px;border-left:3px solid #10b981;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#10b981;">15.</span>
+          <span style="font-size:.88em;font-weight:700;">База знаний (План на 12-15 лет)</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Долгосрочное планирование и фазы развития.
+          <div style="margin-top:4px;"><strong>Где:</strong> Ум → База знаний → План на 12-15 лет</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(16,185,129,.08);padding:12px;border-radius:8px;border-left:3px solid #10b981;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#10b981;">16.</span>
+          <span style="font-size:.88em;font-weight:700;">Этапы развития</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Отслеживание прогресса по этапам 0-3.
+          <div style="margin-top:4px;"><strong>Где:</strong> Контроль → Этапы развития</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(16,185,129,.08);padding:12px;border-radius:8px;border-left:3px solid #10b981;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#10b981;">17.</span>
+          <span style="font-size:.88em;font-weight:700;">Долгосрочные проекты</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Проекты на 1-8 лет с этапами и сроками.
+          <div style="margin-top:4px;"><strong>Где:</strong> Контроль → Долгосрочные проекты</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(16,185,129,.08);padding:12px;border-radius:8px;border-left:3px solid #10b981;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#10b981;">18.</span>
+          <span style="font-size:.88em;font-weight:700;">HRV Трекер</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Отслеживание вариабельности сердечного ритма.
+          <div style="margin-top:4px;"><strong>Где:</strong> Трекеры → Прогресс → HRV Трекер</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ВТОРОСТЕПЕННЫЕ -->
+  <div class="card" style="border-left:4px solid #6b7280;">
+    <h3 style="font-size:1em;margin-bottom:12px;color:#6b7280;">⚪ ВТОРОСТЕПЕННЫЕ</h3>
+    <p style="font-size:.8em;color:var(--t2);margin-bottom:14px;">Вспомогательные инструменты и аналитика.</p>
+
+    <div style="display:grid;gap:10px;">
+      <div class="priority-item" style="background:rgba(107,114,128,.08);padding:12px;border-radius:8px;border-left:3px solid #6b7280;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#6b7280;">19.</span>
+          <span style="font-size:.88em;font-weight:700;">Графики и аналитика</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Визуализация прогресса и статистика.
+          <div style="margin-top:4px;"><strong>Где:</strong> Трекеры → Графики / Аналитика</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(107,114,128,.08);padding:12px;border-radius:8px;border-left:3px solid #6b7280;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#6b7280;">20.</span>
+          <span style="font-size:.88em;font-weight:700;">История тренировок/бега</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Просмотр прошлых тренировок.
+          <div style="margin-top:4px;"><strong>Где:</strong> Трекеры → Прогресс → История</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(107,114,128,.08);padding:12px;border-radius:8px;border-left:3px solid #6b7280;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#6b7280;">21.</span>
+          <span style="font-size:.88em;font-weight:700;">Личные рекорды</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Отслеживание PRs по упражнениям.
+          <div style="margin-top:4px;"><strong>Где:</strong> Трекеры → Прогресс → Личные рекорды</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(107,114,128,.08);padding:12px;border-radius:8px;border-left:3px solid #6b7280;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#6b7280;">22.</span>
+          <span style="font-size:.88em;font-weight:700;">План питания на 15 дней</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Готовый план с рецептами.
+          <div style="margin-top:4px;"><strong>Где:</strong> Тело → План питания</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(107,114,128,.08);padding:12px;border-radius:8px;border-left:3px solid #6b7280;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#6b7280;">23.</span>
+          <span style="font-size:.88em;font-weight:700;">Закупки</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Список продуктов для закупки.
+          <div style="margin-top:4px;"><strong>Где:</strong> Тело → Закупки</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(107,114,128,.08);padding:12px;border-radius:8px;border-left:3px solid #6b7280;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#6b7280;">24.</span>
+          <span style="font-size:.88em;font-weight:700;">БАДы и добавки</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Схемы приёма добавок.
+          <div style="margin-top:4px;"><strong>Где:</strong> Тело → БАДы</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(107,114,128,.08);padding:12px;border-radius:8px;border-left:3px solid #6b7280;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#6b7280;">25.</span>
+          <span style="font-size:.88em;font-weight:700;">База заданий</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Карточки упражнений и задач.
+          <div style="margin-top:4px;"><strong>Где:</strong> Ум → База заданий</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(107,114,128,.08);padding:12px;border-radius:8px;border-left:3px solid #6b7280;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#6b7280;">26.</span>
+          <span style="font-size:.88em;font-weight:700;">ACFT тест</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Army Combat Fitness Test.
+          <div style="margin-top:4px;"><strong>Где:</strong> Трекеры → Прогресс → ACFT</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(107,114,128,.08);padding:12px;border-radius:8px;border-left:3px solid #6b7280;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#6b7280;">27.</span>
+          <span style="font-size:.88em;font-weight:700;">Ментал трекер</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Статистика ментальных практик.
+          <div style="margin-top:4px;"><strong>Где:</strong> Ум → Ментальная тренировка → Трекер</div>
+        </div>
+      </div>
+
+      <div class="priority-item" style="background:rgba(107,114,128,.08);padding:12px;border-radius:8px;border-left:3px solid #6b7280;">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span style="font-size:1.2em;font-weight:700;color:#6b7280;">28.</span>
+          <span style="font-size:.88em;font-weight:700;">Редактор расписания</span>
+        </div>
+        <div style="font-size:.78em;color:var(--t2);padding-left:28px;">
+          Настройка индивидуального графика.
+          <div style="margin-top:4px;"><strong>Где:</strong> Контроль → График → Редактор</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Итоговая сводка -->
+  <div class="card" style="background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.2);">
+    <h3 style="font-size:.95em;margin-bottom:12px;color:var(--a1);">💡 Как использовать приоритеты</h3>
+    <ul style="padding-left:20px;line-height:1.8;font-size:.82em;color:var(--t2);">
+      <li><strong>Начни с красных (1-5)</strong> — без них система не работает</li>
+      <li><strong>Добавляй оранжевые (6-11)</strong> — когда красные стали привычкой</li>
+      <li><strong>Зелёные (12-18)</strong> — для долгосрочного роста</li>
+      <li><strong>Серые (19-28)</strong> — используй по необходимости</li>
+      <li><strong>Не пытайся делать всё сразу</strong> — фокус на топ-5, остальное добавляй постепенно</li>
+    </ul>
+  </div>
 </div>
 
 <!-- ══════════════ ГЛАВНАЯ ══════════════ -->
@@ -801,8 +1164,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
   </div>
   <div id="sc-daily" class="itp">
     <div class="itabs" style="margin-bottom:14px;">
-      <button class="it active" onclick="sit('dsc','train')">💼 Рабочий День</button>
-      <button class="it" onclick="sit('dsc','rest')">🧘 Выходной День</button>
+      <button class="it active" onclick="sit('dsc','train')"><span class="it-icon">💼</span>Рабочий День</button>
+      <button class="it" onclick="sit('dsc','rest')"><span class="it-icon">🧘</span>Выходной День</button>
     </div>
     <div id="dsc-train" class="itp active"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;color:var(--a2);">💼 Рабочий день (смена 11:00-23:00)</h3><div class="hsched" id="dly-train"></div></div></div>
     <div id="dsc-rest" class="itp"><div class="card"><h3 style="margin-bottom:12px;font-size:.93em;color:var(--a1);">🧘 Выходной день (восстановление + развитие)</h3><div class="hsched" id="dly-rest"></div></div></div>
@@ -1039,10 +1402,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <p style="font-size:.8em;color:var(--t2);">💚 <strong>Бюджетные блюда</strong> отмечены тегом <span class="fbudget">💰 Бюджет</span> — средняя стоимость порции 60–120 руб. (цены Уфа, 2025)</p>
   </div>
   <div class="itabs">
-    <button class="it active" onclick="sit('fd','b')">🌅 Завтраки (20)</button>
-    <button class="it" onclick="sit('fd','l')">☀️ Обеды (20)</button>
-    <button class="it" onclick="sit('fd','d')">🌙 Ужины (20)</button>
-    <button class="it" onclick="sit('fd','s')">🍎 Перекусы (20)</button>
+    <div class="it-group">
+      <button class="it active" onclick="sit('fd','b')"><span class="it-icon">🌅</span>Завтраки<span class="it-badge">20</span></button>
+      <button class="it" onclick="sit('fd','l')"><span class="it-icon">☀️</span>Обеды<span class="it-badge">20</span></button>
+    </div>
+    <div class="it-group">
+      <button class="it" onclick="sit('fd','d')"><span class="it-icon">🌙</span>Ужины<span class="it-badge">20</span></button>
+      <button class="it" onclick="sit('fd','s')"><span class="it-icon">🍎</span>Перекусы<span class="it-badge">20</span></button>
+    </div>
   </div>
   <div id="fd-b" class="itp active"><div class="g3" id="fc-b"></div></div>
   <div id="fd-l" class="itp"><div class="g3" id="fc-l"></div></div>
@@ -1144,9 +1511,13 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="sec-s">Научная и прикладная база · долгосрочный план · метрики оценки</div>
   </div>
   <div class="itabs">
-    <button class="it active" onclick="sit('kb','science')">📘 Научная и прикладная база</button>
-    <button class="it" onclick="sit('kb','plan')">🗺️ План адаптированная программа на 12–15 лет</button>
-    <button class="it" onclick="sit('kb','metrics')">📏 Метрики оценки прогресса</button>
+    <div class="it-group">
+      <button class="it active" onclick="sit('kb','science')"><span class="it-icon">📘</span>Научная база</button>
+      <button class="it" onclick="sit('kb','plan')"><span class="it-icon">🗺️</span>План на 12-15 лет</button>
+    </div>
+    <div class="it-group">
+      <button class="it" onclick="sit('kb','metrics')"><span class="it-icon">📏</span>Метрики прогресса</button>
+    </div>
   </div>
   <div class="card focus-keep" style="margin-bottom:14px;padding:10px 14px;">
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -1244,10 +1615,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 
   <div id="kb-plan" class="itp">
     <div class="itabs" style="margin-bottom:14px;">
-      <button class="it active" onclick="sit('kbp','p0')">Фаза 0</button>
-      <button class="it" onclick="sit('kbp','p1')">Фаза 1</button>
-      <button class="it" onclick="sit('kbp','p2')">Фаза 2</button>
-      <button class="it" onclick="sit('kbp','p3')">Фаза 3</button>
+      <button class="it active" onclick="sit('kbp','p0')"><span class="it-icon">0️⃣</span>Фаза 0</button>
+      <button class="it" onclick="sit('kbp','p1')"><span class="it-icon">1️⃣</span>Фаза 1</button>
+      <button class="it" onclick="sit('kbp','p2')"><span class="it-icon">2️⃣</span>Фаза 2</button>
+      <button class="it" onclick="sit('kbp','p3')"><span class="it-icon">3️⃣</span>Фаза 3</button>
     </div>
 
     <div id="kbp-p0" class="itp active">
@@ -1654,13 +2025,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="sec-s">Записывай подходы · повторения · время бега — синхронизируется через Firebase</div>
   </div>
   <div class="itabs">
-    <button class="it active" onclick="sit('pg','log')">📝 Записать тренировку</button>
-    <button class="it" onclick="sit('pg','rlog')">🏃 Записать бег</button>
-    <button class="it" onclick="sit('pg','whist')">📊 История тренировок</button>
-    <button class="it" onclick="sit('pg','rhist')">📊 История бега</button>
-    <button class="it" onclick="sit('pg','prs');renderPRs()">🏆 Личные рекорды</button>
-	<button class="it" onclick="sit('pg','hrv');loadHRVData()">🫀 HRV Трекер</button>
-	<button class="it" onclick="sit('pg','acft')">🎖️ ACFT</button>
+    <div class="it-group">
+      <button class="it active" onclick="sit('pg','log')"><span class="it-icon">📝</span>Записать тренировку</button>
+      <button class="it" onclick="sit('pg','rlog')"><span class="it-icon">🏃</span>Записать бег</button>
+    </div>
+    <div class="it-group">
+      <button class="it" onclick="sit('pg','whist')"><span class="it-icon">📊</span>История тренировок</button>
+      <button class="it" onclick="sit('pg','rhist')"><span class="it-icon">📊</span>История бега</button>
+    </div>
+    <div class="it-group">
+      <button class="it" onclick="sit('pg','prs');renderPRs()"><span class="it-icon">🏆</span>Личные рекорды</button>
+      <button class="it" onclick="sit('pg','hrv');loadHRVData()"><span class="it-icon">🫀</span>HRV Трекер</button>
+      <button class="it" onclick="sit('pg','acft')"><span class="it-icon">🎖️</span>ACFT</button>
+    </div>
   </div>
 
   <div id="pg-log" class="itp active">
@@ -4644,46 +5021,97 @@ if('serviceWorker' in navigator){
 // ═══════════════════════════════════════════════
 
 const COMMAND_ITEMS = [
-  // Главные разделы
+  // ═══ ГЛАВНЫЕ РАЗДЕЛЫ ═══
   {icon:'🏠',title:'Главная',desc:'Dashboard с общей статистикой',action:()=>goSec('dash'),keywords:'главная дашборд dashboard home'},
+  {icon:'🎯',title:'Приоритеты',desc:'Иерархия задач по важности',action:()=>goSec('priorities'),keywords:'приоритеты priorities важность задачи'},
   {icon:'🧠',title:'Ум',desc:'Интеллектуальное развитие',action:()=>goSec('mind'),keywords:'ум интеллект мозг mind'},
   {icon:'💪',title:'Тело',desc:'Физические тренировки',action:()=>goSec('body'),keywords:'тело физика тренировки body'},
   {icon:'🎯',title:'Контроль',desc:'Самоконтроль и дисциплина',action:()=>goSec('control'),keywords:'контроль дисциплина control'},
   {icon:'📈',title:'Трекеры',desc:'Отслеживание прогресса',action:()=>goSec('trackers'),keywords:'трекеры графики статистика trackers'},
 
-  // Ум - подразделы
-  {icon:'📚',title:'Библиотека',desc:'Книги и материалы',action:()=>{goSec('mind');sit('mn','books');},keywords:'книги библиотека чтение books library'},
-  {icon:'♟️',title:'Шахматы',desc:'Тренировка стратегического мышления',action:()=>{goSec('mind');sit('mn','chess');},keywords:'шахматы chess стратегия'},
-  {icon:'🧩',title:'Dual N-Back',desc:'Тренировка рабочей памяти',action:()=>{goSec('mind');sit('mn','nback');},keywords:'память nback dual тренировка'},
-  {icon:'🎓',title:'GRE',desc:'Подготовка к экзамену',action:()=>{goSec('mind');sit('mn','gre');},keywords:'gre экзамен подготовка'},
+  // ═══ УМ - ПОДРАЗДЕЛЫ ═══
+  {icon:'🗂️',title:'База заданий',desc:'Стартовые карточки и задачи',action:()=>goSec('taskbank'),keywords:'задания карточки tasks bank'},
+  {icon:'📚',title:'Литература',desc:'Список книг',action:()=>goSec('books'),keywords:'книги библиотека чтение books library'},
+  {icon:'🧠',title:'База знаний',desc:'Материалы и план развития',action:()=>goSec('knowledge'),keywords:'знания материалы knowledge база'},
+  {icon:'🧩',title:'Навыки',desc:'6 направлений развития',action:()=>goSec('skills'),keywords:'навыки skills мышление память'},
+  {icon:'🧘',title:'Ментальная тренировка',desc:'HRV, медитация, шахматы',action:()=>goSec('mental'),keywords:'ментал медитация hrv дыхание mental'},
 
-  // Тело - подразделы
-  {icon:'🟣',title:'Push тренировка',desc:'Отжимания и брусья',action:()=>{goSec('body');goSec('workout');sit('wo','push');},keywords:'push отжимания брусья грудь'},
-  {icon:'🔵',title:'Pull тренировка',desc:'Подтягивания',action:()=>{goSec('body');goSec('workout');sit('wo','pull');},keywords:'pull подтягивания турник спина'},
-  {icon:'🟢',title:'Legs тренировка',desc:'Ноги и кор',action:()=>{goSec('body');goSec('workout');sit('wo','legs');},keywords:'legs ноги кор приседания'},
-  {icon:'🟡',title:'HIFT тренировка',desc:'Полное тело',action:()=>{goSec('body');goSec('workout');sit('wo','hift');},keywords:'hift full тело комплекс'},
-  {icon:'🏃',title:'Бег',desc:'Кардио тренировки',action:()=>{goSec('body');goSec('running');},keywords:'бег кардио running sprint'},
-  {icon:'🗓️',title:'График тренировок',desc:'Месячный план',action:()=>{goSec('body');goSec('sched');},keywords:'график план расписание calendar'},
+  // База знаний - вкладки
+  {icon:'📘',title:'Научная база',desc:'Научная и прикладная база',action:()=>{goSec('knowledge');sit('kb','science');},keywords:'наука научная база science'},
+  {icon:'🗺️',title:'План на 12-15 лет',desc:'Адаптированная программа',action:()=>{goSec('knowledge');sit('kb','plan');},keywords:'план программа plan долгосрочный'},
+  {icon:'📏',title:'Метрики прогресса',desc:'Оценка прогресса',action:()=>{goSec('knowledge');sit('kb','metrics');},keywords:'метрики оценка metrics прогресс'},
 
-  // Контроль - подразделы
-  {icon:'🧘',title:'Навыки',desc:'Развитие soft skills',action:()=>{goSec('control');goSec('skills');},keywords:'навыки skills мышление эмоции'},
-  {icon:'📊',title:'Аналитика',desc:'Статистика периодов',action:()=>{goSec('control');goSec('analytics');},keywords:'аналитика статистика analytics'},
-  {icon:'🗂️',title:'Проекты',desc:'Долгосрочные цели',action:()=>{goSec('control');goSec('projects');},keywords:'проекты цели projects goals'},
-  {icon:'🛤️',title:'Этапы развития',desc:'Путь на 3 периода',action:()=>{goSec('control');goSec('stages');},keywords:'этапы развитие stages phases'},
+  // Ментал - вкладки
+  {icon:'🫀',title:'HRV и Дыхание',desc:'Резонансное дыхание',action:()=>{goSec('mental');sit('mn','hrv');},keywords:'hrv дыхание резонанс breathing'},
+  {icon:'🧘',title:'Медитация',desc:'Практики медитации',action:()=>{goSec('mental');sit('mn','med');},keywords:'медитация meditation практика'},
+  {icon:'♟️',title:'Шахматы',desc:'Тренировка стратегии',action:()=>{goSec('mental');sit('mn','chess');},keywords:'шахматы chess стратегия'},
+  {icon:'📓',title:'Дневник',desc:'Рефлексия и записи',action:()=>{goSec('mental');sit('mn','jour');},keywords:'дневник journal записи рефлексия'},
+  {icon:'💚',title:'QCT',desc:'Квадрант контроля мыслей',action:()=>{goSec('mental');sit('mn','qct');},keywords:'qct мысли контроль quadrant'},
+  {icon:'🧠',title:'Когнитивные искажения',desc:'Работа с искажениями',action:()=>{goSec('mental');sit('mn','biases');},keywords:'искажения biases когнитивные'},
+  {icon:'📊',title:'Ментал трекер',desc:'Отслеживание практик',action:()=>{goSec('mental');sit('mn','tracker');},keywords:'трекер tracker ментал статистика'},
 
-  // Трекеры - подразделы
-  {icon:'💤',title:'Сон и восстановление',desc:'Трекер сна',action:()=>{goSec('trackers');sit('tr','sleep');},keywords:'сон восстановление sleep recovery'},
-  {icon:'🏆',title:'Достижения',desc:'Badges и рекорды',action:()=>{goSec('trackers');sit('tr','achievements');},keywords:'достижения рекорды badges achievements'},
-  {icon:'🗺️',title:'Тепловая карта',desc:'Активность по дням',action:()=>{goSec('trackers');sit('tr','heatmap');},keywords:'карта активность heatmap calendar'},
-  {icon:'📥',title:'Экспорт данных',desc:'Бэкап и импорт',action:()=>{goSec('trackers');sit('tr','export');},keywords:'экспорт импорт backup данные'},
+  // Навыки - вкладки
+  {icon:'🧠',title:'Мышление',desc:'Развитие мышления',action:()=>{goSec('skills');sit('sk','thinking');},keywords:'мышление thinking логика'},
+  {icon:'🧩',title:'Память',desc:'Тренировка памяти',action:()=>{goSec('skills');sit('sk','memory');},keywords:'память memory запоминание'},
+  {icon:'👁️',title:'Внимание',desc:'Концентрация внимания',action:()=>{goSec('skills');sit('sk','attention');},keywords:'внимание attention концентрация'},
+  {icon:'💚',title:'Эмоции',desc:'Эмоциональный контроль',action:()=>{goSec('skills');sit('sk','emotions');},keywords:'эмоции emotions контроль чувства'},
+  {icon:'🗣️',title:'Коммуникация',desc:'Навыки общения',action:()=>{goSec('skills');sit('sk','communication');},keywords:'коммуникация communication общение'},
+  {icon:'💪',title:'Физика',desc:'Физические навыки',action:()=>{goSec('skills');sit('sk','physical');},keywords:'физика physical тело'},
 
-  // Быстрые действия
-  {icon:'▶️',title:'Начать Push тренировку',desc:'Запустить режим тренировки',action:()=>startWorkoutMode('push'),keywords:'начать тренировка push старт'},
-  {icon:'▶️',title:'Начать Pull тренировку',desc:'Запустить режим тренировки',action:()=>startWorkoutMode('pull'),keywords:'начать тренировка pull старт'},
-  {icon:'▶️',title:'Начать Legs тренировку',desc:'Запустить режим тренировки',action:()=>startWorkoutMode('legs'),keywords:'начать тренировка legs старт'},
-  {icon:'▶️',title:'Начать HIFT тренировку',desc:'Запустить режим тренировки',action:()=>startWorkoutMode('hift'),keywords:'начать тренировка hift старт'},
+  // ═══ ТЕЛО - ПОДРАЗДЕЛЫ ═══
+  {icon:'💪',title:'Тренировки',desc:'Силовые блоки',action:()=>goSec('workout'),keywords:'тренировки workout силовые'},
+  {icon:'🏃',title:'Бег',desc:'Кардио тренировки',action:()=>goSec('run'),keywords:'бег кардио running sprint'},
+  {icon:'🍽️',title:'Питание',desc:'Рацион с макросами',action:()=>goSec('food'),keywords:'питание еда food макросы'},
+  {icon:'🥗',title:'План питания',desc:'План на неделю',action:()=>goSec('mealplan'),keywords:'план питания meal plan неделя'},
+  {icon:'🛒',title:'Закупки',desc:'Список продуктов',action:()=>goSec('shopping'),keywords:'закупки продукты shopping список'},
+  {icon:'💊',title:'БАДы',desc:'Схемы и дозировки',action:()=>goSec('supps'),keywords:'бады добавки supplements витамины'},
+
+  // Тренировки - вкладки
+  {icon:'🟣',title:'Push тренировка',desc:'Отжимания и брусья',action:()=>{goSec('workout');sit('wo','push');},keywords:'push отжимания брусья грудь'},
+  {icon:'🔵',title:'Pull тренировка',desc:'Подтягивания',action:()=>{goSec('workout');sit('wo','pull');},keywords:'pull подтягивания турник спина'},
+  {icon:'🟢',title:'Legs тренировка',desc:'Ноги и кор',action:()=>{goSec('workout');sit('wo','legs');},keywords:'legs ноги кор приседания'},
+  {icon:'🟡',title:'HIFT тренировка',desc:'Полное тело',action:()=>{goSec('workout');sit('wo','hift');},keywords:'hift full тело комплекс'},
+  {icon:'📈',title:'Прогрессия тренировок',desc:'Система прогрессии',action:()=>{goSec('workout');sit('wo','prog');},keywords:'прогрессия progression рост'},
+  {icon:'🔄',title:'Альтернативы упражнений',desc:'Замены упражнений',action:()=>{goSec('workout');sit('wo','alts');},keywords:'альтернативы замены alternatives'},
+
+  // Питание - вкладки
+  {icon:'🌅',title:'Завтраки',desc:'20 вариантов завтраков',action:()=>{goSec('food');sit('fd','b');},keywords:'завтрак breakfast утро'},
+  {icon:'☀️',title:'Обеды',desc:'20 вариантов обедов',action:()=>{goSec('food');sit('fd','l');},keywords:'обед lunch день'},
+  {icon:'🌙',title:'Ужины',desc:'20 вариантов ужинов',action:()=>{goSec('food');sit('fd','d');},keywords:'ужин dinner вечер'},
+  {icon:'🍎',title:'Перекусы',desc:'20 вариантов перекусов',action:()=>{goSec('food');sit('fd','s');},keywords:'перекус snack снек'},
+
+  // ═══ КОНТРОЛЬ - ПОДРАЗДЕЛЫ ═══
+  {icon:'🗓️',title:'График',desc:'Месячный план и расписание',action:()=>goSec('sched'),keywords:'график план расписание schedule calendar'},
+  {icon:'📊',title:'Аналитика периодов',desc:'Статистика за периоды',action:()=>goSec('analytics'),keywords:'аналитика статистика analytics периоды'},
+  {icon:'🗂️',title:'Долгосрочные проекты',desc:'Проекты 1-8 лет',action:()=>goSec('projects'),keywords:'проекты цели projects goals долгосрочные'},
+  {icon:'🛤️',title:'Этапы развития',desc:'Путь на 3 периода',action:()=>goSec('stages'),keywords:'этапы развитие stages phases периоды'},
+
+  // График - вкладки
+  {icon:'📅',title:'Месячный календарь',desc:'План на месяц',action:()=>{goSec('sched');sit('sc','monthly');},keywords:'календарь месяц monthly calendar'},
+  {icon:'🕐',title:'Дневное расписание',desc:'Почасовой план',action:()=>{goSec('sched');sit('sc','daily');},keywords:'расписание день daily schedule'},
+  {icon:'✏️',title:'Редактор расписания',desc:'Настройка расписания',action:()=>{goSec('sched');sit('sc','editor');},keywords:'редактор editor настройка'},
+
+  // ═══ ТРЕКЕРЫ - ПОДРАЗДЕЛЫ ═══
+  {icon:'📈',title:'Прогресс',desc:'Календарь выполнения',action:()=>goSec('progress'),keywords:'прогресс progress календарь выполнение'},
+  {icon:'📊',title:'Графики',desc:'Визуализация данных',action:()=>goSec('charts'),keywords:'графики charts визуализация данные'},
+  {icon:'🧮',title:'Макросы',desc:'Подсчёт КБЖУ',action:()=>goSec('macros'),keywords:'макросы macros кбжу калории белки'},
+
+  // Прогресс - вкладки
+  {icon:'📝',title:'Записать тренировку',desc:'Логирование тренировки',action:()=>{goSec('progress');sit('pg','log');},keywords:'записать тренировка log workout'},
+  {icon:'🏃',title:'Записать бег',desc:'Логирование пробежки',action:()=>{goSec('progress');sit('pg','rlog');},keywords:'записать бег run log'},
+  {icon:'📊',title:'История тренировок',desc:'Все тренировки',action:()=>{goSec('progress');sit('pg','whist');},keywords:'история тренировки history workout'},
+  {icon:'📊',title:'История бега',desc:'Все пробежки',action:()=>{goSec('progress');sit('pg','rhist');},keywords:'история бег run history'},
+  {icon:'🏆',title:'Личные рекорды',desc:'PRs по упражнениям',action:()=>{goSec('progress');sit('pg','prs');},keywords:'рекорды pr personal records'},
+  {icon:'🫀',title:'HRV Трекер',desc:'Отслеживание HRV',action:()=>{goSec('progress');sit('pg','hrv');},keywords:'hrv трекер tracker вариабельность'},
+  {icon:'🎖️',title:'ACFT',desc:'Army Combat Fitness Test',action:()=>{goSec('progress');sit('pg','acft');},keywords:'acft army test фитнес тест'},
+
+  // ═══ БЫСТРЫЕ ДЕЙСТВИЯ ═══
+  {icon:'▶️',title:'Начать Push',desc:'Запустить Push тренировку',action:()=>startWorkoutMode('push'),keywords:'начать тренировка push старт'},
+  {icon:'▶️',title:'Начать Pull',desc:'Запустить Pull тренировку',action:()=>startWorkoutMode('pull'),keywords:'начать тренировка pull старт'},
+  {icon:'▶️',title:'Начать Legs',desc:'Запустить Legs тренировку',action:()=>startWorkoutMode('legs'),keywords:'начать тренировка legs старт'},
+  {icon:'▶️',title:'Начать HIFT',desc:'Запустить HIFT тренировку',action:()=>startWorkoutMode('hift'),keywords:'начать тренировка hift старт'},
   {icon:'🌙',title:'Переключить тему',desc:'Светлая/тёмная тема',action:()=>toggleTheme(),keywords:'тема theme dark light светлая темная'},
-  {icon:'💾',title:'Экспорт всех данных',desc:'Скачать полный бэкап',action:()=>exportAllDataToJSON(),keywords:'экспорт backup бэкап сохранить'},
+  {icon:'💾',title:'Экспорт данных',desc:'Скачать полный бэкап',action:()=>exportAllDataToJSON(),keywords:'экспорт backup бэкап сохранить'},
 ];
 
 let cmdSelectedIndex = 0;
@@ -4773,9 +5201,11 @@ function renderCommandResults() {
     return;
   }
 
-  container.innerHTML = cmdFilteredItems.map((item, idx) => `
+  container.innerHTML = cmdFilteredItems.map((item, idx) => {
+    const globalIdx = COMMAND_ITEMS.indexOf(item);
+    return `
     <div class="cmd-item ${idx === cmdSelectedIndex ? 'selected' : ''}"
-         onclick="executeCommand(COMMAND_ITEMS[${COMMAND_ITEMS.indexOf(item)}])"
+         onclick="executeCommandByIndex(${globalIdx})"
          onmouseenter="cmdSelectedIndex=${idx};renderCommandResults();">
       <div class="cmd-item-icon">${item.icon}</div>
       <div class="cmd-item-content">
@@ -4783,7 +5213,16 @@ function renderCommandResults() {
         <div class="cmd-item-desc">${item.desc}</div>
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
+}
+
+function executeCommandByIndex(idx) {
+  const item = COMMAND_ITEMS[idx];
+  if (item && item.action) {
+    item.action();
+    closeCommandPalette();
+  }
 }
 
 function executeCommand(item) {
