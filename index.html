@@ -3,15 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>⚡ Ayanokoji System v2</title>
+<title>⚡ Ayanokoji System v3</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<!-- Core modules -->
 <script src="./js/core/macros.js"></script>
 <script src="./js/core/validation.js"></script>
 <script src="./js/core/state.js"></script>
 <script src="./js/core/task-engine.js"></script>
+<script src="./js/core/achievements.js"></script>
+<script src="./js/core/recovery.js"></script>
+<script src="./js/core/progressive-overload.js"></script>
+<!-- UI modules -->
+<script src="./js/pr-tracker.js"></script>
+<script src="./js/achievements-ui.js"></script>
+<script src="./js/export.js"></script>
+<script src="./js/notifications.js"></script>
+<script src="./js/heatmap.js"></script>
+<script src="./js/theme.js"></script>
+<script src="./js/dashboard.js"></script>
+<script src="./js/dashboard-enhanced.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
 :root{
@@ -456,9 +469,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 
 <nav class="nav">
   <div class="nav-inner">
-    <div class="logo" style="cursor:pointer;" onclick="goSec('dash')">⚡ AYANOKOJI v2</div>
+    <div class="logo" style="cursor:pointer;" onclick="goSec('dash')">⚡ AYANOKOJI v3</div>
     <input class="search-input" id="global-search" placeholder="Поиск по сайту..." oninput="runGlobalSearch(this.value)">
     <button class="btn btn-gh btn-sm" onclick="toggleFocusMode()">🎯 Фокус</button>
+    <button id="theme-toggle" class="btn btn-gh btn-sm" onclick="toggleTheme()" title="Переключить тему" style="font-size:1.2em;padding:6px 10px;">🌙</button>
     <div id="navlinks" style="display:flex;gap:4px;flex-wrap:wrap;">
       <button class="nb nb-main" data-s="mind">Ум</button>
       <button class="nb nb-main" data-s="body">Тело</button>
@@ -475,7 +489,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <!-- Mobile nav overlay -->
 <div class="mob-nav-overlay" id="mob-nav-overlay" onclick="toggleMobNav()"></div>
 <div class="mob-nav" id="mob-nav">
-  <div class="mob-nav-title">⚡ AYANOKOJI v2</div>
+  <div class="mob-nav-title">⚡ AYANOKOJI v3</div>
   <button class="nb nb-main" data-s="mind" onclick="toggleMobNav()">Ум</button>
   <button class="nb nb-main" data-s="body" onclick="toggleMobNav()">Тело</button>
   <button class="nb nb-main" data-s="control" onclick="toggleMobNav()">Контроль</button>
@@ -538,6 +552,23 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- ══════════════ ACHIEVEMENTS & STREAKS (v3.0) ══════════════ -->
+  <div class="card" style="max-width:960px;margin:14px auto 0;">
+    <h3 style="font-size:.95em;margin-bottom:14px;">🏆 Достижения и серии</h3>
+
+    <!-- Streak Counter -->
+    <div id="streak-counter-container" style="margin-bottom:18px;"></div>
+
+    <!-- Achievements Grid -->
+    <div id="achievements-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-bottom:18px;"></div>
+
+    <!-- Progressive Overload Recommendations -->
+    <div id="progressive-overload-container" style="margin-top:18px;"></div>
+
+    <!-- Plateau Warnings -->
+    <div id="plateau-warnings-container" style="margin-top:14px;"></div>
   </div>
 </div>
 
@@ -625,6 +656,22 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--brd);display:flex;justify-content:center;gap:8px;align-items:center;flex-wrap:wrap;">
         <span style="font-size:.83em;color:var(--t2);">📅 Дата старта:</span>
         <input type="date" id="start-date" onchange="chStart()" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:5px 10px;border-radius:7px;font-size:.85em;">
+      </div>
+
+      <!-- v3.0: Export/Import Data -->
+      <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--brd);">
+        <h4 style="font-size:.88em;margin-bottom:10px;color:var(--a1);">💾 Экспорт и импорт данных</h4>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+          <button class="btn btn-g btn-sm" onclick="exportWorkoutsToCSV()">📊 Экспорт тренировок (CSV)</button>
+          <button class="btn btn-g btn-sm" onclick="exportRunsToCSV()">🏃 Экспорт пробежек (CSV)</button>
+          <button class="btn btn-g btn-sm" onclick="exportSleepToCSV()">😴 Экспорт сна (CSV)</button>
+          <button class="btn btn-p btn-sm" onclick="exportAllDataToJSON()">💾 Полный бэкап (JSON)</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="importDataFromJSON(event)">
+          <button class="btn btn-o btn-sm" onclick="document.getElementById('import-file-input').click()">📥 Импорт из JSON</button>
+          <span style="font-size:.75em;color:var(--t3);">Автобэкап: раз в неделю</span>
+        </div>
       </div>
     </div>
   </div>
@@ -1564,6 +1611,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <button class="it" onclick="sit('pg','rlog')">🏃 Записать бег</button>
     <button class="it" onclick="sit('pg','whist')">📊 История тренировок</button>
     <button class="it" onclick="sit('pg','rhist')">📊 История бега</button>
+    <button class="it" onclick="sit('pg','prs');renderPRs()">🏆 Личные рекорды</button>
 	<button class="it" onclick="sit('pg','hrv');loadHRVData()">🫀 HRV Трекер</button>
 	<button class="it" onclick="sit('pg','acft')">🎖️ ACFT</button>
   </div>
@@ -1632,6 +1680,31 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <div id="rhist-ct"><p style="font-size:.83em;color:var(--t2);">Нет данных. Запиши первую пробежку!</p></div>
     </div>
   </div>
+
+  <!-- PERSONAL RECORDS SECTION -->
+  <div id="pg-prs" class="itp">
+    <div class="card" style="margin-bottom:18px;padding:13px 16px;background:rgba(0,212,255,.04);border-color:rgba(0,212,255,.18);">
+      <p style="font-size:.82em;color:var(--t2);line-height:1.65;">🏆 <strong>Личные рекорды (PRs)</strong> — автоматически отслеживаются при каждой тренировке. Система фиксирует максимальный вес, повторения и объём для каждого упражнения.</p>
+    </div>
+
+    <div class="card">
+      <h3 style="font-size:.95em;margin-bottom:14px;">🏆 Твои личные рекорды</h3>
+      <div id="pr-list">
+        <p style="font-size:.82em;color:var(--t2);">Начни тренироваться, чтобы установить первые рекорды!</p>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px;background:rgba(245,158,11,.03);border-color:rgba(245,158,11,.18);">
+      <h4 style="font-size:.85em;margin-bottom:10px;color:var(--a4);">💡 Как работает трекинг PRs</h4>
+      <ul style="padding-left:18px;line-height:1.7;color:var(--t2);font-size:.82em;">
+        <li><strong>Максимальный вес:</strong> самый тяжёлый вес, который ты поднял в одном подходе</li>
+        <li><strong>Максимальные повторения:</strong> наибольшее количество повторений в одном подходе</li>
+        <li><strong>Максимальный объём:</strong> вес × повторения (показатель общей работы)</li>
+        <li><strong>Уведомления:</strong> система автоматически поздравит тебя с новым рекордом! 🎉</li>
+      </ul>
+    </div>
+  </div>
+
   <!-- ── HRV TRACKER TAB ── -->
 <div id="pg-hrv" class="itp">
   <div class="card" style="margin-bottom:14px;">
@@ -1915,24 +1988,64 @@ let S={
   seenKnowledge:{},
   startDate:new Date(2025,0,6),
   calMonth:new Date().getMonth(),calYear:new Date().getFullYear(),
-  smMonth:new Date().getMonth(),smYear:new Date().getFullYear()
+  smMonth:new Date().getMonth(),smYear:new Date().getFullYear(),
+  sleepLogs:{},
+  personalRecords:{}
 };
-window.S=S;
+
+// Assign to window for global access FIRST
+window.S = S;
+
+// Initialize module states (now that window.S exists)
+if (typeof initDashboardState === 'function') {
+  initDashboardState();
+}
+if (typeof initPRState === 'function') {
+  initPRState();
+}
+
+// Initialize theme (before any rendering)
+if (window.themeModule) {
+  window.themeModule.initTheme();
+}
+
+// Initialize notifications
+if (window.notificationModule) {
+  window.notificationModule.initNotifications();
+}
+
+// Note: setupAutoBackup() will be called later after all functions are defined
 
 function loadLocal(){
-  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.taskStatus=p.taskStatus||{};S.carryOver=p.carryOver||{};S.dailyReviews=p.dailyReviews||{};S.skillStats=p.skillStats||{};S.brainLog=p.brainLog||[];S.memoryCards=p.memoryCards||[];S.selfTests=p.selfTests||[];S.emotionLog=p.emotionLog||[];S.pauseLog=p.pauseLog||[];S.attentionLog=p.attentionLog||[];S.observationLog=p.observationLog||[];S.communicationLog=p.communicationLog||[];S.scenarioLog=p.scenarioLog||[];S.projects=p.projects||[];S.lightDays=p.lightDays||{};S.taskCards=p.taskCards||[];S.dayClosed=p.dayClosed||{};S.currentStage=(p.currentStage==='s2'?'s3':(p.currentStage||'s0'));S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
+  try{const s=localStorage.getItem('ay_s2');if(s){const p=JSON.parse(s);S.done=p.done||{};S.workoutLogs=p.workoutLogs||{};S.runLogs=p.runLogs||{};S.taskStatus=p.taskStatus||{};S.carryOver=p.carryOver||{};S.dailyReviews=p.dailyReviews||{};S.skillStats=p.skillStats||{};S.brainLog=p.brainLog||[];S.memoryCards=p.memoryCards||[];S.selfTests=p.selfTests||[];S.emotionLog=p.emotionLog||[];S.pauseLog=p.pauseLog||[];S.attentionLog=p.attentionLog||[];S.observationLog=p.observationLog||[];S.communicationLog=p.communicationLog||[];S.scenarioLog=p.scenarioLog||[];S.projects=p.projects||[];S.lightDays=p.lightDays||{};S.taskCards=p.taskCards||[];S.dayClosed=p.dayClosed||{};S.currentStage=(p.currentStage==='s2'?'s3':(p.currentStage||'s0'));S.booksRead=p.booksRead||{};S.phaseChecks=p.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=p.history||[];S.seenKnowledge=p.seenKnowledge||{};S.sleepLogs=p.sleepLogs||{};S.personalRecords=p.personalRecords||{};if(p.startDate)S.startDate=new Date(p.startDate);if(p.customSchedule)S.customSchedule=p.customSchedule;}}catch(e){}
 }
 function saveLocal(){
-  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,carryOver:S.carryOver,dailyReviews:S.dailyReviews,skillStats:S.skillStats,brainLog:S.brainLog,memoryCards:S.memoryCards,selfTests:S.selfTests,emotionLog:S.emotionLog,pauseLog:S.pauseLog,attentionLog:S.attentionLog,observationLog:S.observationLog,communicationLog:S.communicationLog,scenarioLog:S.scenarioLog,projects:S.projects,lightDays:S.lightDays,taskCards:S.taskCards,dayClosed:S.dayClosed,currentStage:S.currentStage,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
-       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,carryOver:S.carryOver,dailyReviews:S.dailyReviews,skillStats:S.skillStats,brainLog:S.brainLog,memoryCards:S.memoryCards,selfTests:S.selfTests,emotionLog:S.emotionLog,pauseLog:S.pauseLog,attentionLog:S.attentionLog,observationLog:S.observationLog,communicationLog:S.communicationLog,scenarioLog:S.scenarioLog,projects:S.projects,lightDays:S.lightDays,taskCards:S.taskCards,dayClosed:S.dayClosed,currentStage:S.currentStage,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
+  localStorage.setItem('ay_s2',JSON.stringify({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,carryOver:S.carryOver,dailyReviews:S.dailyReviews,skillStats:S.skillStats,brainLog:S.brainLog,memoryCards:S.memoryCards,selfTests:S.selfTests,emotionLog:S.emotionLog,pauseLog:S.pauseLog,attentionLog:S.attentionLog,observationLog:S.observationLog,communicationLog:S.communicationLog,scenarioLog:S.scenarioLog,projects:S.projects,lightDays:S.lightDays,taskCards:S.taskCards,dayClosed:S.dayClosed,currentStage:S.currentStage,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,sleepLogs:S.sleepLogs,personalRecords:S.personalRecords,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule}));
+       if(fbOk){firebase.database().ref('users/'+uid).update({done:S.done,workoutLogs:S.workoutLogs,runLogs:S.runLogs,taskStatus:S.taskStatus,carryOver:S.carryOver,dailyReviews:S.dailyReviews,skillStats:S.skillStats,brainLog:S.brainLog,memoryCards:S.memoryCards,selfTests:S.selfTests,emotionLog:S.emotionLog,pauseLog:S.pauseLog,attentionLog:S.attentionLog,observationLog:S.observationLog,communicationLog:S.communicationLog,scenarioLog:S.scenarioLog,projects:S.projects,lightDays:S.lightDays,taskCards:S.taskCards,dayClosed:S.dayClosed,currentStage:S.currentStage,booksRead:S.booksRead,phaseChecks:S.phaseChecks,history:S.history,seenKnowledge:S.seenKnowledge,sleepLogs:S.sleepLogs,personalRecords:S.personalRecords,startDate:S.startDate.toISOString(),customSchedule:S.customSchedule,upd:new Date().toISOString()});}
 }
 function loadCloud(cb){
   if(!fbOk){if(cb)cb();return;}
+
+  // Add timeout to prevent infinite loading
+  let callbackCalled = false;
+  const safeCallback = () => {
+    if (!callbackCalled) {
+      callbackCalled = true;
+      if(cb)cb();
+    }
+  };
+
+  // Timeout after 5 seconds
+  setTimeout(() => {
+    console.warn('Firebase load timeout - continuing with local data');
+    safeCallback();
+  }, 5000);
+
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.taskStatus=d.taskStatus||{};S.carryOver=d.carryOver||{};S.dailyReviews=d.dailyReviews||{};S.skillStats=d.skillStats||{};S.brainLog=d.brainLog||[];S.memoryCards=d.memoryCards||[];S.selfTests=d.selfTests||[];S.emotionLog=d.emotionLog||[];S.pauseLog=d.pauseLog||[];S.attentionLog=d.attentionLog||[];S.observationLog=d.observationLog||[];S.communicationLog=d.communicationLog||[];S.scenarioLog=d.scenarioLog||[];S.projects=d.projects||[];S.lightDays=d.lightDays||{};S.taskCards=d.taskCards||[];S.dayClosed=d.dayClosed||{};S.currentStage=(d.currentStage==='s2'?'s3':(d.currentStage||'s0'));S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
-    if(cb)cb();
-  }).catch(()=>{if(cb)cb();});
+    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.taskStatus=d.taskStatus||{};S.carryOver=d.carryOver||{};S.dailyReviews=d.dailyReviews||{};S.skillStats=d.skillStats||{};S.brainLog=d.brainLog||[];S.memoryCards=d.memoryCards||[];S.selfTests=d.selfTests||[];S.emotionLog=d.emotionLog||[];S.pauseLog=d.pauseLog||[];S.attentionLog=d.attentionLog||[];S.observationLog=d.observationLog||[];S.communicationLog=d.communicationLog||[];S.scenarioLog=d.scenarioLog||[];S.projects=d.projects||[];S.lightDays=d.lightDays||{};S.taskCards=d.taskCards||[];S.dayClosed=d.dayClosed||{};S.currentStage=(d.currentStage==='s2'?'s3':(d.currentStage||'s0'));S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};S.sleepLogs=d.sleepLogs||{};S.personalRecords=d.personalRecords||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
+    safeCallback();
+  }).catch(()=>{safeCallback();});
 }
 
 function esc(v){
@@ -1951,6 +2064,15 @@ function clearHistory(){S.history=[];saveLocal();renderHistory();notify('🧹 И
 function syncId(){const v=document.getElementById('sync-in').value.trim();if(!v){notify('⚠️ Введи ID');return;}uid=v;localStorage.setItem('ay_uid',uid);loadCloud(()=>{saveLocal();refreshAll();notify('✅ Синхронизировано!');});}
 function cpUid(){navigator.clipboard.writeText(uid).then(()=>notify('📋 ID скопирован!')).catch(()=>notify('ID: '+uid));}
 function newId(){if(!confirm('Создать новый ID?'))return;uid='u_'+Math.random().toString(36).substr(2,9)+Date.now().toString(36);localStorage.setItem('ay_uid',uid);saveLocal();refreshAll();notify('🆕 Новый ID создан');}
+
+// ═══════════════════════════════════════════════
+// THEME TOGGLE (v3.0)
+// ═══════════════════════════════════════════════
+function toggleTheme(){
+  if(window.themeModule && typeof window.themeModule.toggleTheme === 'function'){
+    window.themeModule.toggleTheme();
+  }
+}
 
 // ═══════════════════════════════════════════════
 // NAV + MOBILE
@@ -2201,6 +2323,15 @@ function saveWorkoutLog(){
   if(!S.workoutLogs[date])S.workoutLogs[date]={};
   S.workoutLogs[date][type]=result;S.done[date]=true;
   logAction('Добавлен лог тренировки '+type.toUpperCase()+' '+date);
+
+  // Check for new PRs
+  if(window.checkWorkoutPRs){
+    const newPRs=checkWorkoutPRs(result);
+    if(newPRs.length>0){
+      showPRNotification(newPRs);
+    }
+  }
+
   saveLocal();updDash();renderCal();renderWHist();renderHistory();notify('✅ Тренировка сохранена!');
 }
 function saveRunLog(){
@@ -4352,6 +4483,26 @@ function updFbStatus(ok){
 function refreshAll(){
   renderExecutorDashboard();updDash();renderCal();renderSM();renderDailySched();
   renderWHist();renderRHist();renderBooks();renderPhaseChecks();renderHistory();updateKnowledgeSeen();renderSkills();renderTaskBank();renderStages();renderLabAll();
+
+  // NEW: v3.0 renders
+  if (typeof renderEnhancedDashboard === 'function') {
+    renderEnhancedDashboard();
+  }
+  if (typeof renderAchievements === 'function') {
+    renderAchievements();
+  }
+  if (typeof renderPRs === 'function') {
+    renderPRs();
+  }
+  if (typeof renderStreakCounter === 'function') {
+    renderStreakCounter();
+  }
+  if (typeof renderProgressiveOverloadRecommendations === 'function') {
+    renderProgressiveOverloadRecommendations();
+  }
+  if (typeof renderPlateauWarnings === 'function') {
+    renderPlateauWarnings();
+  }
 }
 
 function maybeShowDailyReminder(){
@@ -4403,6 +4554,11 @@ if(hrvD&&!hrvD.value) hrvD.value=dKey(new Date());
   renderMealPlan();
   renderShopping();
   maybeShowDailyReminder();
+
+  // Setup auto backup (after all functions are defined)
+  if (typeof setupAutoBackup === 'function') {
+    setupAutoBackup();
+  }
 
   // Hide loading
   setTimeout(()=>{

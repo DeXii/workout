@@ -1,0 +1,100 @@
+<!-- ENHANCED DASHBOARD WITH ACHIEVEMENTS AND SLEEP TRACKING -->
+<div id="s-dashboard-enhanced" class="sec">
+  <div class="wrap">
+    <h1 style="margin-bottom:24px;">🎯 Dashboard</h1>
+
+    <!-- Streak and Achievements -->
+    <div class="card" style="margin-bottom:20px;background:linear-gradient(135deg,rgba(0,212,255,.08),rgba(124,58,237,.08));border-color:rgba(0,212,255,.2);">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+        <div>
+          <h2 style="font-size:1.1em;margin-bottom:8px;">🔥 Текущая серия</h2>
+          <div style="display:flex;align-items:baseline;gap:8px;">
+            <span id="streak-current" style="font-size:3em;font-weight:800;color:var(--a1);">0</span>
+            <span style="font-size:1.2em;color:var(--t2);">дней</span>
+          </div>
+          <p style="font-size:.85em;color:var(--t2);margin-top:6px;" id="streak-message">Начни новую серию сегодня!</p>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:.85em;color:var(--t3);margin-bottom:4px;">Лучшая серия</div>
+          <div style="font-size:1.8em;font-weight:700;color:var(--a4);" id="streak-longest">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="g4" style="margin-bottom:20px;">
+      <div class="stat">
+        <span class="stat-n" id="dash-total-workouts">0</span>
+        <div class="stat-l">💪 Всего тренировок</div>
+      </div>
+      <div class="stat">
+        <span class="stat-n" id="dash-week-count">0</span>
+        <div class="stat-l">📅 На этой неделе</div>
+      </div>
+      <div class="stat">
+        <span class="stat-n" id="dash-recovery-score">—</span>
+        <div class="stat-l">😴 Восстановление</div>
+      </div>
+      <div class="stat">
+        <span class="stat-n" id="dash-sleep-debt">0</span>
+        <div class="stat-l">⏰ Долг сна (ч)</div>
+      </div>
+    </div>
+
+    <!-- Achievements -->
+    <div class="card" style="margin-bottom:20px;">
+      <h3 style="font-size:1em;margin-bottom:14px;">🏆 Достижения</h3>
+      <div id="achievements-list" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;">
+        <div style="text-align:center;padding:12px;background:var(--bg3);border-radius:8px;opacity:.3;">
+          <div style="font-size:2em;margin-bottom:4px;">🥉</div>
+          <div style="font-size:.75em;color:var(--t3);">Первые 10</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sleep Tracking -->
+    <div class="card" style="margin-bottom:20px;">
+      <h3 style="font-size:1em;margin-bottom:14px;">😴 Трекинг сна</h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:14px;">
+        <div>
+          <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:4px;">📅 Дата</label>
+          <input type="date" id="sleep-date" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+        </div>
+        <div>
+          <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:4px;">⏰ Часов сна</label>
+          <input type="number" id="sleep-hours" placeholder="7.5" min="0" max="24" step="0.5" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+        </div>
+        <div>
+          <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:4px;">⭐ Качество (1-10)</label>
+          <input type="number" id="sleep-quality" placeholder="8" min="1" max="10" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+        </div>
+        <div>
+          <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:4px;">😴 Усталость (1-10)</label>
+          <input type="number" id="sleep-fatigue" placeholder="5" min="1" max="10" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+        </div>
+        <div>
+          <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:4px;">💪 Боль в мышцах (0-10)</label>
+          <input type="number" id="sleep-soreness" placeholder="3" min="0" max="10" style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;">
+        </div>
+      </div>
+      <div style="margin-bottom:14px;">
+        <label style="font-size:.78em;color:var(--t3);display:block;margin-bottom:4px;">📝 Заметки</label>
+        <textarea id="sleep-notes" placeholder="Как спал, что мешало, сны..." style="background:var(--bg3);border:1px solid var(--brd);color:var(--t1);padding:7px 10px;border-radius:7px;font-size:.85em;width:100%;min-height:60px;resize:vertical;"></textarea>
+      </div>
+      <button class="btn btn-p btn-sm" onclick="saveSleepLog()">💾 Сохранить запись о сне</button>
+
+      <div id="sleep-recommendations" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--brd);display:none;">
+        <h4 style="font-size:.85em;margin-bottom:8px;color:var(--a4);">💡 Рекомендации</h4>
+        <div id="sleep-rec-list" style="font-size:.82em;color:var(--t2);line-height:1.6;"></div>
+      </div>
+    </div>
+
+    <!-- Recent Sleep Logs -->
+    <div class="card">
+      <h3 style="font-size:1em;margin-bottom:14px;">📊 Последние записи сна</h3>
+      <div id="recent-sleep-logs">
+        <p style="font-size:.82em;color:var(--t2);">Нет записей. Добавь первую!</p>
+      </div>
+    </div>
+  </div>
+</div>
