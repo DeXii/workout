@@ -494,8 +494,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <nav class="nav">
   <div class="nav-inner">
     <div class="logo" style="cursor:pointer;" onclick="goSec('dash')">⚡ AYANOKOJI v3</div>
+<<<<<<< HEAD
     <input class="search-input" id="global-search" placeholder="Поиск... (Ctrl+K)" oninput="runGlobalSearch(this.value)">
     <button class="btn btn-gh btn-sm" onclick="openCommandPalette()" title="Быстрая навигация (Ctrl+K)">⌘ K</button>
+=======
+    <input class="search-input" id="global-search" placeholder="Поиск по сайту..." oninput="runGlobalSearch(this.value)">
+>>>>>>> 378d3ddfa9b0fbdf22784c21190fb780ba814285
     <button class="btn btn-gh btn-sm" onclick="toggleFocusMode()">🎯 Фокус</button>
     <button id="theme-toggle" class="btn btn-gh btn-sm" onclick="toggleTheme()" title="Переключить тему" style="font-size:1.2em;padding:6px 10px;">🌙</button>
     <div id="navlinks" style="display:flex;gap:4px;flex-wrap:wrap;">
@@ -524,7 +528,10 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <div class="mob-nav-overlay" id="mob-nav-overlay" onclick="toggleMobNav()"></div>
 <div class="mob-nav" id="mob-nav">
   <div class="mob-nav-title">⚡ AYANOKOJI v3</div>
+<<<<<<< HEAD
   <button class="nb nb-main" data-s="priorities" onclick="toggleMobNav()">Приоритеты</button>
+=======
+>>>>>>> 378d3ddfa9b0fbdf22784c21190fb780ba814285
   <button class="nb nb-main" data-s="mind" onclick="toggleMobNav()">Ум</button>
   <button class="nb nb-main" data-s="body" onclick="toggleMobNav()">Тело</button>
   <button class="nb nb-main" data-s="control" onclick="toggleMobNav()">Контроль</button>
@@ -2025,6 +2032,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="sec-s">Записывай подходы · повторения · время бега — синхронизируется через Firebase</div>
   </div>
   <div class="itabs">
+<<<<<<< HEAD
     <div class="it-group">
       <button class="it active" onclick="sit('pg','log')"><span class="it-icon">📝</span>Записать тренировку</button>
       <button class="it" onclick="sit('pg','rlog')"><span class="it-icon">🏃</span>Записать бег</button>
@@ -2038,6 +2046,15 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
       <button class="it" onclick="sit('pg','hrv');loadHRVData()"><span class="it-icon">🫀</span>HRV Трекер</button>
       <button class="it" onclick="sit('pg','acft')"><span class="it-icon">🎖️</span>ACFT</button>
     </div>
+=======
+    <button class="it active" onclick="sit('pg','log')">📝 Записать тренировку</button>
+    <button class="it" onclick="sit('pg','rlog')">🏃 Записать бег</button>
+    <button class="it" onclick="sit('pg','whist')">📊 История тренировок</button>
+    <button class="it" onclick="sit('pg','rhist')">📊 История бега</button>
+    <button class="it" onclick="sit('pg','prs');renderPRs()">🏆 Личные рекорды</button>
+	<button class="it" onclick="sit('pg','hrv');loadHRVData()">🫀 HRV Трекер</button>
+	<button class="it" onclick="sit('pg','acft')">🎖️ ACFT</button>
+>>>>>>> 378d3ddfa9b0fbdf22784c21190fb780ba814285
   </div>
 
   <div id="pg-log" class="itp active">
@@ -5002,9 +5019,12 @@ if(hrvD&&!hrvD.value) hrvD.value=dKey(new Date());
     setupAutoBackup();
   }
 
+<<<<<<< HEAD
   // Initialize command palette
   initCommandPalette();
 
+=======
+>>>>>>> 378d3ddfa9b0fbdf22784c21190fb780ba814285
   // Hide loading
   setTimeout(()=>{
     const ld=document.getElementById('loading');
