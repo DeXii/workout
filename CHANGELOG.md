@@ -1,6 +1,114 @@
-# Ayanokoji System v3.0 - Changelog
+# Ayanokoji System - Changelog
 
-## Новые возможности (2026-05-06)
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+---
+
+## [3.2.0] - 2026-05-06
+
+### Added
+- **🎯 Priorities System**: New main section ranking all 28 tasks by importance
+  - Hierarchical ranking from 1 (most important) to 28
+  - 4 color-coded categories: Very Important (🔴), Important (🟠), Medium (🟡), Secondary (🟢)
+  - Dedicated navigation button in main nav, mobile nav, and bottom nav
+  - Visual hierarchy with emoji indicators and detailed descriptions
+  - Covers all aspects: physical training, mental development, nutrition, recovery, skills
+
+- **⌘ Command Palette Enhancement**: Expanded to 86 commands with full hierarchy
+  - Added Priorities section (28 task commands)
+  - Mental section: HRV, Meditation, Journal, Chess, QCT, Biases, Tracker (15 commands)
+  - Workout section: Push/Pull/Legs/HIFT, Progression, Alternatives (10 commands)
+  - Schedule section: Monthly/Daily/Editor (3 commands)
+  - Skills section: Thinking, Memory, Attention, Emotions, Communication, Physical (6 commands)
+  - Food section: Breakfast, Lunch, Dinner, Snacks (4 commands)
+  - Knowledge Base section: Science, Plan, Metrics (3 commands)
+  - Progress section: Log workout/run, History, PRs, HRV, ACFT (7 commands)
+  - Improved keyboard navigation with arrow keys and Enter
+  - Fuzzy search across all sections and actions
+  - Backdrop blur effect for better focus
+
+- **📑 Tab Navigation Improvements**: All 9 sections reorganized with logical grouping
+  - **Mental** (mn-*): 3 groups
+    - Group 1: HRV Трекер, Медитация, Журнал самоконтроля
+    - Group 2: Шахматы, QCT, Когнитивные искажения
+    - Group 3: Ментальный трекер
+  - **Workout** (wo-*): 2 groups
+    - Group 1: Push — A, Pull — B, Ноги+Кор — C, Full HIFT — D
+    - Group 2: Прогрессия, Альтернативы
+  - **Schedule** (sc-*): Monthly, Daily, Editor with icons
+  - **Skills** (sk-*): 2 groups
+    - Group 1: Мышление, Память, Внимание
+    - Group 2: Эмоции, Коммуникация, Физика
+  - **Food** (fd-*): 2 groups with badges
+    - Group 1: Завтрак, Обед
+    - Group 2: Ужин, Перекусы
+  - **Knowledge Base** (kb-*): 2 groups
+    - Group 1: Научная база, План на 12-15 лет
+    - Group 2: Метрики прогресса
+  - **Progress** (pg-*): 3 groups
+    - Group 1: Записать тренировку, Записать бег
+    - Group 2: История тренировок, История бега
+    - Group 3: Личные рекорды, HRV Трекер, ACFT
+  - Sticky scroll positioning for all tabs (top: 70px)
+  - Icon separation with `span.it-icon` for better visual hierarchy
+  - Visual group separators with `it-group` class
+  - Badge indicators with `it-badge` class for special tabs
+
+### Changed
+- Restored HRV Tracker to Progress section (was temporarily in Mental in v3.1)
+- Updated search placeholder to "Поиск... (Ctrl+K)" for consistency
+- Improved tab grouping logic across all sections for better UX
+- Enhanced visual hierarchy with consistent spacing and separators
+- Updated package.json to version 3.2.0 with new description
+
+### Fixed
+- Git merge conflicts in index.html resolved during rebase
+- Module initialization timing issues (window.S must exist before modules access it)
+- Command Palette navigation bugs (executeCommandByIndex function)
+- Duplicate sections removed (HRV was in both Mental and Progress, Skills was duplicated)
+- Firebase timeout handling improved (5-second timeout for loadCloud)
+
+---
+
+## [3.1.0] - 2026-05-03
+
+### Added
+- **⌘ Command Palette**: Keyboard-driven navigation system
+  - Ctrl+K (or Cmd+K on Mac) shortcut to open
+  - Search across all sections and actions with fuzzy matching
+  - Arrow key navigation (↑/↓) and Enter to execute
+  - ESC or click outside to close
+  - Backdrop blur effect with dark overlay
+  - 50+ initial commands covering main sections and subsections
+
+- **📑 Tab Improvements**: Enhanced visual organization
+  - Sticky positioning for tabs (position: sticky, top: 70px)
+  - Icons for all tabs using emoji
+  - Logical grouping with visual separators
+  - Badge indicators for special tabs
+  - Improved hover and active states
+  - Better mobile responsiveness
+
+### Changed
+- Updated navigation structure for better UX
+- Improved tab CSS with backdrop-filter blur
+- Enhanced search input styling with Ctrl+K hint
+- Added Command Palette button (⌘ K) to main navigation
+
+### Fixed
+- Module initialization order (window.S timing issue)
+  - Wrapped dashboard-enhanced.js state init in function
+  - Wrapped pr-tracker.js state init in function
+  - Added safety checks in export.js
+- Firebase timeout handling (5-second timeout for loadCloud with safeCallback)
+- CORS issues with local development (created start-server.bat for http-server)
+
+---
+
+## [3.0.0] - 2026-05-01
 
 ### 🎯 Progressive Overload System
 **Модуль**: `js/core/progressive-overload.js`
@@ -329,6 +437,20 @@ window.importFromJSON();
 Разработано с использованием Claude Code (claude.ai/code)
 Вдохновлено философией Киётаки Аянокоджи из "Classroom of the Elite"
 
-**Версия**: 3.0  
+**Текущая версия**: 3.2.0  
 **Дата релиза**: 2026-05-06  
 **Тестов**: 34/34 ✅
+
+---
+
+## Version History Summary
+
+- **v3.2.0** (2026-05-06): Priorities System + Command Palette expansion + Tab reorganization
+- **v3.1.0** (2026-05-03): Command Palette + Tab improvements + Module fixes
+- **v3.0.0** (2026-05-01): Progressive Overload + Achievements + Notifications + Heatmap + Theme + Export
+
+---
+
+[3.2.0]: https://github.com/DeXii/workout/compare/v3.1.0...v3.2.0
+[3.1.0]: https://github.com/DeXii/workout/compare/v3.0.0...v3.1.0
+[3.0.0]: https://github.com/DeXii/workout/releases/tag/v3.0.0
