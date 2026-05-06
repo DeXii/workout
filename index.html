@@ -97,11 +97,35 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 .btn-xs{padding:3px 8px;font-size:.74em;}
 
 /* INNER TABS */
-.itabs{display:flex;gap:5px;margin-bottom:18px;flex-wrap:wrap;}
-.it{background:rgba(255,255,255,.04);border:1px solid var(--brd);color:var(--t2);padding:6px 14px;border-radius:7px;cursor:pointer;font-size:.82em;transition:all .2s;}
-.it.active,.it:hover{background:rgba(0,212,255,.09);border-color:rgba(0,212,255,.28);color:var(--a1);}
+.itabs{display:flex;gap:5px;margin-bottom:18px;flex-wrap:wrap;position:sticky;top:70px;background:var(--bg1);padding:10px 0;z-index:100;border-bottom:1px solid transparent;transition:all .2s;}
+.itabs.scrolled{border-bottom-color:var(--brd);box-shadow:0 4px 12px rgba(0,0,0,.2);}
+.it{background:rgba(255,255,255,.04);border:1px solid var(--brd);color:var(--t2);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:.82em;transition:all .2s;display:inline-flex;align-items:center;gap:6px;font-weight:500;}
+.it .it-icon{font-size:1.1em;}
+.it .it-badge{background:rgba(0,212,255,.15);color:var(--a1);padding:1px 5px;border-radius:10px;font-size:.7em;font-weight:700;margin-left:2px;}
+.it.active{background:rgba(0,212,255,.12);border-color:rgba(0,212,255,.35);color:var(--a1);box-shadow:0 2px 8px rgba(0,212,255,.15);}
+.it:hover{background:rgba(0,212,255,.08);border-color:rgba(0,212,255,.25);color:var(--a1);transform:translateY(-1px);}
+.it-group{display:flex;gap:5px;padding-right:12px;margin-right:12px;border-right:1px solid var(--brd);}
+.it-group:last-child{border-right:none;padding-right:0;margin-right:0;}
 .itp{display:none;}
 .itp.active{display:block;animation:fu .3s ease;}
+
+/* COMMAND PALETTE */
+.cmd-palette{position:fixed;inset:0;background:rgba(0,0,0,.85);backdrop-filter:blur(8px);z-index:9999;display:none;align-items:flex-start;justify-content:center;padding-top:15vh;animation:fadeIn .2s ease;}
+.cmd-palette.active{display:flex;}
+.cmd-palette-inner{background:var(--bg2);border:1px solid var(--brd);border-radius:16px;width:90%;max-width:640px;box-shadow:0 20px 60px rgba(0,0,0,.5);animation:slideDown .25s ease;}
+.cmd-search{width:100%;background:transparent;border:none;color:var(--t1);padding:20px 24px;font-size:1.1em;outline:none;border-bottom:1px solid var(--brd);}
+.cmd-search::placeholder{color:var(--t3);}
+.cmd-results{max-height:400px;overflow-y:auto;padding:8px;}
+.cmd-item{padding:12px 16px;border-radius:10px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:12px;margin-bottom:4px;}
+.cmd-item:hover,.cmd-item.selected{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.2);}
+.cmd-item-icon{font-size:1.4em;width:32px;text-align:center;}
+.cmd-item-content{flex:1;}
+.cmd-item-title{font-size:.9em;font-weight:600;color:var(--t1);margin-bottom:2px;}
+.cmd-item-desc{font-size:.75em;color:var(--t3);}
+.cmd-item-shortcut{font-size:.7em;color:var(--t3);background:rgba(255,255,255,.05);padding:2px 6px;border-radius:4px;border:1px solid var(--brd);}
+.cmd-empty{padding:40px 24px;text-align:center;color:var(--t3);font-size:.85em;}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
 
 /* SYNC BOX */
 .sbox{background:var(--bg2);border:1px solid var(--brd);border-radius:14px;padding:18px;text-align:center;margin-bottom:18px;}
@@ -470,10 +494,12 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 <nav class="nav">
   <div class="nav-inner">
     <div class="logo" style="cursor:pointer;" onclick="goSec('dash')">⚡ AYANOKOJI v3</div>
-    <input class="search-input" id="global-search" placeholder="Поиск по сайту..." oninput="runGlobalSearch(this.value)">
+    <input class="search-input" id="global-search" placeholder="Поиск... (Ctrl+K)" oninput="runGlobalSearch(this.value)">
+    <button class="btn btn-gh btn-sm" onclick="openCommandPalette()" title="Быстрая навигация (Ctrl+K)">⌘ K</button>
     <button class="btn btn-gh btn-sm" onclick="toggleFocusMode()">🎯 Фокус</button>
     <button id="theme-toggle" class="btn btn-gh btn-sm" onclick="toggleTheme()" title="Переключить тему" style="font-size:1.2em;padding:6px 10px;">🌙</button>
     <div id="navlinks" style="display:flex;gap:4px;flex-wrap:wrap;">
+      <button class="nb nb-main" data-s="priorities">Приоритеты</button>
       <button class="nb nb-main" data-s="mind">Ум</button>
       <button class="nb nb-main" data-s="body">Тело</button>
       <button class="nb nb-main" data-s="control">Контроль</button>
@@ -485,6 +511,14 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     </div>
   </div>
 </nav>
+
+<!-- Command Palette -->
+<div class="cmd-palette" id="cmd-palette" onclick="closeCommandPalette(event)">
+  <div class="cmd-palette-inner" onclick="event.stopPropagation()">
+    <input type="text" class="cmd-search" id="cmd-search" placeholder="🔍 Поиск разделов и действий..." autocomplete="off">
+    <div class="cmd-results" id="cmd-results"></div>
+  </div>
+</div>
 
 <!-- Mobile nav overlay -->
 <div class="mob-nav-overlay" id="mob-nav-overlay" onclick="toggleMobNav()"></div>
@@ -690,12 +724,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="sec-s">6 направлений: мышление, память, внимание, эмоции, коммуникация, физика</div>
   </div>
   <div class="itabs">
-    <button class="it active" onclick="sit('sk','thinking');renderSkills()">Мышление</button>
-    <button class="it" onclick="sit('sk','memory');renderSkills()">Память</button>
-    <button class="it" onclick="sit('sk','attention');renderSkills()">Внимание</button>
-    <button class="it" onclick="sit('sk','emotions');renderSkills()">Эмоции</button>
-    <button class="it" onclick="sit('sk','communication');renderSkills()">Коммуникация</button>
-    <button class="it" onclick="sit('sk','physical');renderSkills()">Физика</button>
+    <div class="it-group">
+      <button class="it active" onclick="sit('sk','thinking');renderSkills()"><span class="it-icon">🧠</span>Мышление</button>
+      <button class="it" onclick="sit('sk','memory');renderSkills()"><span class="it-icon">🧩</span>Память</button>
+      <button class="it" onclick="sit('sk','attention');renderSkills()"><span class="it-icon">👁️</span>Внимание</button>
+    </div>
+    <div class="it-group">
+      <button class="it" onclick="sit('sk','emotions');renderSkills()"><span class="it-icon">💚</span>Эмоции</button>
+      <button class="it" onclick="sit('sk','communication');renderSkills()"><span class="it-icon">🗣️</span>Коммуникация</button>
+      <button class="it" onclick="sit('sk','physical');renderSkills()"><span class="it-icon">💪</span>Физика</button>
+    </div>
   </div>
   <div id="sk-thinking" class="itp active"><div class="card" id="skills-thinking"></div><div class="card" id="lab-brain-ct" style="margin-top:10px;"></div></div>
   <div id="sk-memory" class="itp"><div class="card" id="skills-memory"></div><div class="card" id="lab-memory-ct" style="margin-top:10px;"></div></div>
@@ -736,9 +774,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="sec-s">Месячный план · Дневное расписание с учётом графика 2/2 и смены 11:00-23:00</div>
   </div>
   <div class="itabs">
-    <button class="it active" onclick="sit('sc','monthly')">📅 Месячный</button>
-    <button class="it" onclick="sit('sc','daily')">🕐 Дневной</button>
-    <button class="it" onclick="sit('sc','editor')">✏️ Редактор</button>
+    <button class="it active" onclick="sit('sc','monthly')"><span class="it-icon">📅</span>Месячный</button>
+    <button class="it" onclick="sit('sc','daily')"><span class="it-icon">🕐</span>Дневной</button>
+    <button class="it" onclick="sit('sc','editor')"><span class="it-icon">✏️</span>Редактор</button>
   </div>
   <div id="sc-monthly" class="itp active">
     <div class="card">
@@ -795,12 +833,16 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="sec-s">Турник + Брусья — GPP/HIFT система с прогрессией</div>
   </div>
   <div class="itabs">
-    <button class="it active" onclick="sit('wo','push')">🟣 A — Push</button>
-    <button class="it" onclick="sit('wo','pull')">🔵 B — Pull</button>
-    <button class="it" onclick="sit('wo','legs')">🟢 C — Ноги+Кор</button>
-    <button class="it" onclick="sit('wo','hift')">🟡 D — Full HIFT</button>
-    <button class="it" onclick="sit('wo','prog')">📈 Прогрессия</button>
-    <button class="it" onclick="sit('wo','alts')">🔄 Альтернативы</button>
+    <div class="it-group">
+      <button class="it active" onclick="sit('wo','push')"><span class="it-icon">🟣</span>A — Push</button>
+      <button class="it" onclick="sit('wo','pull')"><span class="it-icon">🔵</span>B — Pull</button>
+      <button class="it" onclick="sit('wo','legs')"><span class="it-icon">🟢</span>C — Ноги+Кор</button>
+      <button class="it" onclick="sit('wo','hift')"><span class="it-icon">🟡</span>D — Full HIFT</button>
+    </div>
+    <div class="it-group">
+      <button class="it" onclick="sit('wo','prog')"><span class="it-icon">📈</span>Прогрессия</button>
+      <button class="it" onclick="sit('wo','alts')"><span class="it-icon">🔄</span>Альтернативы</button>
+    </div>
   </div>
 
   <div id="wo-push" class="itp active">
@@ -1349,13 +1391,19 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
     <div class="sec-s">HRV · Медитация · Шахматы · Рефлексия — Уровень 2 пирамиды</div>
   </div>
   <div class="itabs">
-    <button class="it active" onclick="sit('mn','hrv')">🫀 HRV & Дыхание</button>
-    <button class="it" onclick="sit('mn','med')">🧘 Медитация</button>
-    <button class="it" onclick="sit('mn','chess')">♟️ Шахматы</button>
-    <button class="it" onclick="sit('mn','jour')">📓 Дневник</button>
-	<button class="it" onclick="sit('mn','qct')">💚 QCT</button>
-	<button class="it" onclick="sit('mn','biases');renderBiases()">🧠 Искажения</button>
-	<button class="it" onclick="sit('mn','tracker');loadMentalTracker()">📊 Трекер</button>
+    <div class="it-group">
+      <button class="it active" onclick="sit('mn','hrv')"><span class="it-icon">🫀</span>HRV & Дыхание</button>
+      <button class="it" onclick="sit('mn','med')"><span class="it-icon">🧘</span>Медитация</button>
+      <button class="it" onclick="sit('mn','jour')"><span class="it-icon">📓</span>Дневник</button>
+    </div>
+    <div class="it-group">
+      <button class="it" onclick="sit('mn','chess')"><span class="it-icon">♟️</span>Шахматы</button>
+      <button class="it" onclick="sit('mn','qct')"><span class="it-icon">💚</span>QCT</button>
+      <button class="it" onclick="sit('mn','biases');renderBiases()"><span class="it-icon">🧠</span>Искажения</button>
+    </div>
+    <div class="it-group">
+      <button class="it" onclick="sit('mn','tracker');loadMentalTracker()"><span class="it-icon">📊</span>Трекер</button>
+    </div>
   </div>
   <div id="mn-hrv" class="itp active">
     <div class="g2">
@@ -2147,6 +2195,24 @@ function sit(pfx,name){
 }
 if(name==='tracker')loadMentalTracker();
 }
+
+// Sticky tabs on scroll
+let lastScrollTop = 0;
+window.addEventListener('scroll', () => {
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+  // Add scrolled class to all itabs when scrolling down
+  document.querySelectorAll('.itabs').forEach(tabs => {
+    const rect = tabs.getBoundingClientRect();
+    if (rect.top <= 70 && rect.bottom > 70) {
+      tabs.classList.add('scrolled');
+    } else {
+      tabs.classList.remove('scrolled');
+    }
+  });
+
+  lastScrollTop = scrollTop;
+}, { passive: true });
 
 // Swipes
 let touchStartX=0,touchStartY=0;
@@ -4560,6 +4626,9 @@ if(hrvD&&!hrvD.value) hrvD.value=dKey(new Date());
     setupAutoBackup();
   }
 
+  // Initialize command palette
+  initCommandPalette();
+
   // Hide loading
   setTimeout(()=>{
     const ld=document.getElementById('loading');
@@ -4569,6 +4638,160 @@ if(hrvD&&!hrvD.value) hrvD.value=dKey(new Date());
 
 if('serviceWorker' in navigator){
   navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+// ═══════════════════════════════════════════════
+// COMMAND PALETTE
+// ═══════════════════════════════════════════════
+
+const COMMAND_ITEMS = [
+  // Главные разделы
+  {icon:'🏠',title:'Главная',desc:'Dashboard с общей статистикой',action:()=>goSec('dash'),keywords:'главная дашборд dashboard home'},
+  {icon:'🧠',title:'Ум',desc:'Интеллектуальное развитие',action:()=>goSec('mind'),keywords:'ум интеллект мозг mind'},
+  {icon:'💪',title:'Тело',desc:'Физические тренировки',action:()=>goSec('body'),keywords:'тело физика тренировки body'},
+  {icon:'🎯',title:'Контроль',desc:'Самоконтроль и дисциплина',action:()=>goSec('control'),keywords:'контроль дисциплина control'},
+  {icon:'📈',title:'Трекеры',desc:'Отслеживание прогресса',action:()=>goSec('trackers'),keywords:'трекеры графики статистика trackers'},
+
+  // Ум - подразделы
+  {icon:'📚',title:'Библиотека',desc:'Книги и материалы',action:()=>{goSec('mind');sit('mn','books');},keywords:'книги библиотека чтение books library'},
+  {icon:'♟️',title:'Шахматы',desc:'Тренировка стратегического мышления',action:()=>{goSec('mind');sit('mn','chess');},keywords:'шахматы chess стратегия'},
+  {icon:'🧩',title:'Dual N-Back',desc:'Тренировка рабочей памяти',action:()=>{goSec('mind');sit('mn','nback');},keywords:'память nback dual тренировка'},
+  {icon:'🎓',title:'GRE',desc:'Подготовка к экзамену',action:()=>{goSec('mind');sit('mn','gre');},keywords:'gre экзамен подготовка'},
+
+  // Тело - подразделы
+  {icon:'🟣',title:'Push тренировка',desc:'Отжимания и брусья',action:()=>{goSec('body');goSec('workout');sit('wo','push');},keywords:'push отжимания брусья грудь'},
+  {icon:'🔵',title:'Pull тренировка',desc:'Подтягивания',action:()=>{goSec('body');goSec('workout');sit('wo','pull');},keywords:'pull подтягивания турник спина'},
+  {icon:'🟢',title:'Legs тренировка',desc:'Ноги и кор',action:()=>{goSec('body');goSec('workout');sit('wo','legs');},keywords:'legs ноги кор приседания'},
+  {icon:'🟡',title:'HIFT тренировка',desc:'Полное тело',action:()=>{goSec('body');goSec('workout');sit('wo','hift');},keywords:'hift full тело комплекс'},
+  {icon:'🏃',title:'Бег',desc:'Кардио тренировки',action:()=>{goSec('body');goSec('running');},keywords:'бег кардио running sprint'},
+  {icon:'🗓️',title:'График тренировок',desc:'Месячный план',action:()=>{goSec('body');goSec('sched');},keywords:'график план расписание calendar'},
+
+  // Контроль - подразделы
+  {icon:'🧘',title:'Навыки',desc:'Развитие soft skills',action:()=>{goSec('control');goSec('skills');},keywords:'навыки skills мышление эмоции'},
+  {icon:'📊',title:'Аналитика',desc:'Статистика периодов',action:()=>{goSec('control');goSec('analytics');},keywords:'аналитика статистика analytics'},
+  {icon:'🗂️',title:'Проекты',desc:'Долгосрочные цели',action:()=>{goSec('control');goSec('projects');},keywords:'проекты цели projects goals'},
+  {icon:'🛤️',title:'Этапы развития',desc:'Путь на 3 периода',action:()=>{goSec('control');goSec('stages');},keywords:'этапы развитие stages phases'},
+
+  // Трекеры - подразделы
+  {icon:'💤',title:'Сон и восстановление',desc:'Трекер сна',action:()=>{goSec('trackers');sit('tr','sleep');},keywords:'сон восстановление sleep recovery'},
+  {icon:'🏆',title:'Достижения',desc:'Badges и рекорды',action:()=>{goSec('trackers');sit('tr','achievements');},keywords:'достижения рекорды badges achievements'},
+  {icon:'🗺️',title:'Тепловая карта',desc:'Активность по дням',action:()=>{goSec('trackers');sit('tr','heatmap');},keywords:'карта активность heatmap calendar'},
+  {icon:'📥',title:'Экспорт данных',desc:'Бэкап и импорт',action:()=>{goSec('trackers');sit('tr','export');},keywords:'экспорт импорт backup данные'},
+
+  // Быстрые действия
+  {icon:'▶️',title:'Начать Push тренировку',desc:'Запустить режим тренировки',action:()=>startWorkoutMode('push'),keywords:'начать тренировка push старт'},
+  {icon:'▶️',title:'Начать Pull тренировку',desc:'Запустить режим тренировки',action:()=>startWorkoutMode('pull'),keywords:'начать тренировка pull старт'},
+  {icon:'▶️',title:'Начать Legs тренировку',desc:'Запустить режим тренировки',action:()=>startWorkoutMode('legs'),keywords:'начать тренировка legs старт'},
+  {icon:'▶️',title:'Начать HIFT тренировку',desc:'Запустить режим тренировки',action:()=>startWorkoutMode('hift'),keywords:'начать тренировка hift старт'},
+  {icon:'🌙',title:'Переключить тему',desc:'Светлая/тёмная тема',action:()=>toggleTheme(),keywords:'тема theme dark light светлая темная'},
+  {icon:'💾',title:'Экспорт всех данных',desc:'Скачать полный бэкап',action:()=>exportAllDataToJSON(),keywords:'экспорт backup бэкап сохранить'},
+];
+
+let cmdSelectedIndex = 0;
+let cmdFilteredItems = [];
+
+function initCommandPalette() {
+  // Keyboard shortcut: Ctrl+K or Cmd+K
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+      e.preventDefault();
+      openCommandPalette();
+    }
+    if (e.key === 'Escape') {
+      closeCommandPalette();
+    }
+  });
+
+  // Command palette search
+  const cmdSearch = document.getElementById('cmd-search');
+  if (cmdSearch) {
+    cmdSearch.addEventListener('input', (e) => {
+      filterCommandItems(e.target.value);
+    });
+
+    cmdSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        cmdSelectedIndex = Math.min(cmdSelectedIndex + 1, cmdFilteredItems.length - 1);
+        renderCommandResults();
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        cmdSelectedIndex = Math.max(cmdSelectedIndex - 1, 0);
+        renderCommandResults();
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (cmdFilteredItems[cmdSelectedIndex]) {
+          executeCommand(cmdFilteredItems[cmdSelectedIndex]);
+        }
+      }
+    });
+  }
+}
+
+function openCommandPalette() {
+  const palette = document.getElementById('cmd-palette');
+  const search = document.getElementById('cmd-search');
+  if (palette && search) {
+    palette.classList.add('active');
+    search.value = '';
+    cmdSelectedIndex = 0;
+    filterCommandItems('');
+    setTimeout(() => search.focus(), 100);
+  }
+}
+
+function closeCommandPalette(event) {
+  if (!event || event.target.id === 'cmd-palette') {
+    const palette = document.getElementById('cmd-palette');
+    if (palette) {
+      palette.classList.remove('active');
+    }
+  }
+}
+
+function filterCommandItems(query) {
+  const q = query.toLowerCase().trim();
+
+  if (!q) {
+    cmdFilteredItems = COMMAND_ITEMS;
+  } else {
+    cmdFilteredItems = COMMAND_ITEMS.filter(item => {
+      const searchText = `${item.title} ${item.desc} ${item.keywords}`.toLowerCase();
+      return searchText.includes(q);
+    });
+  }
+
+  cmdSelectedIndex = 0;
+  renderCommandResults();
+}
+
+function renderCommandResults() {
+  const container = document.getElementById('cmd-results');
+  if (!container) return;
+
+  if (cmdFilteredItems.length === 0) {
+    container.innerHTML = '<div class="cmd-empty">Ничего не найдено</div>';
+    return;
+  }
+
+  container.innerHTML = cmdFilteredItems.map((item, idx) => `
+    <div class="cmd-item ${idx === cmdSelectedIndex ? 'selected' : ''}"
+         onclick="executeCommand(COMMAND_ITEMS[${COMMAND_ITEMS.indexOf(item)}])"
+         onmouseenter="cmdSelectedIndex=${idx};renderCommandResults();">
+      <div class="cmd-item-icon">${item.icon}</div>
+      <div class="cmd-item-content">
+        <div class="cmd-item-title">${item.title}</div>
+        <div class="cmd-item-desc">${item.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function executeCommand(item) {
+  if (item && item.action) {
+    item.action();
+    closeCommandPalette();
+  }
 }
 
 // ═══════════════════════════════════════════════
