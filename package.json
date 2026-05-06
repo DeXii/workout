@@ -1,9 +1,11 @@
 {
   "name": "workout-1",
   "private": true,
-  "version": "1.0.0",
-  "description": "Ayanokoji workout tracker quality tooling",
+  "version": "3.0.1",
+  "description": "Ayanokoji System v3.0 - Progressive Web App for workout tracking",
   "scripts": {
+    "start": "npx http-server -p 8080 -o",
+    "dev": "npx live-server --port=8080",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --ext .js",

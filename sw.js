@@ -1,4 +1,4 @@
-const CACHE_NAME = "ayanokoji-v2";
+const CACHE_NAME = "ayanokoji-v3";
 const STATIC_CACHE = [
   "./",
   "./index.html",
@@ -7,6 +7,18 @@ const STATIC_CACHE = [
   "./js/core/macros.js",
   "./js/core/validation.js",
   "./js/core/state.js",
+  "./js/core/task-engine.js",
+  "./js/core/achievements.js",
+  "./js/core/recovery.js",
+  "./js/core/progressive-overload.js",
+  "./js/pr-tracker.js",
+  "./js/dashboard-enhanced.js",
+  "./js/achievements-ui.js",
+  "./js/export.js",
+  "./js/notifications.js",
+  "./js/heatmap.js",
+  "./js/theme.js",
+  "./js/dashboard.js"
 ];
 
 self.addEventListener("install", (event) => {
@@ -71,5 +83,38 @@ self.addEventListener("fetch", (event) => {
     requestUrl.pathname.endsWith(".html");
 
   event.respondWith(isHtmlRequest ? networkFirst(event.request) : staleWhileRevalidate(event.request));
+});
+
+// Handle notification clicks
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action === 'start' || event.action === 'snooze') {
+    event.waitUntil(
+      /* global clients */
+      clients.matchAll({ type: 'window' }).then(clientList => {
+        // Send message to client
+        if (clientList.length > 0) {
+          clientList[0].postMessage({
+            type: 'notification-action',
+            action: event.action
+          });
+          return clientList[0].focus();
+        }
+        // Open new window if no client exists
+        return clients.openWindow('/');
+      })
+    );
+  } else {
+    // Default action - open app
+    event.waitUntil(
+      clients.matchAll({ type: 'window' }).then(clientList => {
+        if (clientList.length > 0) {
+          return clientList[0].focus();
+        }
+        return clients.openWindow('/');
+      })
+    );
+  }
 });
 
