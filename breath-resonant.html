@@ -1,0 +1,710 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Резонансное дыхание</title>
+  <!--
+  ╔══════════════════════════════════════════════════════════════════╗
+  ║  ИНСТРУКЦИЯ ПО ВСТРАИВАНИЮ                                      ║
+  ║                                                                  ║
+  ║  Вариант 1: iframe                                               ║
+  ║  <iframe src="breath-resonant.html" width="100%"                 ║
+  ║          height="500" style="border:none;"></iframe>            ║
+  ║                                                                  ║
+  ║  Вариант 2: Копирование блока                                    ║
+  ║  Скопируйте всё содержимое <style>, HTML-блок .breath-container ║
+  ║  и <script> в нужное место вашей страницы.                       ║
+  ╚══════════════════════════════════════════════════════════════════╝
+  -->
+  <style>
+    /* ═══════════════════════════════════════════════════════════════
+       ОСНОВНЫЕ СТИЛИ
+       ═══════════════════════════════════════════════════════════════ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-primary: #0d1117;
+      --bg-secondary: #161b22;
+      --text-primary: #f0f6fc;
+      --text-secondary: #8b949e;
+      --accent-inh: #58a6ff;      /* Синий для вдоха */
+      --accent-exh: #7ee787;      /* Зелёный для выдоха */
+      --accent-glow: rgba(88, 166, 255, 0.4);
+      --circle-min: 100px;
+      --circle-max: 300px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       КОНТЕЙНЕР ТАЙМЕРА
+       ═══════════════════════════════════════════════════════════════ */
+    .breath-container {
+      width: 100%;
+      max-width: 500px;
+      min-width: 300px;
+      background: var(--bg-secondary);
+      border-radius: 24px;
+      padding: 40px 30px;
+      text-align: center;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .breath-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, var(--accent-inh), var(--accent-exh));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .breath-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 30px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ВИЗУАЛИЗАЦИЯ КРУГА
+       ═══════════════════════════════════════════════════════════════ */
+    .breath-visual {
+      position: relative;
+      width: var(--circle-max);
+      height: var(--circle-max);
+      margin: 0 auto 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .breath-circle {
+      width: var(--circle-min);
+      height: var(--circle-min);
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%,
+        rgba(88, 166, 255, 0.3),
+        rgba(88, 166, 255, 0.1));
+      border: 3px solid var(--accent-inh);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: width 5s linear, height 5s linear,
+                  background 5s linear, border-color 5s linear,
+                  box-shadow 5s linear;
+      will-change: width, height, background, border-color;
+    }
+
+    .breath-circle.inh {
+      width: var(--circle-max);
+      height: var(--circle-max);
+      background: radial-gradient(circle at 30% 30%,
+        rgba(88, 166, 255, 0.5),
+        rgba(88, 166, 255, 0.2));
+      border-color: var(--accent-inh);
+      box-shadow: 0 0 60px var(--accent-glow);
+    }
+
+    .breath-circle.exh {
+      width: var(--circle-min);
+      height: var(--circle-min);
+      background: radial-gradient(circle at 30% 30%,
+        rgba(126, 231, 135, 0.3),
+        rgba(126, 231, 135, 0.1));
+      border-color: var(--accent-exh);
+      box-shadow: 0 0 30px rgba(126, 231, 135, 0.3);
+    }
+
+    /* Текст внутри круга */
+    .breath-phase-text {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      transition: opacity 0.3s;
+    }
+
+    .breath-countdown {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--text-primary);
+      position: absolute;
+      bottom: -40px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ТАЙМЕР И СТАТИСТИКА
+       ═══════════════════════════════════════════════════════════════ */
+    .breath-timer-display {
+      font-size: 3.5rem;
+      font-weight: 800;
+      font-family: 'Courier New', monospace;
+      color: var(--text-primary);
+      margin-bottom: 10px;
+      letter-spacing: 0.05em;
+    }
+
+    .breath-stats {
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      margin-bottom: 30px;
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    .breath-stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .breath-stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .breath-stat-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       КНОПКИ УПРАВЛЕНИЯ
+       ═══════════════════════════════════════════════════════════════ */
+    .breath-controls {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .breath-btn {
+      padding: 14px 28px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      min-width: 120px;
+    }
+
+    .breath-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .breath-btn-start {
+      background: var(--accent-inh);
+      color: #000;
+    }
+
+    .breath-btn-start:hover:not(:disabled) {
+      background: #79b8ff;
+      transform: translateY(-2px);
+    }
+
+    .breath-btn-pause {
+      background: #f0883e;
+      color: #000;
+    }
+
+    .breath-btn-pause:hover:not(:disabled) {
+      background: #f9a563;
+      transform: translateY(-2px);
+    }
+
+    .breath-btn-reset {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 2px solid var(--text-secondary);
+    }
+
+    .breath-btn-reset:hover:not(:disabled) {
+      border-color: var(--text-primary);
+      color: var(--text-primary);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       СООБЩЕНИЕ О ЗАВЕРШЕНИИ
+       ═══════════════════════════════════════════════════════════════ */
+    .breath-complete {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: rgba(13, 17, 23, 0.95);
+      border-radius: 24px;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+      z-index: 10;
+    }
+
+    .breath-complete.show {
+      display: flex;
+    }
+
+    .breath-complete-text {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: var(--accent-exh);
+    }
+
+    .breath-complete-sub {
+      font-size: 1rem;
+      color: var(--text-secondary);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       АДАПТИВНОСТЬ
+       ═══════════════════════════════════════════════════════════════ */
+    @media (max-width: 400px) {
+      :root {
+        --circle-min: 80px;
+        --circle-max: 200px;
+      }
+
+      .breath-container {
+        padding: 30px 20px;
+      }
+
+      .breath-title {
+        font-size: 1.2rem;
+      }
+
+      .breath-timer-display {
+        font-size: 2.5rem;
+      }
+
+      .breath-phase-text {
+        font-size: 1.5rem;
+      }
+
+      .breath-countdown {
+        font-size: 2rem;
+        bottom: -35px;
+      }
+
+      .breath-btn {
+        padding: 12px 20px;
+        min-width: 100px;
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="breath-container">
+    <h1 class="breath-title">🌬️ Резонансное дыхание</h1>
+    <p class="breath-subtitle">5 сек вдох · 5 сек выдох · 10 минут</p>
+
+    <!-- Визуализация -->
+    <div class="breath-visual">
+      <div class="breath-circle" id="breathCircle">
+        <span class="breath-phase-text" id="phaseText">Готов</span>
+      </div>
+      <div class="breath-countdown" id="countdown"></div>
+    </div>
+
+    <!-- Таймер сессии -->
+    <div class="breath-timer-display" id="sessionTimer">10:00</div>
+
+    <!-- Статистика -->
+    <div class="breath-stats">
+      <div class="breath-stat-item">
+        <span class="breath-stat-value" id="cyclesDone">0</span>
+        <span class="breath-stat-label">Циклов</span>
+      </div>
+      <div class="breath-stat-item">
+        <span class="breath-stat-value" id="cyclesLeft">60</span>
+        <span class="breath-stat-label">Осталось</span>
+      </div>
+    </div>
+
+    <!-- Кнопки -->
+    <div class="breath-controls">
+      <button class="breath-btn breath-btn-start" id="btnStart">▶ Старт</button>
+      <button class="breath-btn breath-btn-pause" id="btnPause" disabled>⏸ Пауза</button>
+      <button class="breath-btn breath-btn-reset" id="btnReset">⟲ Сброс</button>
+    </div>
+
+    <!-- Сообщение о завершении -->
+    <div class="breath-complete" id="completeOverlay">
+      <div class="breath-complete-text">✅ Сессия завершена</div>
+      <div class="breath-complete-sub">Отличная работа!</div>
+      <button class="breath-btn breath-btn-start" onclick="resetTimer()">Новая сессия</button>
+    </div>
+  </div>
+
+  <script>
+    /* ═══════════════════════════════════════════════════════════════
+       КОНФИГУРАЦИЯ ТАЙМЕРА
+       ═══════════════════════════════════════════════════════════════ */
+    const CONFIG = {
+      INHALE_MS: 5000,           // Длительность вдоха (мс)
+      EXHALE_MS: 5000,           // Длительность выдоха (мс)
+      TOTAL_CYCLES: 60,          // Общее количество циклов
+      TOTAL_SESSION_MS: 600000,  // 10 минут в миллисекундах
+      PHASE_INHALE: 'inhale',
+      PHASE_EXHALE: 'exhale'
+    };
+
+    /* ═══════════════════════════════════════════════════════════════
+       СОСТОЯНИЕ ТАЙМЕРА
+       ═══════════════════════════════════════════════════════════════ */
+    const state = {
+      isRunning: false,
+      isPaused: false,
+      currentPhase: CONFIG.PHASE_INHALE,
+      cycleStartTime: 0,         // Время начала текущей фазы
+      sessionStartTime: 0,       // Время начала сессии
+      pausedAt: 0,               // Время паузы
+      totalPausedTime: 0,        // Общее время на паузе
+      cyclesCompleted: 0,
+      animationId: null,
+      wakeLock: null
+    };
+
+    /* ═══════════════════════════════════════════════════════════════
+       DOM ЭЛЕМЕНТЫ
+       ═══════════════════════════════════════════════════════════════ */
+    const elements = {
+      circle: document.getElementById('breathCircle'),
+      phaseText: document.getElementById('phaseText'),
+      countdown: document.getElementById('countdown'),
+      sessionTimer: document.getElementById('sessionTimer'),
+      cyclesDone: document.getElementById('cyclesDone'),
+      cyclesLeft: document.getElementById('cyclesLeft'),
+      btnStart: document.getElementById('btnStart'),
+      btnPause: document.getElementById('btnPause'),
+      btnReset: document.getElementById('btnReset'),
+      completeOverlay: document.getElementById('completeOverlay')
+    };
+
+    /* ═══════════════════════════════════════════════════════════════
+       ЗВУКОВОЕ ОФОРМЛЕНИЕ (Web Audio API)
+       ═══════════════════════════════════════════════════════════════ */
+    let audioContext = null;
+
+    // Инициализация аудио контекста (требует взаимодействия пользователя)
+    function initAudio() {
+      if (!audioContext) {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioContext.state === 'suspended') {
+        audioContext.resume();
+      }
+    }
+
+    // Звуковой сигнал (частота, длительность)
+    function playTone(frequency, duration, type = 'sine') {
+      if (!audioContext) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+
+      oscillator.frequency.value = frequency;
+      oscillator.type = type;
+
+      // Плавное затухание
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + duration);
+
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + duration);
+    }
+
+    // Звук начала сессии
+    function playStartSound() {
+      playTone(523.25, 0.15); // C5
+      setTimeout(() => playTone(659.25, 0.15), 150); // E5
+      setTimeout(() => playTone(783.99, 0.3), 300);  // G5
+    }
+
+    // Звук окончания сессии
+    function playEndSound() {
+      playTone(783.99, 0.2); // G5
+      setTimeout(() => playTone(659.25, 0.2), 200);  // E5
+      setTimeout(() => playTone(523.25, 0.4), 400);  // C5
+    }
+
+    // Тихий щелчок при смене фазы
+    function playPhaseClick() {
+      playTone(800, 0.05, 'square');
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       WAKE LOCK API (препятствует гашению экрана)
+       ═══════════════════════════════════════════════════════════════ */
+    async function requestWakeLock() {
+      if ('wakeLock' in navigator) {
+        try {
+          state.wakeLock = await navigator.wakeLock.request('screen');
+          console.log('Wake Lock активирован');
+        } catch (err) {
+          console.log('Wake Lock не поддерживается или отклонён:', err.message);
+        }
+      }
+    }
+
+    async function releaseWakeLock() {
+      if (state.wakeLock) {
+        try {
+          await state.wakeLock.release();
+          state.wakeLock = null;
+          console.log('Wake Lock отключён');
+        } catch (err) {
+          console.log('Ошибка при отключении Wake Lock:', err.message);
+        }
+      }
+    }
+
+    // Повторный запрос Wake Lock при возвращении на вкладку
+    document.addEventListener('visibilitychange', async () => {
+      if (state.isRunning && !state.isPaused && document.visibilityState === 'visible') {
+        await requestWakeLock();
+      }
+    });
+
+    /* ═══════════════════════════════════════════════════════════════
+       ФОРМАТИРОВАНИЕ ВРЕМЕНИ
+       ═══════════════════════════════════════════════════════════════ */
+    function formatTime(ms) {
+      const totalSeconds = Math.max(0, Math.ceil(ms / 1000));
+      const minutes = Math.floor(totalSeconds / 60);
+      const seconds = totalSeconds % 60;
+      return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ОБНОВЛЕНИЕ UI
+       ═══════════════════════════════════════════════════════════════ */
+    function updateUI() {
+      // Обновляем счётчики циклов
+      elements.cyclesDone.textContent = state.cyclesCompleted;
+      elements.cyclesLeft.textContent = Math.max(0, CONFIG.TOTAL_CYCLES - state.cyclesCompleted);
+    }
+
+    function setPhase(phase) {
+      state.currentPhase = phase;
+
+      if (phase === CONFIG.PHASE_INHALE) {
+        elements.circle.className = 'breath-circle inh';
+        elements.phaseText.textContent = 'Вдох';
+      } else {
+        elements.circle.className = 'breath-circle exh';
+        elements.phaseText.textContent = 'Выдох';
+      }
+
+      playPhaseClick();
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ОСНОВНОЙ ЦИКЛ ТАЙМЕРА (requestAnimationFrame)
+       ═══════════════════════════════════════════════════════════════ */
+    function tick() {
+      if (!state.isRunning || state.isPaused) return;
+
+      const now = Date.now();
+      const elapsedSinceStart = now - state.sessionStartTime - state.totalPausedTime;
+      const remainingSession = CONFIG.TOTAL_SESSION_MS - elapsedSinceStart;
+
+      // Проверяем завершение сессии
+      if (remainingSession <= 0) {
+        completeSession();
+        return;
+      }
+
+      // Обновляем таймер сессии
+      elements.sessionTimer.textContent = formatTime(remainingSession);
+
+      // Вычисляем текущую фазу цикла
+      const elapsedInCycle = (now - state.cycleStartTime) % (CONFIG.INHALE_MS + CONFIG.EXHALE_MS);
+
+      // Определяем фазу
+      const shouldBeInhale = elapsedInCycle < CONFIG.INHALE_MS;
+      const newPhase = shouldBeInhale ? CONFIG.PHASE_INHALE : CONFIG.PHASE_EXHALE;
+
+      // Меняем фазу при необходимости
+      if (newPhase !== state.currentPhase) {
+        setPhase(newPhase);
+
+        // Увеличиваем счётчик циклов при переходе к вдоху
+        if (newPhase === CONFIG.PHASE_INHALE) {
+          state.cyclesCompleted++;
+          updateUI();
+        }
+      }
+
+      // Обратный отсчёт внутри фазы
+      const phaseElapsed = shouldBeInhale ? elapsedInCycle : elapsedInCycle - CONFIG.INHALE_MS;
+      const phaseDuration = shouldBeInhale ? CONFIG.INHALE_MS : CONFIG.EXHALE_MS;
+      const phaseRemaining = Math.ceil((phaseDuration - phaseElapsed) / 1000);
+      elements.countdown.textContent = phaseRemaining > 0 ? phaseRemaining : '';
+
+      // Продолжаем анимацию
+      state.animationId = requestAnimationFrame(tick);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       УПРАВЛЕНИЕ ТАЙМЕРОМ
+       ═══════════════════════════════════════════════════════════════ */
+    function startTimer() {
+      initAudio();
+
+      if (state.isPaused) {
+        // Продолжение после паузы
+        const pauseDuration = Date.now() - state.pausedAt;
+        state.totalPausedTime += pauseDuration;
+        state.cycleStartTime += pauseDuration;
+        state.isPaused = false;
+      } else {
+        // Новый старт
+        state.sessionStartTime = Date.now();
+        state.cycleStartTime = Date.now();
+        state.totalPausedTime = 0;
+        state.cyclesCompleted = 0;
+
+        // Устанавливаем начальную фазу
+        setPhase(CONFIG.PHASE_INHALE);
+        elements.circle.style.transition = 'width 5s linear, height 5s linear, background 5s linear, border-color 5s linear, box-shadow 5s linear';
+
+        playStartSound();
+      }
+
+      state.isRunning = true;
+
+      // Обновляем кнопки
+      elements.btnStart.disabled = true;
+      elements.btnPause.disabled = false;
+      elements.btnPause.textContent = '⏸ Пауза';
+      elements.completeOverlay.classList.remove('show');
+
+      // Запрашиваем Wake Lock
+      requestWakeLock();
+
+      // Запускаем цикл
+      state.animationId = requestAnimationFrame(tick);
+    }
+
+    function pauseTimer() {
+      if (!state.isRunning || state.isPaused) return;
+
+      state.isPaused = true;
+      state.pausedAt = Date.now();
+
+      // Отменяем анимацию
+      if (state.animationId) {
+        cancelAnimationFrame(state.animationId);
+        state.animationId = null;
+      }
+
+      // Отпускаем Wake Lock
+      releaseWakeLock();
+
+      // Обновляем кнопки
+      elements.btnStart.disabled = false;
+      elements.btnStart.textContent = '▶ Продолжить';
+      elements.btnPause.disabled = true;
+      elements.phaseText.textContent = 'Пауза';
+    }
+
+    function resetTimer() {
+      // Останавливаем всё
+      state.isRunning = false;
+      state.isPaused = false;
+      state.cyclesCompleted = 0;
+      state.totalPausedTime = 0;
+
+      if (state.animationId) {
+        cancelAnimationFrame(state.animationId);
+        state.animationId = null;
+      }
+
+      releaseWakeLock();
+
+      // Сбрасываем UI
+      elements.circle.className = 'breath-circle';
+      elements.circle.style.transition = '';
+      elements.phaseText.textContent = 'Готов';
+      elements.countdown.textContent = '';
+      elements.sessionTimer.textContent = '10:00';
+
+      // Сбрасываем счётчики
+      elements.cyclesDone.textContent = '0';
+      elements.cyclesLeft.textContent = '60';
+
+      // Восстанавливаем кнопки
+      elements.btnStart.disabled = false;
+      elements.btnStart.textContent = '▶ Старт';
+      elements.btnPause.disabled = true;
+      elements.btnPause.textContent = '⏸ Пауза';
+      elements.completeOverlay.classList.remove('show');
+    }
+
+    function completeSession() {
+      state.isRunning = false;
+      state.isPaused = false;
+
+      if (state.animationId) {
+        cancelAnimationFrame(state.animationId);
+        state.animationId = null;
+      }
+
+      releaseWakeLock();
+
+      // Звук завершения
+      playEndSound();
+
+      // Финальные значения
+      elements.sessionTimer.textContent = '00:00';
+      elements.cyclesDone.textContent = CONFIG.TOTAL_CYCLES;
+      elements.cyclesLeft.textContent = '0';
+      elements.phaseText.textContent = 'Готово';
+      elements.countdown.textContent = '';
+
+      // Показываем оверлей завершения
+      elements.completeOverlay.classList.add('show');
+
+      // Блокируем кнопки
+      elements.btnStart.disabled = true;
+      elements.btnPause.disabled = true;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ОБРАБОТЧИКИ СОБЫТИЙ
+       ═══════════════════════════════════════════════════════════════ */
+    elements.btnStart.addEventListener('click', startTimer);
+    elements.btnPause.addEventListener('click', pauseTimer);
+    elements.btnReset.addEventListener('click', resetTimer);
+
+    // Инициализация при загрузке
+    updateUI();
+  </script>
+</body>
+</html>
