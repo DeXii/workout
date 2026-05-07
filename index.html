@@ -308,7 +308,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 /* RESONANT BREATHING TIMER */
 .breath-resonant-card{position:relative;text-align:center;overflow:hidden;}
 .breath-visual-wrapper{position:relative;width:200px;height:200px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;}
-.breath-resonant-circle{width:80px;height:80px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(0,212,255,.3),rgba(0,212,255,.1));border:3px solid var(--a1);display:flex;align-items:center;justify-content:center;transition:width 5s linear,height 5s linear,background 5s linear,border-color 5s linear,box-shadow 5s linear;will-change:width,height;}
+.breath-resonant-circle{width:80px;height:80px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(0,212,255,.3),rgba(0,212,255,.1));border:3px solid var(--a1);display:flex;align-items:center;justify-content:center;transition:width var(--breath-dur,5s) linear,height var(--breath-dur,5s) linear,background var(--breath-dur,5s) linear,border-color var(--breath-dur,5s) linear,box-shadow var(--breath-dur,5s) linear;will-change:width,height;}
 .breath-resonant-circle.inh{width:200px;height:200px;background:radial-gradient(circle at 30% 30%,rgba(0,212,255,.5),rgba(0,212,255,.2));border-color:var(--a1);box-shadow:0 0 40px rgba(0,212,255,.4);}
 .breath-resonant-circle.exh{width:80px;height:80px;background:radial-gradient(circle at 30% 30%,rgba(16,185,129,.3),rgba(16,185,129,.1));border-color:var(--a3);box-shadow:0 0 20px rgba(16,185,129,.3);}
 .breath-resonant-phase{font-size:1.4rem;font-weight:800;color:var(--t1);text-transform:uppercase;letter-spacing:.08em;}
@@ -325,7 +325,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg1);color:var
 .breath-complete-sub{font-size:.9rem;color:var(--t2);}
 
 /* BOX BREATHING TIMER */
-.breath-box-circle{width:80px;height:80px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(88,166,255,.3),rgba(88,166,255,.1));border:3px solid var(--a1);display:flex;align-items:center;justify-content:center;transition:width 5s linear,height 5s linear,background 5s linear,border-color 5s linear,box-shadow 5s linear;will-change:width,height;}
+.breath-box-circle{width:80px;height:80px;border-radius:50%;background:radial-gradient(circle at 30% 30%,rgba(88,166,255,.3),rgba(88,166,255,.1));border:3px solid var(--a1);display:flex;align-items:center;justify-content:center;transition:width var(--box-breath-dur,4s) linear,height var(--box-breath-dur,4s) linear,background var(--box-breath-dur,4s) linear,border-color var(--box-breath-dur,4s) linear,box-shadow var(--box-breath-dur,4s) linear;will-change:width,height;}
 .breath-box-circle.inh{width:200px;height:200px;background:radial-gradient(circle at 30% 30%,rgba(88,166,255,.5),rgba(88,166,255,.2));border-color:var(--a1);box-shadow:0 0 40px rgba(88,166,255,.4);}
 .breath-box-circle.hold-inh{width:200px;height:200px;background:radial-gradient(circle at 30% 30%,rgba(124,58,237,.4),rgba(124,58,237,.2));border-color:var(--a2);box-shadow:0 0 40px rgba(124,58,237,.4);animation:box-pulse 1.5s ease-in-out infinite;}
 .breath-box-circle.exh{width:80px;height:80px;background:radial-gradient(circle at 30% 30%,rgba(244,63,143,.3),rgba(244,63,143,.1));border-color:var(--a6);box-shadow:0 0 20px rgba(244,63,143,.3);}
@@ -2650,7 +2650,57 @@ function loadCloud(cb){
 
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    if(d){S.done=d.done||{};S.workoutLogs=d.workoutLogs||{};S.runLogs=d.runLogs||{};S.taskStatus=d.taskStatus||{};S.carryOver=d.carryOver||{};S.dailyReviews=d.dailyReviews||{};S.skillStats=d.skillStats||{};S.brainLog=d.brainLog||[];S.memoryCards=d.memoryCards||[];S.selfTests=d.selfTests||[];S.emotionLog=d.emotionLog||[];S.pauseLog=d.pauseLog||[];S.attentionLog=d.attentionLog||[];S.observationLog=d.observationLog||[];S.communicationLog=d.communicationLog||[];S.scenarioLog=d.scenarioLog||[];S.projects=d.projects||[];S.lightDays=d.lightDays||{};S.taskCards=d.taskCards||[];S.dayClosed=d.dayClosed||{};S.currentStage=(d.currentStage==='s2'?'s3':(d.currentStage||'s0'));S.booksRead=d.booksRead||{};S.phaseChecks=d.phaseChecks||{p0:{},p1:{},p2:{},p3:{}};S.history=d.history||[];S.seenKnowledge=d.seenKnowledge||{};S.sleepLogs=d.sleepLogs||{};S.personalRecords=d.personalRecords||{};if(d.startDate)S.startDate=new Date(d.startDate);if(d.customSchedule)S.customSchedule=d.customSchedule;}
+    if(d){
+      // MERGE instead of overwrite - keep local data if newer
+      // For objects: merge, preferring non-empty values
+      const mergeObj = (local, remote) => {
+        if (!remote) return local;
+        if (!local) return remote;
+        const result = {...remote, ...local}; // Local takes priority
+        return result;
+      };
+
+      // For arrays: use the one with more items (likely newer)
+      const mergeArr = (local, remote) => {
+        if (!remote || !Array.isArray(remote)) return local || [];
+        if (!local || !Array.isArray(local)) return remote;
+        return local.length >= remote.length ? local : remote;
+      };
+
+      S.done = mergeObj(S.done, d.done);
+      S.workoutLogs = mergeObj(S.workoutLogs, d.workoutLogs);
+      S.runLogs = mergeObj(S.runLogs, d.runLogs);
+      S.taskStatus = mergeObj(S.taskStatus, d.taskStatus);
+      S.carryOver = mergeObj(S.carryOver, d.carryOver);
+      S.dailyReviews = mergeObj(S.dailyReviews, d.dailyReviews);
+      S.skillStats = mergeObj(S.skillStats, d.skillStats);
+      S.brainLog = mergeArr(S.brainLog, d.brainLog);
+      S.memoryCards = mergeArr(S.memoryCards, d.memoryCards);
+      S.selfTests = mergeArr(S.selfTests, d.selfTests);
+      S.emotionLog = mergeArr(S.emotionLog, d.emotionLog);
+      S.pauseLog = mergeArr(S.pauseLog, d.pauseLog);
+      S.attentionLog = mergeArr(S.attentionLog, d.attentionLog);
+      S.observationLog = mergeArr(S.observationLog, d.observationLog);
+      S.communicationLog = mergeArr(S.communicationLog, d.communicationLog);
+      S.scenarioLog = mergeArr(S.scenarioLog, d.scenarioLog);
+      S.projects = mergeArr(S.projects, d.projects);
+      S.lightDays = mergeObj(S.lightDays, d.lightDays);
+      S.taskCards = mergeArr(S.taskCards, d.taskCards);
+      S.dayClosed = mergeObj(S.dayClosed, d.dayClosed);
+      S.currentStage = (d.currentStage==='s2'?'s3':(d.currentStage||S.currentStage||'s0'));
+      S.booksRead = mergeObj(S.booksRead, d.booksRead);
+      S.phaseChecks = mergeObj(S.phaseChecks, d.phaseChecks);
+      S.phaseChecks = {p0:{},p1:{},p2:{},p3:{},...S.phaseChecks};
+      S.history = mergeArr(S.history, d.history);
+      S.seenKnowledge = mergeObj(S.seenKnowledge, d.seenKnowledge);
+      S.sleepLogs = mergeObj(S.sleepLogs, d.sleepLogs);
+      S.personalRecords = mergeObj(S.personalRecords, d.personalRecords);
+      if(d.startDate) S.startDate = new Date(d.startDate);
+      if(d.customSchedule) S.customSchedule = d.customSchedule;
+
+      // Save merged data back to localStorage and Firebase
+      saveLocal();
+    }
     safeCallback();
   }).catch(()=>{safeCallback();});
 }
@@ -2780,7 +2830,7 @@ document.getElementById('main-wrap').addEventListener('touchend',e=>{
   const dx=e.changedTouches[0].clientX-touchStartX;
   const dy=e.changedTouches[0].clientY-touchStartY;
   if(Math.abs(dx)>60&&Math.abs(dx)>Math.abs(dy)*1.5){
-    const secs=['dash','mind','body','control','trackers','skills','taskbank','stages','analytics','projects','sched','workout','run','food','mealplan','shopping','supps','books','knowledge','mental','progress','charts','macros'];
+    const secs=['dash','priorities','mind','body','control','trackers','skills','taskbank','stages','analytics','projects','sched','workout','run','food','mealplan','shopping','supps','books','knowledge','mental','progress','charts','macros'];
     const cur=Array.from(document.querySelectorAll('.sec')).findIndex(s=>s.classList.contains('active'));
     let next=cur+(dx<0?1:-1);
     if(next>=0&&next<secs.length)goSec(secs[next]);
@@ -5155,16 +5205,17 @@ function resonantTick() {
   document.getElementById('resonantTimer').textContent = resonantFormatTime(remaining);
 
   const cycleDuration = RESONANT_CONFIG.INHALE_MS + RESONANT_CONFIG.EXHALE_MS;
+
+  // Вычисляем завершённые циклы из прошедшего времени (начинаем с 1, т.к. первый цикл уже идёт)
+  resonantState.cyclesCompleted = Math.min(RESONANT_CONFIG.TOTAL_CYCLES, Math.floor(elapsed / cycleDuration) + 1);
+  resonantUpdateUI();
+
   const elapsedInCycle = (now - resonantState.cycleStartTime) % cycleDuration;
   const shouldBeInhale = elapsedInCycle < RESONANT_CONFIG.INHALE_MS;
   const newPhase = shouldBeInhale ? 'inhale' : 'exhale';
 
   if (newPhase !== resonantState.currentPhase) {
     resonantSetPhase(newPhase);
-    if (newPhase === 'inhale') {
-      resonantState.cyclesCompleted++;
-      resonantUpdateUI();
-    }
   }
 
   const phaseElapsed = shouldBeInhale ? elapsedInCycle : elapsedInCycle - RESONANT_CONFIG.INHALE_MS;
@@ -5182,6 +5233,9 @@ function resonantStart() {
   const btnStart = document.getElementById('resonantBtnStart');
   const btnPause = document.getElementById('resonantBtnPause');
   const complete = document.getElementById('resonantComplete');
+
+  // Устанавливаем CSS переменную для длительности фазы
+  document.documentElement.style.setProperty('--breath-dur', RESONANT_CONFIG.INHALE_MS + 'ms');
 
   if (resonantState.isPaused) {
     const pauseDur = Date.now() - resonantState.pausedAt;
@@ -5873,6 +5927,10 @@ function boxTick() {
   const cycleDuration = BOX_PHASES.reduce((sum, p) => sum + p.duration, 0);
   const elapsedInCycle = (now - boxState.cycleStartTime) % cycleDuration;
 
+  // Вычисляем завершённые циклы из прошедшего времени (начинаем с 1, т.к. первый цикл уже идёт)
+  boxState.cyclesCompleted = Math.min(BOX_CONFIG.TOTAL_CYCLES, Math.floor(elapsed / cycleDuration) + 1);
+  boxUpdateUI();
+
   // Определяем фазу
   let phaseStart = 0;
   let newPhase = 0;
@@ -5887,12 +5945,6 @@ function boxTick() {
   // Меняем фазу при необходимости
   if (newPhase !== boxState.currentPhase) {
     boxSetPhase(newPhase);
-
-    // Увеличиваем счётчик при переходе к вдоху (начало нового цикла)
-    if (newPhase === 0) {
-      boxState.cyclesCompleted++;
-      boxUpdateUI();
-    }
   }
 
   // Обратный отсчёт внутри фазы
@@ -5910,6 +5962,9 @@ function boxStart() {
   const btnStart = document.getElementById('boxBtnStart');
   const btnPause = document.getElementById('boxBtnPause');
   const complete = document.getElementById('boxComplete');
+
+  // Устанавливаем CSS переменную для длительности фазы
+  document.documentElement.style.setProperty('--box-breath-dur', BOX_CONFIG.INHALE_MS + 'ms');
 
   if (boxState.isPaused) {
     const pauseDur = Date.now() - boxState.pausedAt;

@@ -1,10 +1,31 @@
-# ⚡ Ayanokoji System v3.3
+# ⚡ Ayanokoji System v3.3.1
 
 > Продвинутый трекер тренировок и личного развития с системой приоритетов, Command Palette и умной навигацией
 
 [![Tests](https://img.shields.io/badge/tests-34%2F34%20passing-brightgreen)]()
-[![Version](https://img.shields.io/badge/version-3.3.0-blue)]()
+[![Version](https://img.shields.io/badge/version-3.3.1-blue)]()
 [![PWA](https://img.shields.io/badge/PWA-ready-purple)]()
+
+## 🚀 Что нового в v3.3.1
+
+### 🐛 Исправления багов
+Критические исправления для стабильности работы:
+
+**Синхронизация данных**
+- ✅ Исправлена потеря данных тренировок при синхронизации с Firebase
+- ✅ `loadCloud` теперь делает merge вместо перезаписи (локальные данные имеют приоритет)
+- ✅ Данные тренировок больше не исчезают после перезагрузки страницы
+
+**Таймеры дыхания**
+- ✅ Исправлен счётчик циклов в Resonant Breathing (теперь показывает 1-60 корректно)
+- ✅ Исправлен счётчик циклов в Box Breathing (аналогичное исправление)
+- ✅ CSS transition duration теперь синхронизирован с JS конфигурацией через CSS переменные
+
+**Навигация**
+- ✅ Добавлен `priorities` в список секций для swipe-навигации на мобильных
+
+**Git**
+- ✅ Создан `.gitignore` для исключения `node_modules/.vite/` и других артефактов
 
 ## 🚀 Что нового в v3.3.0
 
@@ -200,6 +221,7 @@ workout-3 — копия/
 ├── sw.js                         # Service Worker v3
 ├── manifest.webmanifest          # PWA manifest
 ├── offline.html                  # Offline fallback
+├── .gitignore                    # Git исключения
 │
 ├── audio/                        # Аудио файлы
 │   └── MoriBreath.mp3           # Аудио для Mori breathing
@@ -284,7 +306,7 @@ workout-3 — копия/
 ### Синхронизация
 - ✅ Firebase Realtime Database
 - ✅ Offline-first (Service Worker)
-- ✅ Автоматический sync
+- ✅ Автоматический sync с merge (локальные данные имеют приоритет)
 
 ---
 
@@ -437,15 +459,19 @@ const themes = {
 // Резонансное дыхание (миллисекунды)
 const RESONANT_CONFIG = {
   INHALE_MS: 5000,
-  EXHALE_MS: 5000
+  EXHALE_MS: 5000,
+  TOTAL_CYCLES: 60,
+  TOTAL_SESSION_MS: 600000
 };
 
 // Квадратное дыхание
 const BOX_CONFIG = {
   INHALE_MS: 4000,
-  HOLD_IN_MS: 4000,
+  HOLD_INHALE_MS: 4000,
   EXHALE_MS: 4000,
-  HOLD_OUT_MS: 4000
+  HOLD_EXHALE_MS: 4000,
+  TOTAL_CYCLES: 44,
+  TOTAL_SESSION_MS: 600000
 };
 
 // Mori breathing
@@ -553,7 +579,7 @@ npm test
 
 ---
 
-**Версия**: 3.3.0  
+**Версия**: 3.3.1  
 **Дата релиза**: 2026-05-07  
 **Тестов**: 34/34 ✅  
 **Модулей**: 15  
