@@ -3,7 +3,57 @@
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+and this project adheres to [Semantic Versioning](https://semver.org/spec/2.0.0.html).
+
+---
+
+## [3.3.0] - 2026-05-07
+
+### Added
+- **🌬️ Resonant Breathing Timer**: Полностью переработанный таймер резонансного дыхания
+  - Анимированный круг с плавным расширением (вдох) и сжатием (выдох)
+  - Точные интервалы: 5 секунд вдох, 5 секунд выдох
+  - Звуковые сигналы начала и конца фаз (Web Audio API)
+  - Счетчик выполненных циклов
+  - Wake Lock API для предотвращения засыпания экрана на мобильных устройствах
+  - Точная синхронизация через Date.now() (предотвращает дрейф при фоновом режиме)
+
+- **📦 Box Breathing Timer**: Новый таймер квадратного дыхания
+  - 4 фазы по 4 секунды: вдох → задержка → выдох → задержка
+  - Визуальный квадрат с анимацией заполнения по фазам
+  - Эмодзи-индикаторы текущей фазы (👃吸气 → ⏸️ → 👃 → ⏸️)
+  - Звуковые клики при смене фаз
+  - CSS анимация пульсации на задержке (hold)
+  - Счетчик циклов
+
+- **🎭 Mori Breathing Tab**: Новая вкладка для 3-ступенчатой техники дыхания
+  - 3 ступени практики: начальная, средняя, продвинутая
+  - 10 секунд вдох → 10 секунд задержка → 10 секунд выдох
+  - Встроенный аудио плеер для файла MoriBreath.mp3
+  - Выбор текущей ступени через селектор
+  - Визуальный индикатор с анимацией круга
+
+- **📁 Audio folder**: Добавлена папка `audio/` для аудиофайлов
+  - MoriBreath.mp3 - фоновая музыка для Mori breathing
+
+### Changed
+- Таймеры дыхания теперь встроены в index.html (inline) вместо отдельного файла
+- Улучшена точность таймеров с использованием Date.now() вместо setInterval
+- Добавлена поддержка Wake Lock API для мобильных устройств
+
+### Removed
+- **QCT вкладка**: Полностью удалена (дублировала функционал других разделов)
+  - Удалены HTML элементы вкладки QCT
+  - Удалены CSS стили для QCT
+  - Удалены JavaScript функции и обработчики QCT
+  - Удалена кнопка навигации QCT
+- **breath-timer.js**: Удален старый unified timer (заменен на встроенные таймеры)
+
+### Technical
+- Web Audio API для генерации звуковых сигналов (без внешних файлов)
+- requestAnimationFrame для плавной анимации
+- CSS custom properties (--breath-dur) для динамических переходов
+- Service Worker обновлен (v3), breath-timer.js удален из кэша
 
 ---
 
@@ -306,6 +356,9 @@ workout-3 — копия/
 ├── CLAUDE.md                     # Документация для Claude
 ├── CHANGELOG.md                  # Этот файл
 │
+├── audio/                        # Аудио файлы (NEW in v3.3)
+│   └── MoriBreath.mp3           # Mori breathing audio
+│
 ├── js/
 │   ├── core/                     # Бизнес-логика (тестируемая)
 │   │   ├── macros.js            # Калькулятор питания
@@ -314,15 +367,15 @@ workout-3 — копия/
 │   │   ├── task-engine.js       # Конвертация расписания в задачи
 │   │   ├── achievements.js      # Streak и badges
 │   │   ├── recovery.js          # Сон и восстановление
-│   │   └── progressive-overload.js  # NEW: Прогрессивная перегрузка
+│   │   └── progressive-overload.js  # Прогрессивная перегрузка
 │   │
 │   ├── pr-tracker.js            # Трекинг личных рекордов
-│   ├── achievements-ui.js       # NEW: UI для достижений
-│   ├── export.js                # NEW: Экспорт/импорт данных
-│   ├── notifications.js         # NEW: Push-уведомления
-│   ├── heatmap.js               # NEW: Тепловая карта
-│   ├── theme.js                 # NEW: Переключатель темы
-│   ├── dashboard.js             # NEW: Enhanced dashboard
+│   ├── achievements-ui.js       # UI для достижений
+│   ├── export.js                # Экспорт/импорт данных
+│   ├── notifications.js         # Push-уведомления
+│   ├── heatmap.js               # Тепловая карта
+│   ├── theme.js                 # Переключатель темы
+│   ├── dashboard.js             # Enhanced dashboard
 │   └── dashboard-enhanced.js    # Дополнительные виджеты
 │
 └── tests/
@@ -330,105 +383,8 @@ workout-3 — копия/
     ├── validation.test.js       # 3 теста
     ├── achievements.test.js     # 8 тестов
     ├── recovery.test.js         # 9 тестов
-    └── progressive-overload.test.js  # NEW: 12 тестов
+    └── progressive-overload.test.js  # 12 тестов
 ```
-
----
-
-## Как использовать новые функции
-
-### Progressive Overload
-```javascript
-// Получить рекомендацию по весу
-const recommendation = window.ASCore.progressiveOverload.calculateRecommendedWeight(
-  'Bench Press',
-  window.S.personalRecords,
-  window.S.workoutLogs
-);
-// → { current: 80, recommended: 82.5, reason: "Увеличь вес на 2.5кг", increment: 2.5 }
-
-// Проверить плато
-const plateaus = window.ASCore.progressiveOverload.getAllPlateaus(
-  window.S.personalRecords,
-  window.S.workoutLogs,
-  2 // недели
-);
-```
-
-### Уведомления
-```javascript
-// Инициализация
-window.notificationModule.initNotifications();
-
-// Запланировать напоминание о тренировке
-window.notificationModule.scheduleWorkoutReminder('06:00', 'Утренняя тренировка');
-
-// Уведомить о новом PR
-window.notificationModule.notifyNewPR('Bench Press', 'weight', 100);
-```
-
-### Тепловая карта
-```javascript
-// Отрисовать годовую карту
-window.heatmapModule.renderHeatmap('heatmap-container', window.S.done, 2026);
-
-// Отрисовать месячную карту
-window.heatmapModule.renderMonthlyHeatmap('monthly-container', window.S.done, 2026, 5);
-```
-
-### Тема
-```javascript
-// Переключить тему
-window.toggleTheme();
-
-// Применить конкретную тему
-window.themeModule.applyTheme('light');
-
-// Получить текущую тему
-const theme = window.themeModule.getCurrentTheme(); // 'dark' или 'light'
-```
-
-### Экспорт
-```javascript
-// Экспорт тренировок в CSV
-window.exportWorkoutsToCSV();
-
-// Полный бэкап в JSON
-window.exportAllDataToJSON();
-
-// Импорт из JSON
-window.importFromJSON();
-```
-
----
-
-## Что дальше?
-
-### Запланированные улучшения
-- [ ] Шаблоны тренировок (сохранить и переиспользовать)
-- [ ] Программы на 4-12 недель (5x5, PPL, Upper/Lower)
-- [ ] Трекинг воды
-- [ ] Сканер штрих-кодов для питания
-- [ ] Голосовой ввод для быстрого логирования
-- [ ] AI/ML предсказания оптимального времени тренировки
-- [ ] Экспорт прогресса в изображение для соцсетей
-- [ ] Виджеты для Android/iOS
-
-### Известные ограничения
-- Уведомления работают только когда браузер открыт (ограничение PWA)
-- Тепловая карта не показывает интенсивность (только наличие/отсутствие)
-- Экспорт питания пока не реализован (placeholder)
-
----
-
-## Миграция с v2.0
-
-1. Откройте приложение - данные сохранятся автоматически
-2. Service Worker обновится до v3
-3. Новые модули загрузятся в кэш
-4. Рекомендуется сделать бэкап: Settings → Export All Data
-
-**Совместимость**: Полная обратная совместимость с данными v2.0
 
 ---
 
@@ -437,20 +393,22 @@ window.importFromJSON();
 Разработано с использованием Claude Code (claude.ai/code)
 Вдохновлено философией Киётаки Аянокоджи из "Classroom of the Elite"
 
-**Текущая версия**: 3.2.0  
-**Дата релиза**: 2026-05-06  
+**Текущая версия**: 3.3.0  
+**Дата релиза**: 2026-05-07  
 **Тестов**: 34/34 ✅
 
 ---
 
 ## Version History Summary
 
+- **v3.3.0** (2026-05-07): Breathing timers redesign + Mori tab + QCT removal
 - **v3.2.0** (2026-05-06): Priorities System + Command Palette expansion + Tab reorganization
 - **v3.1.0** (2026-05-03): Command Palette + Tab improvements + Module fixes
 - **v3.0.0** (2026-05-01): Progressive Overload + Achievements + Notifications + Heatmap + Theme + Export
 
 ---
 
+[3.3.0]: https://github.com/DeXii/workout/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/DeXii/workout/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/DeXii/workout/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/DeXii/workout/releases/tag/v3.0.0

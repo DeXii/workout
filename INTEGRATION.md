@@ -1,4 +1,4 @@
-# Ayanokoji System v3.0 - Руководство по интеграции
+# Ayanokoji System v3.3 - Руководство по интеграции
 
 ## Быстрый старт
 
@@ -242,6 +242,152 @@ window.S = window.S || {
 };
 ```
 
+---
+
+## 🌬️ Интеграция таймеров дыхания (NEW in v3.3)
+
+Таймеры дыхания встроены напрямую в `index.html` и не требуют внешних файлов.
+
+### Резонансное дыхание
+
+```html
+<!-- HTML контейнер -->
+<div id="resonant-timer" class="breath-resonant-container">
+  <div class="breath-resonant-circle" id="resonant-circle"></div>
+  <div class="breath-resonant-phase" id="resonant-phase">Нажмите Start</div>
+  <div class="breath-resonant-count" id="resonant-count">0</div>
+  <div class="breath-resonant-controls">
+    <button onclick="startResonantBreathing()" class="btn btn-p">Start</button>
+    <button onclick="stopResonantBreathing()" class="btn btn-gh">Stop</button>
+  </div>
+</div>
+```
+
+```javascript
+// Управление таймером
+startResonantBreathing();  // Запуск
+stopResonantBreathing();   // Остановка
+```
+
+### Квадратное дыхание
+
+```html
+<!-- HTML контейнер -->
+<div id="box-timer" class="breath-box-container">
+  <div class="breath-box-wrapper">
+    <div class="breath-box-square" id="box-square">
+      <div class="breath-box-fill" id="box-fill"></div>
+    </div>
+  </div>
+  <div class="breath-box-phase" id="box-phase">👃 Вдох</div>
+  <div class="breath-box-count" id="box-count">0</div>
+  <div class="breath-box-controls">
+    <button onclick="startBoxBreathing()" class="btn btn-p">Start</button>
+    <button onclick="stopBoxBreathing()" class="btn btn-gh">Stop</button>
+  </div>
+</div>
+```
+
+```javascript
+// Управление таймером
+startBoxBreathing();  // Запуск
+stopBoxBreathing();   // Остановка
+```
+
+### Mori Breathing
+
+```html
+<!-- HTML контейнер -->
+<div id="mori-timer" class="mori-container">
+  <!-- Аудио плеер -->
+  <div class="mori-audio-player">
+    <audio id="mori-audio" src="./audio/MoriBreath.mp3"></audio>
+    <button onclick="toggleMoriAudio()" class="btn btn-gh">▶️ Play Audio</button>
+  </div>
+  
+  <!-- Селектор ступени -->
+  <div class="mori-stage-selector">
+    <button onclick="selectMoriStage(1)" class="btn btn-p">Ступень 1</button>
+    <button onclick="selectMoriStage(2)" class="btn btn-gh">Ступень 2</button>
+    <button onclick="selectMoriStage(3)" class="btn btn-gh">Ступень 3</button>
+  </div>
+  
+  <!-- Визуальный индикатор -->
+  <div class="breath-mori-circle" id="mori-circle"></div>
+  <div class="mori-phase" id="mori-phase">Выберите ступень</div>
+  
+  <!-- Управление -->
+  <div class="mori-controls">
+    <button onclick="startMoriBreathing()" class="btn btn-p">Start</button>
+    <button onclick="stopMoriBreathing()" class="btn btn-gh">Stop</button>
+  </div>
+</div>
+```
+
+```javascript
+// Управление таймером
+selectMoriStage(1);        // Выбор ступени (1-3)
+startMoriBreathing();      // Запуск
+stopMoriBreathing();       // Остановка
+toggleMoriAudio();         // Воспроизведение/пауза аудио
+```
+
+### Настройка параметров
+
+Параметры таймеров можно изменить в начале скрипта:
+
+```javascript
+// Резонансное дыхание (миллисекунды)
+const RESONANT_CONFIG = {
+  INHALE_MS: 5000,   // 5 секунд вдох
+  EXHALE_MS: 5000    // 5 секунд выдох
+};
+
+// Квадратное дыхание
+const BOX_CONFIG = {
+  INHALE_MS: 4000,    // 4 секунды вдох
+  HOLD_IN_MS: 4000,   // 4 секунды задержка на вдохе
+  EXHALE_MS: 4000,    // 4 секунды выдох
+  HOLD_OUT_MS: 4000   // 4 секунды задержка на выдохе
+};
+
+// Mori breathing
+const MORI_CONFIG = {
+  INHALE_MS: 10000,  // 10 секунд вдох
+  HOLD_MS: 10000,    // 10 секунд задержка
+  EXHALE_MS: 10000   // 10 секунд выдох
+};
+```
+
+### Wake Lock API
+
+Таймеры автоматически запрашивают Wake Lock для предотвращения засыпания экрана:
+
+```javascript
+// Wake Lock запрашивается при запуске таймера
+let wakeLock = null;
+
+async function requestWakeLock() {
+  if ('wakeLock' in navigator) {
+    try {
+      wakeLock = await navigator.wakeLock.request('screen');
+    } catch (err) {
+      console.log('Wake Lock not supported');
+    }
+  }
+}
+
+// Освобождается при остановке
+function releaseWakeLock() {
+  if (wakeLock) {
+    wakeLock.release();
+    wakeLock = null;
+  }
+}
+```
+
+---
+
 ## Примеры использования
 
 ### Progressive Overload в UI тренировки
@@ -311,6 +457,8 @@ function unlockAchievement(achievementId) {
 }
 ```
 
+---
+
 ## Troubleshooting
 
 ### Уведомления не работают
@@ -337,12 +485,29 @@ function unlockAchievement(achievementId) {
 2. Проверьте структуру `window.S.workoutLogs`
 3. Убедитесь, что `personalRecords` заполнен
 
+### Таймеры дыхания не воспроизводят звук
+
+1. Проверьте поддержку Web Audio API в браузере
+2. Убедитесь, что страница загружена через HTTPS или localhost
+3. Звук генерируется программно — внешние файлы не нужны
+
+### Wake Lock не работает
+
+1. Wake Lock API требует HTTPS
+2. Не все браузеры поддерживают Wake Lock
+3. Wake Lock автоматически отключается при сворачивании браузера
+
+---
+
 ## Performance Tips
 
 1. **Lazy loading**: Рендерите тепловую карту только при открытии секции аналитики
 2. **Debounce**: Используйте debounce для частых обновлений (например, при вводе)
 3. **Virtual scrolling**: Для длинных списков достижений/PR
 4. **IndexedDB**: Для больших объемов данных (>5MB) переходите с localStorage на IndexedDB
+5. **requestAnimationFrame**: Таймеры дыхания используют rAF для плавной анимации
+
+---
 
 ## Безопасность
 
@@ -350,6 +515,9 @@ function unlockAchievement(achievementId) {
 2. **Валидация**: Всегда валидируйте импортированные данные
 3. **Санитизация**: Используйте `validation.js` для всех пользовательских вводов
 4. **HTTPS**: PWA требует HTTPS для Service Worker и уведомлений
+5. **Wake Lock**: Требует безопасного контекста (HTTPS)
+
+---
 
 ## Дальнейшая разработка
 
@@ -375,7 +543,15 @@ function unlockAchievement(achievementId) {
 3. Используйте `exportToCSV()` helper
 4. Добавьте кнопку в Settings секцию
 
+### Добавление нового таймера дыхания
+
+1. Добавьте HTML контейнер в соответствующую секцию `index.html`
+2. Добавьте CSS стили с анимациями
+3. Создайте функции start/stop с Web Audio API
+4. Используйте Date.now() для точного времени
+5. Запрашивайте Wake Lock при старте
+
 ---
 
-**Версия**: 3.0  
-**Последнее обновление**: 2026-05-06
+**Версия**: 3.3  
+**Последнее обновление**: 2026-05-07

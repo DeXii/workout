@@ -1,8 +1,8 @@
 {
   "name": "workout-1",
   "private": true,
-  "version": "3.2.0",
-  "description": "Ayanokoji System v3.2 - Progressive Web App with Priorities system",
+  "version": "3.3.0",
+  "description": "Ayanokoji System v3.3 - Progressive Web App with Breathing Timers",
   "scripts": {
     "start": "npx http-server -p 8080 -o",
     "dev": "npx live-server --port=8080",

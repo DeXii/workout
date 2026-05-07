@@ -4,35 +4,32 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-"Ayanokoji System v2" is a vanilla JavaScript workout and life tracking PWA. It's a single-page application with Firebase sync, offline-first architecture, and comprehensive tracking for workouts, nutrition, schedule, sleep/recovery, achievements, personal records, and progressive overload.
+Ayanokoji System v3.2 - A vanilla JavaScript workout and life tracking PWA. Single-page application with Firebase sync, offline-first architecture, and comprehensive tracking for workouts, nutrition, schedule, sleep/recovery, achievements, personal records, and progressive overload. UI is in Russian.
 
 **Tech Stack**: Vanilla JavaScript (ES6+), Firebase Realtime Database, Service Worker (offline-first), Chart.js, Vitest
-
-**Version**: 3.0 (Enhanced with Progressive Overload, Achievements, Notifications, Heatmap, Theme Switcher)
 
 ## Development Commands
 
 ```bash
-# Run tests
-npm test
+# Start local server
+npm start          # http-server on port 8080
 
-# Run tests in watch mode
-npm run test:watch
+# Development with live reload
+npm run dev        # live-server on port 8080
 
-# Lint code
-npm run lint
+# Testing
+npm test           # Run all tests with Vitest
+npm run test:watch # Watch mode
+npx vitest run tests/validation.test.js  # Run single test file
 
-# Auto-fix linting issues
-npm run lint:fix
+# Linting
+npm run lint       # ESLint check
+npm run lint:fix   # Auto-fix lint issues
 
-# Format code with Prettier
-npm run format
-
-# Check formatting
-npm run format:check
+# Formatting
+npm run format     # Prettier format all files
+npm run format:check # Check formatting
 ```
-
-**Note**: This is a static site with no build step. Open `index.html` directly in a browser or use a local server like `python -m http.server` or `npx serve`.
 
 ## Architecture
 
@@ -97,13 +94,6 @@ Extracted business logic that can be tested independently:
 - `showPRNotification(prs)` - Displays PR celebration notifications
 - `renderPRs()` - Renders PR list in UI
 
-### Additional Modules (`js/`)
-
-**`pr-tracker.js`** - Personal records integration
-- `checkWorkoutPRs(workoutLog)` - Detects new PRs after workout save
-- `showPRNotification(prs)` - Displays PR celebration notifications
-- `renderPRs()` - Renders PR list in UI
-
 **`achievements-ui.js`** - Achievements UI rendering
 - `renderStreakCounter()` - Renders current and longest streak cards
 - `renderAchievements()` - Renders achievement badges and milestones
@@ -143,12 +133,9 @@ Extracted business logic that can be tested independently:
 - `getCurrentTheme()` - Returns current theme name
 - `createThemeToggleButton()` - Creates theme toggle button HTML
 
-**`dashboard.js`** - Enhanced dashboard
-- `renderEnhancedDashboard()` - Renders comprehensive dashboard with all metrics
+**`dashboard.js`** / **`dashboard-enhanced.js`** - Dashboard rendering
+- `renderEnhancedDashboard()` - Renders comprehensive dashboard with greeting, streak, workout count, weekly volume, recovery score
 - `calculateWeeklyVolume()` - Calculates total volume for last 7 days
-- `renderWeeklyChart()` - Renders weekly progress chart
-
-**`dashboard-enhanced.js`** - Enhanced dashboard widgets (if present)
 
 ### State Structure (`window.S`)
 
@@ -178,10 +165,11 @@ window.S = {
 
 ### Service Worker (`sw.js`)
 
-- Cache name: `ayanokoji-v2`
+- Cache name: `ayanokoji-v3`
 - Strategy: Network-first for HTML, stale-while-revalidate for assets
 - Offline fallback: `offline.html`
-- Caches core modules: `macros.js`, `validation.js`, `state.js`, `task-engine.js`, `achievements.js`, `recovery.js`, `pr-tracker.js`, `dashboard-enhanced.js`
+- Handles notification clicks for workout reminders
+- Caches all core modules and UI modules
 
 ### Navigation
 
@@ -243,16 +231,11 @@ Each exercise tracks three PR types:
 
 ## Testing
 
-Tests use Vitest with CommonJS modules:
+Tests use Vitest with globals (`describe`, `it`, `expect`). Core modules export via both `window.ASCore` (browser) and `module.exports` (Node/Vitest).
+
+Existing tests:
 - `tests/macros.test.js` - Macro calculation logic
 - `tests/validation.test.js` - Input sanitization
-- `tests/achievements.test.js` - Streak and achievement calculations
-- `tests/recovery.test.js` - Sleep and recovery scoring
-- `tests/progressive-overload.test.js` - Progressive overload algorithms
-
-Core modules export via both `window.ASCore` (browser) and `module.exports` (Node/Vitest).
-
-**Total: 34 tests passing**
 
 ## Common Patterns
 
@@ -307,11 +290,11 @@ if (sleepEntry) {
 
 ## Important Notes
 
-- **No Build Step**: This is intentional. The app is designed to work by opening `index.html` directly.
-- **Inline Everything**: CSS and main JS are inline in `index.html` for offline performance and simplicity.
-- **Firebase Optional**: App works offline-first. Firebase sync is optional enhancement.
-- **Global State**: `window.S` is the single source of truth. No state management library.
-- **Manual DOM**: No framework. Direct DOM manipulation via `document.querySelector` and `innerHTML`.
-- **Mobile-First**: Responsive design with hamburger menu and bottom nav for mobile.
-- **Dual Export Pattern**: All core modules export to both `window.ASCore` (browser) and `module.exports` (Node/tests).
-- **Service Worker Updates**: When adding new core modules, always update `STATIC_CACHE` array in `sw.js`.
+- **No Build Step**: Open `index.html` directly or use `npm start` / `npm run dev`
+- **Inline Everything**: CSS and main JS are inline in `index.html` for offline performance
+- **Firebase Optional**: App works offline-first. Firebase sync is optional enhancement
+- **Global State**: `window.S` is the single source of truth
+- **Manual DOM**: No framework. Direct DOM manipulation via `document.querySelector` and `innerHTML`
+- **Mobile-First**: Responsive design with hamburger menu and bottom nav for mobile
+- **Dual Export Pattern**: All core modules export to both `window.ASCore` (browser) and `module.exports` (Node/tests)
+- **Service Worker Updates**: When adding new core modules, update `STATIC_CACHE` array in `sw.js`
