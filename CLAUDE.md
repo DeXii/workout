@@ -231,14 +231,11 @@ Each exercise tracks three PR types:
 
 ## Testing
 
-Tests use Vitest (Node.js, not browser) with globals (`describe`, `it`, `expect`). Core modules export via both `window.ASCore` (browser) and `module.exports` (Node/Vitest).
+Tests use Vitest with globals (`describe`, `it`, `expect`). Core modules export via both `window.ASCore` (browser) and `module.exports` (Node/Vitest).
 
-Existing tests (34 total):
+Existing tests:
 - `tests/macros.test.js` - Macro calculation logic
 - `tests/validation.test.js` - Input sanitization
-- `tests/achievements.test.js` - Streak and badge logic
-- `tests/recovery.test.js` - Sleep/recovery scoring
-- `tests/progressive-overload.test.js` - 1RM, plateau detection, recommendations
 
 ## Common Patterns
 
@@ -299,6 +296,5 @@ if (sleepEntry) {
 - **Global State**: `window.S` is the single source of truth
 - **Manual DOM**: No framework. Direct DOM manipulation via `document.querySelector` and `innerHTML`
 - **Mobile-First**: Responsive design with hamburger menu and bottom nav for mobile
-- **Dual Export Pattern**: All core modules export to both `window.ASCore` (browser) and `module.exports` (Node/tests). This is required for Vitest to work.
+- **Dual Export Pattern**: All core modules export to both `window.ASCore` (browser) and `module.exports` (Node/tests)
 - **Service Worker Updates**: When adding new core modules, update `STATIC_CACHE` array in `sw.js`
-- **ESLint/Prettier**: Both are configured. `npm run lint:fix` auto-fixes issues. `npm run format` formats all files.
