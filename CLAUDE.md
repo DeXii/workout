@@ -87,6 +87,40 @@ Extracted business logic that can be tested independently:
 - `getSleepRecommendation(sleepEntry)` - Returns actionable sleep advice
 - `calculateSleepDebt(sleepLogs, days)` - Calculates cumulative sleep deficit
 
+### Dual Export Pattern
+
+All core modules use a dual export pattern for browser and Node.js compatibility:
+
+```javascript
+// Browser: attach to window.ASCore
+window.ASCore = window.ASCore || {};
+window.ASCore.moduleName = { /* exports */ };
+
+// Node.js/Vitest: module.exports
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { /* same exports */ };
+}
+```
+
+Tests access modules via `module.exports`, browser code via `window.ASCore.moduleName`.
+
+### Dual Export Pattern
+
+All core modules use a dual export pattern for browser and Node.js compatibility:
+
+```javascript
+// Browser: attach to window.ASCore
+window.ASCore = window.ASCore || {};
+window.ASCore.moduleName = { /* exports */ };
+
+// Node.js/Vitest: module.exports
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = { /* same exports */ };
+}
+```
+
+Tests access modules via `module.exports`, browser code via `window.ASCore.moduleName`.
+
 ### Additional Modules (`js/`)
 
 **`pr-tracker.js`** - Personal records integration

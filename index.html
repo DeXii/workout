@@ -2650,7 +2650,10 @@ function loadCloud(cb){
 
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    if(d){
+    // FIX: Check if remote data actually has content (non-empty objects), not just {}
+    const hasRemoteData = d && Object.keys(d).some(k => d[k] !== null && d[k] !== undefined && d[k] !== '' && (typeof d[k] !== 'object' || Object.keys(d[k]).length > 0));
+    if(hasRemoteData){
+      console.log('[Firebase] Merging remote data, keys:', Object.keys(d));
       // MERGE instead of overwrite - keep local data if newer
       // For objects: merge, preferring non-empty values
       const mergeObj = (local, remote) => {
@@ -5449,6 +5452,7 @@ function maybeShowDailyReminder(){
 // ═══════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════
+// CRITICAL: loadLocal MUST be called FIRST before any save operations
 loadLocal();
 
 // Render static content immediately
