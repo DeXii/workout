@@ -2650,16 +2650,23 @@ function loadCloud(cb){
 
   firebase.database().ref('users/'+uid).once('value',snap=>{
     const d=snap.val();
-    // FIX: Check if remote data actually has content (non-empty objects), not just {}
-    const hasRemoteData = d && Object.keys(d).some(k => d[k] !== null && d[k] !== undefined && d[k] !== '' && (typeof d[k] !== 'object' || Object.keys(d[k]).length > 0));
+    console.log('[Firebase] Raw snapshot:', JSON.stringify(d).substring(0, 500));
+    // FIX: Check if remote data actually has workout content
+    const hasRemoteData = d && d.workoutLogs && Object.keys(d.workoutLogs).length > 0;
+    console.log('[Firebase] hasRemoteData:', hasRemoteData);
     if(hasRemoteData){
       console.log('[Firebase] Merging remote data, keys:', Object.keys(d));
-      // MERGE instead of overwrite - keep local data if newer
-      // For objects: merge, preferring non-empty values
+      // FIX: Proper deep merge for nested workoutLogs structure
       const mergeObj = (local, remote) => {
-        if (!remote) return local;
-        if (!local) return remote;
-        const result = {...remote, ...local}; // Local takes priority
+        if (!remote) return local || {};
+        if (!local) return remote || {};
+        // Deep merge by keys - local takes priority but remote adds missing
+        const result = {...remote};
+        Object.keys(local).forEach(key => {
+          if (local[key] !== null && local[key] !== undefined) {
+            result[key] = local[key];
+          }
+        });
         return result;
       };
 

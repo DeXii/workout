@@ -115,32 +115,46 @@ function calculatePersonalRecords(workoutLogs) {
       const workout = workoutLogs[date][workoutType];
       if (!workout.exercises) return;
 
-      workout.exercises.forEach(ex => {
-        const name = ex.name;
-        if (!prs[name]) {
-          prs[name] = { maxWeight: 0, maxReps: 0, maxVolume: 0, date: date };
-        }
+      // FIX: Handle both formats - object with arrays (index.html) and array with objects (test format)
+      const exercises = workout.exercises;
 
-        const sets = ex.sets || [];
-        sets.forEach(set => {
-          const weight = set.weight || 0;
-          const reps = set.reps || 0;
-          const volume = weight * reps;
-
-          if (weight > prs[name].maxWeight) {
-            prs[name].maxWeight = weight;
-            prs[name].maxWeightDate = date;
+      if (Array.isArray(exercises)) {
+        // Array format: [{ name: "Bench Press", sets: [100, 8, 8] }]
+        exercises.forEach(ex => {
+          const name = ex.name;
+          if (!prs[name]) {
+            prs[name] = { maxWeight: 0, maxReps: 0, maxVolume: 0, date: date };
           }
-          if (reps > prs[name].maxReps) {
-            prs[name].maxReps = reps;
-            prs[name].maxRepsDate = date;
+          const sets = ex.sets || [];
+          sets.forEach(set => {
+            if (typeof set === 'object') {
+              const weight = set.weight || 0;
+              const reps = set.reps || 0;
+              const volume = weight * reps;
+              if (weight > prs[name].maxWeight) { prs[name].maxWeight = weight; prs[name].maxWeightDate = date; }
+              if (reps > prs[name].maxReps) { prs[name].maxReps = reps; prs[name].maxRepsDate = date; }
+              if (volume > prs[name].maxVolume) { prs[name].maxVolume = volume; prs[name].maxVolumeDate = date; }
+            }
+          });
+        });
+      } else if (typeof exercises === 'object') {
+        // Object format (index.html): { "Bench Press": [8, 8, 8] }
+        Object.keys(exercises).forEach(exName => {
+          if (!prs[exName]) {
+            prs[exName] = { maxWeight: 0, maxReps: 0, maxVolume: 0, date: date };
           }
-          if (volume > prs[name].maxVolume) {
-            prs[name].maxVolume = volume;
-            prs[name].maxVolumeDate = date;
+          const sets = exercises[exName];
+          if (Array.isArray(sets)) {
+            sets.forEach(reps => {
+              reps = Number(reps) || 0;
+              if (reps > prs[exName].maxReps) {
+                prs[exName].maxReps = reps;
+                prs[exName].maxRepsDate = date;
+              }
+            });
           }
         });
-      });
+      }
     });
   });
 
