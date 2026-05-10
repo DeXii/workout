@@ -46,7 +46,8 @@ async function staleWhileRevalidate(request) {
   const cached = await cache.match(request);
   const networkPromise = fetch(request)
     .then((response) => {
-      if (response && response.ok) {
+      // Only cache complete (200) responses, not partial (206)
+      if (response && response.ok && response.status === 200) {
         cache.put(request, response.clone());
       }
       return response;
@@ -59,7 +60,8 @@ async function networkFirst(request) {
   const cache = await caches.open(CACHE_NAME);
   try {
     const response = await fetch(request);
-    if (response && response.ok) {
+    // Only cache complete (200) responses, not partial (206)
+    if (response && response.ok && response.status === 200) {
       cache.put(request, response.clone());
     }
     return response;

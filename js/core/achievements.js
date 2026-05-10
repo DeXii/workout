@@ -115,32 +115,72 @@ function calculatePersonalRecords(workoutLogs) {
       const workout = workoutLogs[date][workoutType];
       if (!workout.exercises) return;
 
-      workout.exercises.forEach(ex => {
-        const name = ex.name;
-        if (!prs[name]) {
-          prs[name] = { maxWeight: 0, maxReps: 0, maxVolume: 0, date: date };
-        }
+      // Handle both array format [{name, sets: [{weight, reps}]}]
+      // and object format { 'Exercise Name': [reps...] or [{weight, reps}...] }
+      if (Array.isArray(workout.exercises)) {
+        // Array format
+        workout.exercises.forEach(ex => {
+          const name = ex.name;
+          if (!prs[name]) {
+            prs[name] = { maxWeight: 0, maxReps: 0, maxVolume: 0, date: date };
+          }
 
-        const sets = ex.sets || [];
-        sets.forEach(set => {
-          const weight = set.weight || 0;
-          const reps = set.reps || 0;
-          const volume = weight * reps;
+          const sets = ex.sets || [];
+          sets.forEach(set => {
+            const weight = set.weight || 0;
+            const reps = set.reps || 0;
+            const volume = weight * reps;
 
-          if (weight > prs[name].maxWeight) {
-            prs[name].maxWeight = weight;
-            prs[name].maxWeightDate = date;
-          }
-          if (reps > prs[name].maxReps) {
-            prs[name].maxReps = reps;
-            prs[name].maxRepsDate = date;
-          }
-          if (volume > prs[name].maxVolume) {
-            prs[name].maxVolume = volume;
-            prs[name].maxVolumeDate = date;
-          }
+            if (weight > prs[name].maxWeight) {
+              prs[name].maxWeight = weight;
+              prs[name].maxWeightDate = date;
+            }
+            if (reps > prs[name].maxReps) {
+              prs[name].maxReps = reps;
+              prs[name].maxRepsDate = date;
+            }
+            if (volume > prs[name].maxVolume) {
+              prs[name].maxVolume = volume;
+              prs[name].maxVolumeDate = date;
+            }
+          });
         });
-      });
+      } else {
+        // Object format: { 'Exercise Name': [reps] or [{weight, reps}] }
+        Object.keys(workout.exercises).forEach(name => {
+          if (!prs[name]) {
+            prs[name] = { maxWeight: 0, maxReps: 0, maxVolume: 0, date: date };
+          }
+
+          const sets = workout.exercises[name] || [];
+          sets.forEach(set => {
+            let weight = 0;
+            let reps = 0;
+
+            if (typeof set === 'object' && set !== null) {
+              weight = set.weight || 0;
+              reps = set.reps || 0;
+            } else {
+              reps = parseInt(set) || 0;
+            }
+
+            const volume = weight * reps;
+
+            if (weight > prs[name].maxWeight) {
+              prs[name].maxWeight = weight;
+              prs[name].maxWeightDate = date;
+            }
+            if (reps > prs[name].maxReps) {
+              prs[name].maxReps = reps;
+              prs[name].maxRepsDate = date;
+            }
+            if (volume > prs[name].maxVolume) {
+              prs[name].maxVolume = volume;
+              prs[name].maxVolumeDate = date;
+            }
+          });
+        });
+      }
     });
   });
 
